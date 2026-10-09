@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\ExerciseLibrarySeeder;
 use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -40,6 +41,12 @@ expect()->extend('toBeOne', function () {
 function seedPlan(): void
 {
     test()->seed(PlanSeeder::class);
+}
+
+function seedLibrary(): void
+{
+    seedPlan();
+    test()->seed(ExerciseLibrarySeeder::class);
 }
 
 /** A valid onboarding / body-profile payload. */

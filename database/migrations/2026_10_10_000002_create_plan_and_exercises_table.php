@@ -41,6 +41,10 @@ return new class extends Migration
             $table->json('equipment')->nullable();
             $table->enum('difficulty', ['beginner', 'intermediate', 'advanced'])->default('beginner');
             $table->boolean('is_timed')->default(false);
+            // Mobility moves only: dynamic (warm-up) or static (cool-down / recovery) stretches.
+            $table->enum('mobility_type', ['dynamic', 'static'])->nullable();
+            $table->unsignedSmallInteger('default_hold_seconds')->nullable();
+            $table->boolean('per_side')->default(false);
             $table->unsignedSmallInteger('rest_min_seconds')->default(60);
             $table->unsignedSmallInteger('rest_max_seconds')->default(90);
             $table->unsignedSmallInteger('default_rest_seconds')->default(75);

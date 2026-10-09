@@ -16,7 +16,7 @@
         <h1 class="mt-2 text-2xl font-black uppercase sm:text-3xl">Profile and settings</h1>
     </div>
 
-    <div class="grid gap-5 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {{-- Account --}}
         <section class="glass p-5 sm:p-6" aria-labelledby="acct-title">
             <h2 id="acct-title" class="text-base font-bold uppercase">Account</h2>
@@ -64,12 +64,12 @@
                     <input type="hidden" name="ai_coach_opt_in" value="0">
                     <label class="flex items-center gap-3 text-sm"><input type="checkbox" class="check" name="ai_coach_opt_in" value="1" @checked(old('ai_coach_opt_in', $profile->ai_coach_opt_in))> Use the AI coach (sends your questions and basic stats to the AI service)</label>
                 @endif
-                <div class="grid gap-4 sm:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <x-field name="workout_reminder_at" type="time" label="Workout reminder" :value="$notifications->workout_reminder_at ? substr($notifications->workout_reminder_at, 0, 5) : null"/>
                     <x-field name="creatine_reminder_at" type="time" label="Creatine reminder" :value="$notifications->creatine_reminder_at ? substr($notifications->creatine_reminder_at, 0, 5) : null"/>
                     <x-field name="sleep_reminder_at" type="time" label="Bedtime reminder" :value="$notifications->sleep_reminder_at ? substr($notifications->sleep_reminder_at, 0, 5) : null"/>
                 </div>
-                <div class="grid gap-4 sm:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <x-field name="water_goal_ml" type="number" label="Water goal (ml)" :value="$profile->water_goal_ml" min="500" max="8000" step="50" hint="Blank = automatic"/>
                     <x-field name="sleep_goal_hours" type="number" label="Sleep goal (h)" :value="$profile->sleep_goal_hours" min="4" max="12" step="0.5"/>
                     <x-field name="creatine_dose_g" type="number" label="Creatine (g)" :value="$profile->creatine_dose_g" min="1" max="20" step="0.5"/>
@@ -84,7 +84,7 @@
             <p class="mt-1 text-sm text-muted">Changing your weight or goal here updates your diet targets the next time you recalculate.</p>
             <form method="POST" action="{{ route('profile.body') }}" class="mt-5 space-y-8">
                 @csrf @method('PATCH')
-                <div class="grid gap-8 lg:grid-cols-2">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                     <div class="space-y-8">
                         @include('profile._fields', ['group' => 'identity', 'wizard' => false])
                         @include('profile._fields', ['group' => 'body', 'wizard' => false])

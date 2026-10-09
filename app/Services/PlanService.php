@@ -6,7 +6,9 @@ use App\Enums\SessionStatus;
 use App\Models\Plan;
 use App\Models\PlanDay;
 use App\Models\User;
+use App\Models\UserExerciseSwap;
 use App\Models\WorkoutSession;
+use App\Support\PlanItemView;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
@@ -95,6 +97,33 @@ class PlanService
         $startDay = CarbonImmutable::parse($start->toDateString(), $user->timezone())->startOfDay();
 
         return max(1, intdiv(max(0, (int) $startDay->diffInDays($date->startOfDay(), false)), 7) + 1);
+    }
+
+    /**
+     * The day's exercises as this user sees them (their swaps applied).
+     *
+     * @return Collection<int, PlanItemView>
+     */
+    public function effectiveItems(User $user, PlanDay $day): Collection
+    {
+        $day->loadMissing('items.exercise.postureRules');
+
+        $swaps = UserExerciseSwap::query()
+            ->where('user_id', $user->id)
+            ->whereIn('plan_day_exercise_id', $day->items->pluck('id'))
+            ->with('replacement.postureRules')
+            ->get()
+            ->keyBy('plan_day_exercise_id');
+
+        return $day->items->map(fn ($item) => new PlanItemView($item, $swaps->get($item->id)))->values();
+    }
+
+    /** The date a plan weekday falls on in the week containing $anchor (default: this week). */
+    public function dateForWeekday(User $user, int $isoWeekday, ?CarbonInterface $anchor = null): CarbonImmutable
+    {
+        $anchor = $anchor ? CarbonImmutable::instance($anchor) : $user->localToday();
+
+        return $anchor->startOfWeek(CarbonInterface::MONDAY)->addDays($isoWeekday - 1)->startOfDay();
     }
 
     /** Rough session length in minutes: warm-up + sets x (work + rest). */

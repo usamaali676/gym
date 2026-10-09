@@ -34,7 +34,8 @@
     --shadow-neon: 0 0 0 1px rgba(57, 255, 20, 0.45), 0 0 22px rgba(57, 255, 20, 0.35);
     --shadow-neon-sm: 0 0 12px rgba(57, 255, 20, 0.35);
 
-    --animate-rise: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    /* "backwards", not "both": a lingering transform would become the containing block for fixed-position modals. */
+    --animate-rise: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
     --animate-pulse-neon: pulse-neon 2.4s ease-in-out infinite;
 }
 
@@ -233,7 +234,7 @@
     .dot-in_progress { background: var(--color-neon2); animation: var(--animate-pulse-neon); }
 
     .rise { animation: var(--animate-rise); animation-delay: calc(var(--i, 0) * 70ms); }
-    .page-in { animation: page-in 0.4s ease both; }
+    .page-in { animation: page-in 0.4s ease backwards; }
     .skeleton { background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 0.6rem; }
 
     .prose-lite p { margin: 0 0 0.8rem; line-height: 1.65; color: #c5d6cb; }

@@ -2,10 +2,12 @@ import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
 import { initEffects } from './modules/effects';
 import bodyForm from './modules/body-form';
+import swapSheet from './modules/swap';
 
 window.Alpine = Alpine;
 Alpine.plugin(focus);
 Alpine.data('bodyForm', bodyForm);
+Alpine.data('swapSheet', swapSheet);
 
 /** Per-user preference helpers: storage can throw (private mode, blocked cookies), so always guard. */
 window.safeStorage = {

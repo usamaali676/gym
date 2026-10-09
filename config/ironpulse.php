@@ -104,6 +104,15 @@ return [
         'assist_machine' => 'machine',
     ],
 
+    /** Display names for the muscle regions used by the 3D model and exercise content. */
+    'regions' => [
+        'chest_upper' => 'Upper chest', 'chest_lower' => 'Lower chest', 'delt_front' => 'Front delts',
+        'delt_side' => 'Side delts', 'delt_rear' => 'Rear delts', 'biceps' => 'Biceps', 'triceps' => 'Triceps',
+        'forearms' => 'Forearms', 'lats' => 'Lats', 'mid_back' => 'Mid-back', 'traps' => 'Traps',
+        'lower_back' => 'Lower back', 'abs' => 'Abs', 'glutes' => 'Glutes', 'quads' => 'Quads',
+        'hamstrings' => 'Hamstrings', 'calves' => 'Calves',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Motivation

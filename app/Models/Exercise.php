@@ -27,6 +27,7 @@ class Exercise extends Model
             'form_cues' => 'array',
             'common_mistakes' => 'array',
             'is_timed' => 'boolean',
+            'per_side' => 'boolean',
             'is_active' => 'boolean',
         ];
     }

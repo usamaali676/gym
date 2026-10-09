@@ -10,7 +10,7 @@
 @if ($group === 'identity')
     <div class="space-y-5">
         <x-field name="name" label="Your name" :value="$user->is_guest && $user->name === 'Guest' ? '' : $user->name" required maxlength="120" autocomplete="name"/>
-        <div class="grid gap-5 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <x-field name="age" type="number" label="Age" :value="$val('age')" required min="14" max="90" inputmode="numeric"/>
             @unless ($wizard)
                 <x-field name="public_name" label="Leaderboard name (optional)" :value="$val('public_name')" maxlength="60" hint="Shown instead of your real name if you join the leaderboard."/>
@@ -39,7 +39,7 @@
             <input type="hidden" name="unit_system" :value="unit">
         </div>
 
-        <div class="grid gap-5 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
                 <p class="label" id="height-label">Height</p>
                 <div x-show="unit === 'metric'" class="relative">
@@ -84,7 +84,7 @@
 
         <fieldset>
             <legend class="label">Fitness level</legend>
-            <div class="grid gap-2 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 @foreach ($enumOptions(\App\Enums\FitnessLevel::class) as $opt)
                     <label class="tile"><input type="radio" name="fitness_level" value="{{ $opt->value }}" @checked($val('fitness_level') === $opt->value) required><span class="tile-body text-center text-sm font-semibold">{{ $opt->label() }}</span></label>
                 @endforeach
@@ -107,7 +107,7 @@
     <div class="space-y-6">
         <fieldset>
             <legend class="label">Your goal</legend>
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 @foreach ($enumOptions(\App\Enums\Goal::class) as $opt)
                     <label class="tile"><input type="radio" name="goal" value="{{ $opt->value }}" @checked($val('goal') === $opt->value) required>
                         <span class="tile-body"><span class="text-sm font-bold">{{ $opt->label() }}</span><span class="text-xs text-muted">{{ $goalCopy[$opt->value] }}</span></span></label>
@@ -117,7 +117,7 @@
         </fieldset>
         <fieldset>
             <legend class="label">Diet preference</legend>
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 @foreach ($enumOptions(\App\Enums\DietPreference::class) as $opt)
                     <label class="tile"><input type="radio" name="diet_preference" value="{{ $opt->value }}" @checked($val('diet_preference') === $opt->value) required>
                         <span class="tile-body"><span class="text-sm font-bold">{{ $opt->label() }}</span><span class="text-xs text-muted">{{ $dietCopy[$opt->value] }}</span></span></label>
@@ -139,7 +139,7 @@
                 <legend class="label !mb-0">Equipment you can use</legend>
                 <button type="button" class="text-xs font-semibold text-neon underline underline-offset-4" @click="toggleAllEquipment()" x-text="equipment.length >= allEquipment.length ? 'Clear all' : 'Full gym (select all)'">Full gym (select all)</button>
             </div>
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 @foreach (config('ironpulse.equipment') as $key => $label)
                     <label class="tile"><input type="checkbox" name="equipment[]" value="{{ $key }}" x-model="equipment"><span class="tile-body text-sm font-semibold">{{ $label }}</span></label>
                 @endforeach

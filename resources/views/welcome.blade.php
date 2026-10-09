@@ -70,7 +70,7 @@
 
         <section class="mx-auto max-w-6xl px-4 pb-24 sm:px-6" aria-labelledby="features-heading">
             <h2 id="features-heading" class="eyebrow mb-6 text-center">Built for lifters</h2>
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ([
                     ['dumbbell', 'Game-mode workouts', 'Full-screen guided sessions with countdowns, set tracking, rest timers and a 3D demo for every move.'],
                     ['scan', 'AI posture checker', 'MediaPipe runs on your device. Your skeleton glows green when form is right and red when it is not.'],

@@ -17,7 +17,7 @@
         <p class="mt-2 max-w-2xl text-sm text-muted sm:text-base">“{{ $quote }}”</p>
     </section>
 
-    <div class="grid gap-4 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {{-- Today's workout --}}
         <article class="glass glass-neon rise relative overflow-hidden p-5 sm:p-7 lg:col-span-2" style="--i:1" aria-labelledby="today-title">
             <div class="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-neon/10 blur-3xl" aria-hidden="true"></div>
@@ -38,7 +38,7 @@
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <p class="eyebrow">Today · {{ $day->name }}</p>
-                        <h2 id="today-title" class="mt-2 text-3xl font-black uppercase sm:text-5xl">{{ $day->label }} <span class="text-neon text-glow">{{ $day->focus }}</span></h2>
+                        <h2 id="today-title" class="mt-2 text-3xl font-black uppercase sm:text-5xl">{{ $day->label }} @if ($day->focusLabel())<span class="text-neon text-glow">{{ $day->focusLabel() }}</span>@endif</h2>
                     </div>
                     @if ($todayStatus === 'completed')
                         <span class="chip chip-neon"><x-icon name="check" class="size-4"/>Completed</span>
@@ -51,7 +51,7 @@
                     <li class="chip"><x-icon name="repeat" class="size-4"/>{{ $day->totalSets() }} sets</li>
                     <li class="chip"><x-icon name="clock" class="size-4"/>about {{ $dayMinutes }} min</li>
                 </ul>
-                <ol class="mt-5 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
+                <ol class="mt-5 grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
                     @foreach ($day->items->take(6) as $item)
                         <li class="flex items-baseline justify-between gap-3 border-b border-line/60 py-1.5">
                             <span class="truncate">{{ $item->displayName() }}</span>
@@ -111,7 +111,7 @@
     </div>
 
     {{-- Stat tiles --}}
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <article class="glass rise p-5" style="--i:3">
             <p class="eyebrow flex items-center gap-2"><x-icon name="flame" class="size-4"/>Streak</p>
             <p class="num mt-3 text-4xl text-neon text-glow"><span data-count-to="{{ $streak }}">{{ $streak }}</span> <span class="text-base text-muted">{{ \Illuminate\Support\Str::plural('day', $streak) }}</span></p>

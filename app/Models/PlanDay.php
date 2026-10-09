@@ -29,7 +29,13 @@ class PlanDay extends Model
     /** "PUSH, Chest Focus" style heading. */
     public function title(): string
     {
-        return $this->is_rest ? 'REST' : "{$this->label}, {$this->focus} Focus";
+        return $this->focusLabel() === null ? $this->label : "{$this->label}, {$this->focus} Focus";
+    }
+
+    /** The focus text to show after the label, or null when it only repeats it ("LEGS Legs", "REST Recovery"). */
+    public function focusLabel(): ?string
+    {
+        return $this->is_rest || strcasecmp($this->label, $this->focus) === 0 ? null : $this->focus;
     }
 
     public function totalSets(): int
