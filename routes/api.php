@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
+use App\Http\Controllers\Api\HabitController;
 use App\Http\Controllers\Api\PostureSessionController;
 use App\Http\Controllers\Api\SwapController;
 use App\Http\Controllers\Api\WorkoutSessionController;
+use App\Http\Controllers\ProgressController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,3 +44,14 @@ Route::post('/food-logs/batch', [FoodLogController::class, 'batch'])->name('food
 Route::post('/food-logs/copy', [FoodLogController::class, 'copy'])->name('food-logs.copy');
 Route::patch('/food-logs/{log}', [FoodLogController::class, 'update'])->whereNumber('log')->name('food-logs.update');
 Route::delete('/food-logs/{log}', [FoodLogController::class, 'destroy'])->whereNumber('log')->name('food-logs.destroy');
+
+// Habits: water, creatine, sleep, mobility minutes
+Route::get('/habits', [HabitController::class, 'show'])->name('habits.show');
+Route::post('/water', [HabitController::class, 'addWater'])->name('water.add');
+Route::delete('/water/last', [HabitController::class, 'undoWater'])->name('water.undo');
+Route::put('/creatine', [HabitController::class, 'creatine'])->name('creatine.set');
+Route::put('/sleep', [HabitController::class, 'sleep'])->name('sleep.set');
+Route::put('/mobility', [HabitController::class, 'mobility'])->name('mobility.set');
+
+// Progress: strength curve for one exercise
+Route::get('/progress/exercises/{exercise}', [ProgressController::class, 'strength'])->name('progress.strength');

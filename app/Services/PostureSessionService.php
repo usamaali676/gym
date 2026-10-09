@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Badge;
 use App\Models\PostureRule;
 use App\Models\PostureSession;
 use App\Models\User;
@@ -14,13 +15,13 @@ use Illuminate\Support\Facades\DB;
  */
 class PostureSessionService
 {
-    public function __construct(private readonly XpService $xp) {}
+    public function __construct(private readonly XpService $xp, private readonly BadgeService $badges) {}
 
     /**
      * Idempotent on `client_uuid`: a retried request returns the stored session and pays nothing twice.
      *
      * @param  array<string, mixed>  $data  validated payload
-     * @return array{session: PostureSession, created: bool, xp: array{session:int, reps:int, total:int}}
+     * @return array{session: PostureSession, created: bool, xp: array{session:int, reps:int, total:int}, badges: list<Badge>}
      */
     public function record(User $user, array $data): array
     {
@@ -28,7 +29,7 @@ class PostureSessionService
         if ($existing) {
             abort_unless($existing->user_id === $user->id, 409, 'This session id is already in use.');
 
-            return ['session' => $existing, 'created' => false, 'xp' => ['session' => 0, 'reps' => 0, 'total' => 0]];
+            return ['session' => $existing, 'created' => false, 'xp' => ['session' => 0, 'reps' => 0, 'total' => 0], 'badges' => []];
         }
 
         return DB::transaction(function () use ($user, $data) {
@@ -56,7 +57,9 @@ class PostureSessionService
                 'model_variant' => $data['model_variant'] ?? 'lite',
             ]);
 
-            return ['session' => $session, 'created' => true, 'xp' => $this->award($user, $session)];
+            $xp = $this->award($user, $session);
+
+            return ['session' => $session, 'created' => true, 'xp' => $xp, 'badges' => $this->badges->evaluate($user->refresh(), ['posture', 'level'], ['source' => 'posture', 'id' => $session->id])];
         });
     }
 

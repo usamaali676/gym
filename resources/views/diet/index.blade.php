@@ -75,7 +75,7 @@
                 </div>
 
                 @if ($restTargets)
-                    <div class="mt-6 overflow-x-auto rounded-xl border border-line">
+                    <div class="relative mt-6 overflow-x-auto rounded-xl border border-line">
                         <table class="w-full min-w-[22rem] text-left text-sm">
                             <caption class="sr-only">Calorie cycling targets</caption>
                             <thead class="text-xs uppercase tracking-wider text-muted"><tr><th class="p-3" scope="col">Day type</th><th class="p-3" scope="col">Calories</th><th class="p-3" scope="col">Protein</th><th class="p-3" scope="col">Carbs</th><th class="p-3" scope="col">Fat</th></tr></thead>

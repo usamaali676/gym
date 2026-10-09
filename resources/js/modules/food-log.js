@@ -181,6 +181,7 @@ export default function foodLog(config) {
                 });
                 this.logs.push(res.log);
                 this.day = res.day;
+                window.toastBadges?.(res.badges);
                 this.say(`Added ${res.log.name} to ${this.config.meals[this.sheetMeal].toLowerCase()}.`);
                 if (keepGoing) {
                     this.picked = null;

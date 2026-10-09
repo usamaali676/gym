@@ -449,6 +449,7 @@ export default function postureLab(config) {
                 const res = await window.api(config.urls.save, { method: 'POST', body: payload });
                 this.xp = res.xp;
                 this.level = res.level;
+                window.toastBadges?.(res.badges);
                 this.saveState = 'saved';
             } catch (error) {
                 this.saveState = 'failed';

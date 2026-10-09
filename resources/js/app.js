@@ -3,8 +3,11 @@ import focus from '@alpinejs/focus';
 import { initEffects } from './modules/effects';
 import bodyForm from './modules/body-form';
 import swapSheet from './modules/swap';
+import { toast, toastBadges } from './modules/toast';
 
 window.Alpine = Alpine;
+window.toast = toast;
+window.toastBadges = toastBadges;
 Alpine.plugin(focus);
 Alpine.data('bodyForm', bodyForm);
 Alpine.data('swapSheet', swapSheet);

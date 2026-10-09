@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\BadgeSeeder;
 use Database\Seeders\ExerciseLibrarySeeder;
 use Database\Seeders\FoodSeeder;
 use Database\Seeders\MealTemplateSeeder;
@@ -56,6 +57,11 @@ function seedPosture(): void
 {
     seedLibrary();
     test()->seed(PostureRuleSeeder::class);
+}
+
+function seedBadges(): void
+{
+    test()->seed(BadgeSeeder::class);
 }
 
 function seedFoods(): void

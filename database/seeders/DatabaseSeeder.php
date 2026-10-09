@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             PostureRuleSeeder::class,
             FoodSeeder::class,
             MealTemplateSeeder::class,
+            BadgeSeeder::class,
             DemoUserSeeder::class,
         ]);
     }

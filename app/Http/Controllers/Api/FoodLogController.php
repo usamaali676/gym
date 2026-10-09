@@ -10,8 +10,10 @@ use App\Http\Requests\StoreFoodLogRequest;
 use App\Http\Requests\UpdateFoodLogRequest;
 use App\Models\Food;
 use App\Models\FoodLog;
+use App\Services\BadgeService;
 use App\Services\FoodLogService;
 use App\Services\NutritionDayService;
+use App\Support\BadgePresenter;
 use App\Support\FoodPresenter;
 use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +25,7 @@ class FoodLogController extends Controller
     public function __construct(
         private readonly FoodLogService $logs,
         private readonly NutritionDayService $days,
+        private readonly BadgeService $badges,
     ) {}
 
     public function store(StoreFoodLogRequest $request): JsonResponse
@@ -33,7 +36,7 @@ class FoodLogController extends Controller
 
         $log = $this->logs->add($user, $food, $date, Meal::from($request->input('meal')), (float) $request->input('quantity'), $request->input('unit'), $request->input('serving_id'));
 
-        return response()->json(['log' => FoodPresenter::log($log)] + $this->payload($request->user(), $date), 201);
+        return response()->json(['log' => FoodPresenter::log($log)] + $this->payload($request->user(), $date, true), 201);
     }
 
     public function batch(BatchFoodLogRequest $request): JsonResponse
@@ -43,7 +46,7 @@ class FoodLogController extends Controller
 
         $created = $this->logs->addMany($user, $date, Meal::from($request->input('meal')), $request->validated('items'));
 
-        return response()->json(['logs' => $created->map(fn (FoodLog $l) => FoodPresenter::log($l))->all()] + $this->payload($user, $date), 201);
+        return response()->json(['logs' => $created->map(fn (FoodLog $l) => FoodPresenter::log($l))->all()] + $this->payload($user, $date, true), 201);
     }
 
     public function update(UpdateFoodLogRequest $request, FoodLog $log): JsonResponse
@@ -77,9 +80,14 @@ class FoodLogController extends Controller
     }
 
     /** @return array<string, mixed> */
-    private function payload($user, CarbonInterface $date): array
+    private function payload($user, CarbonInterface $date, bool $checkBadges = false): array
     {
-        return ['day' => $this->days->state($user, $date)];
+        $payload = ['day' => $this->days->state($user, $date)];
+        if ($checkBadges) {
+            $payload['badges'] = BadgePresenter::many($this->badges->evaluate($user->refresh(), ['nutrition']));
+        }
+
+        return $payload;
     }
 
     /** @return list<array<string, mixed>> */

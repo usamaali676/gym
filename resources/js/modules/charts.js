@@ -79,3 +79,71 @@ export async function nutritionChart(canvas, history) {
         },
     });
 }
+
+/** Body weight over time with an optional goal line. */
+export async function weightChart(canvas, points, target = null) {
+    const Chart = await chartLib();
+
+    return new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: points.map((p) => shortDate(p.date)),
+            datasets: [
+                {
+                    label: 'Weight (kg)',
+                    data: points.map((p) => p.weight_kg),
+                    borderColor: '#39FF14',
+                    backgroundColor: 'rgba(57, 255, 20, 0.12)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: points.length > 40 ? 0 : 3,
+                    borderWidth: 2,
+                },
+                ...(target ? [{
+                    label: 'Goal',
+                    data: points.map(() => target),
+                    borderColor: 'rgba(232, 245, 233, 0.6)',
+                    borderDash: [5, 4],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                }] : []),
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: reducedMotion() ? false : { duration: 600 },
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } },
+            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 7, maxRotation: 0 } }, y: { grid: { color: 'rgba(57, 255, 20, 0.08)' } } },
+        },
+    });
+}
+
+/** Strength curve: estimated 1RM and the heaviest set of each workout. Returns the chart so the page can update it. */
+export async function strengthChart(canvas, series) {
+    const Chart = await chartLib();
+
+    return new Chart(canvas, {
+        type: 'line',
+        data: strengthData(series),
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: reducedMotion() ? false : { duration: 400 },
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } },
+            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 7, maxRotation: 0 } }, y: { title: { display: true, text: 'kg' }, grid: { color: 'rgba(57, 255, 20, 0.08)' } } },
+        },
+    });
+}
+
+export function strengthData(series) {
+    return {
+        labels: series.map((s) => shortDate(s.date)),
+        datasets: [
+            { label: 'Estimated 1RM', data: series.map((s) => s.e1rm), borderColor: '#39FF14', backgroundColor: '#39FF14', tension: 0.25, borderWidth: 2, pointRadius: 3 },
+            { label: 'Heaviest set', data: series.map((s) => s.top_weight), borderColor: '#FFC83D', backgroundColor: '#FFC83D', tension: 0.25, borderWidth: 2, pointRadius: 3, borderDash: [4, 3] },
+        ],
+    };
+}
