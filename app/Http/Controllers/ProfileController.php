@@ -6,6 +6,7 @@ use App\Http\Requests\BodyProfileRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\SettingsRequest;
 use App\Models\NotificationSetting;
+use App\Services\Coach\CoachService;
 use App\Services\ProfileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +52,13 @@ class ProfileController extends Controller
         $notificationKeys = ['workout_reminder_at', 'creatine_reminder_at', 'sleep_reminder_at', 'water_reminders', 'water_interval_minutes', 'browser_notifications', 'email_digest', 'digest_day'];
 
         // Unchecked checkboxes are not sent; this form posts a hidden 0 first, so booleans are always present.
-        $user->profile->fill(array_intersect_key($data, array_flip($profileKeys)))->save();
+        $user->profile->fill(array_intersect_key($data, array_flip($profileKeys)));
+        // Switching the AI coach off takes the saved conversation with it.
+        $coachSwitchedOff = $user->profile->isDirty('ai_coach_opt_in') && ! $user->profile->ai_coach_opt_in;
+        $user->profile->save();
+        if ($coachSwitchedOff) {
+            app(CoachService::class)->clear($user);
+        }
         NotificationSetting::updateOrCreate(
             ['user_id' => $user->id],
             array_intersect_key($data, array_flip($notificationKeys)),

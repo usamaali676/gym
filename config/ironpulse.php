@@ -94,7 +94,10 @@ return [
         'api_key' => env('ANTHROPIC_API_KEY'),
         'model' => env('COACH_MODEL'),
         'daily_message_limit' => (int) env('COACH_DAILY_MESSAGE_LIMIT', 20),
-        'max_output_tokens' => 700,
+        // Models that think before answering spend part of this on thinking, so keep it generous.
+        'max_output_tokens' => (int) env('COACH_MAX_OUTPUT_TOKENS', 1500),
+        // Optional reasoning effort (low, medium, high). Leave blank for models that do not take it.
+        'effort' => env('COACH_EFFORT'),
         'history_messages' => 12,
     ],
 

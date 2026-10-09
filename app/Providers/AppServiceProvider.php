@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Coach\AnthropicCoachModel;
+use App\Services\Coach\CoachModel;
 use App\Services\DietCalculatorService;
 use App\View\Composers\NavComposer;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -22,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
             (float) config('ironpulse.water.ml_per_kg'),
             (int) config('ironpulse.water.training_day_bonus_ml'),
         ));
+
+        // Swappable in tests; in the app it is the official Anthropic SDK, called from the server only.
+        $this->app->bind(CoachModel::class, AnthropicCoachModel::class);
     }
 
     public function boot(): void

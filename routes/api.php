@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CoachController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Api\HabitController;
@@ -55,3 +56,7 @@ Route::put('/mobility', [HabitController::class, 'mobility'])->name('mobility.se
 
 // Progress: strength curve for one exercise
 Route::get('/progress/exercises/{exercise}', [ProgressController::class, 'strength'])->name('progress.strength');
+
+// Optional AI coach: server-side only, rate limited per user on top of the daily message limit
+Route::post('/coach/messages', [CoachController::class, 'store'])->middleware('throttle:coach')->name('coach.messages.store');
+Route::delete('/coach/messages', [CoachController::class, 'destroy'])->name('coach.messages.destroy');

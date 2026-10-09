@@ -12,8 +12,8 @@ use RuntimeException;
 /**
  * Loads one posture rule per exercise from database/seeders/data/posture-rules/*.json.
  * Every config is validated first: a broken rule stops the seed instead of reaching the browser.
- * Re-running is safe; rules are keyed by (exercise, version) and a rule an admin has edited
- * (updated_by is set) is left alone.
+ * Re-running is safe; rules are keyed by (exercise, version) and an exercise whose rule an admin has
+ * edited (updated_by is set on any of its versions) is left alone.
  */
 class PostureRuleSeeder extends Seeder
 {
@@ -42,9 +42,9 @@ class PostureRuleSeeder extends Seeder
                 }
 
                 $version = (int) ($data['version'] ?? 1);
-                $existing = PostureRule::where(['exercise_id' => $exerciseId, 'version' => $version])->first();
-                if ($existing?->updated_by !== null) {
-                    continue; // edited in the admin panel: keep their version
+                // Once an admin has edited an exercise's rule, the seed never touches that exercise again.
+                if (PostureRule::where('exercise_id', $exerciseId)->whereNotNull('updated_by')->exists()) {
+                    continue;
                 }
 
                 PostureRule::updateOrCreate(

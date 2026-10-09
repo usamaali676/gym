@@ -1,7 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemoGalleryController;
+use App\Http\Controllers\Admin\ExerciseController as AdminExerciseController;
+use App\Http\Controllers\Admin\FoodController as AdminFoodController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\PostureRuleController as AdminPostureRuleController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BadgeController;
+use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DietController;
 use App\Http\Controllers\FoodController;
@@ -56,6 +63,11 @@ Route::get('/recovery', [RecoveryController::class, 'index'])->name('recovery.in
 // Badges and leaderboard
 Route::get('/badges', [BadgeController::class, 'index'])->name('badges.index');
 
+// Optional AI coach (404 unless COACH_ENABLED)
+Route::get('/coach', [CoachController::class, 'index'])->name('coach.index');
+Route::post('/coach/opt-in', [CoachController::class, 'optIn'])->name('coach.opt-in');
+Route::delete('/coach/opt-in', [CoachController::class, 'optOut'])->name('coach.opt-out');
+
 // Weekly reports: page, PDF, share links
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::get('/reports/{week}', [ReportController::class, 'show'])->where('week', '\d{4}-\d{2}-\d{2}')->name('reports.show');
@@ -67,7 +79,41 @@ Route::delete('/reports/{week}/share', [ReportController::class, 'unshare'])->wh
 Route::get('/posture', [PostureLabController::class, 'index'])->name('posture.index');
 Route::get('/posture/{exercise}', [PostureLabController::class, 'show'])->name('posture.show');
 
-// Admin tools (the full admin panel arrives in a later phase)
+// Admin panel
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminDashboardController::class)->name('index');
     Route::get('/demos', DemoGalleryController::class)->name('demos');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->whereNumber('user')->name('users.show');
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->whereNumber('user')->name('users.role');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->whereNumber('user')->name('users.destroy');
+
+    Route::get('/plan', [AdminPlanController::class, 'index'])->name('plan.index');
+    Route::get('/plan/days/{day}', [AdminPlanController::class, 'edit'])->whereNumber('day')->name('plan.edit');
+    Route::patch('/plan/days/{day}', [AdminPlanController::class, 'update'])->whereNumber('day')->name('plan.update');
+    Route::post('/plan/days/{day}/items', [AdminPlanController::class, 'storeItem'])->whereNumber('day')->name('plan.items.store');
+    Route::patch('/plan/items/{item}', [AdminPlanController::class, 'updateItem'])->whereNumber('item')->name('plan.items.update');
+    Route::post('/plan/items/{item}/move', [AdminPlanController::class, 'moveItem'])->whereNumber('item')->name('plan.items.move');
+    Route::delete('/plan/items/{item}', [AdminPlanController::class, 'destroyItem'])->whereNumber('item')->name('plan.items.destroy');
+
+    Route::get('/exercises', [AdminExerciseController::class, 'index'])->name('exercises.index');
+    Route::get('/exercises/create', [AdminExerciseController::class, 'create'])->name('exercises.create');
+    Route::post('/exercises', [AdminExerciseController::class, 'store'])->name('exercises.store');
+    Route::get('/exercises/{exercise}/edit', [AdminExerciseController::class, 'edit'])->name('exercises.edit');
+    Route::patch('/exercises/{exercise}', [AdminExerciseController::class, 'update'])->name('exercises.update');
+    Route::delete('/exercises/{exercise}', [AdminExerciseController::class, 'destroy'])->name('exercises.destroy');
+
+    Route::get('/posture', [AdminPostureRuleController::class, 'index'])->name('posture.index');
+    Route::post('/posture/validate', [AdminPostureRuleController::class, 'validateConfig'])->name('posture.validate');
+    Route::get('/posture/{exercise}', [AdminPostureRuleController::class, 'edit'])->name('posture.edit');
+    Route::put('/posture/{exercise}', [AdminPostureRuleController::class, 'update'])->name('posture.update');
+    Route::post('/posture/{exercise}/restore/{rule}', [AdminPostureRuleController::class, 'restore'])->whereNumber('rule')->name('posture.restore');
+
+    Route::get('/foods', [AdminFoodController::class, 'index'])->name('foods.index');
+    Route::get('/foods/create', [AdminFoodController::class, 'create'])->name('foods.create');
+    Route::post('/foods', [AdminFoodController::class, 'store'])->name('foods.store');
+    Route::get('/foods/{food}/edit', [AdminFoodController::class, 'edit'])->whereNumber('food')->name('foods.edit');
+    Route::patch('/foods/{food}', [AdminFoodController::class, 'update'])->whereNumber('food')->name('foods.update');
+    Route::delete('/foods/{food}', [AdminFoodController::class, 'destroy'])->whereNumber('food')->name('foods.destroy');
 });
