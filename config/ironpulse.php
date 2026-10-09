@@ -1,0 +1,166 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Guest mode
+    |--------------------------------------------------------------------------
+    | Lets a visitor try the app without registering. A guest is a real user
+    | row (is_guest = true) that can later be "claimed" with an email/password.
+    */
+    'guest_mode' => (bool) env('IRONPULSE_GUEST_MODE', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP and levels
+    |--------------------------------------------------------------------------
+    | level = floor(sqrt(xp / level_base)) + 1
+    */
+    'xp' => [
+        'level_base' => 100,
+        'set_completed' => 5,
+        'workout_completed' => 50,
+        'exercise_completed' => 5,
+        'personal_record' => 25,
+        'posture_session' => 20,
+        'posture_good_rep' => 1,
+        'water_goal' => 10,
+        'creatine' => 5,
+        'sleep_goal' => 10,
+        'protein_goal' => 15,
+        'streak_milestones' => [3 => 25, 7 => 75, 14 => 150, 30 => 400],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Progressive overload
+    |--------------------------------------------------------------------------
+    | The plan says: add 1-2 reps OR add 2.5-5 kg each week.
+    */
+    'overload' => [
+        'upper_increment_kg' => 2.5,
+        'lower_increment_kg' => 5.0,
+        'lower_groups' => ['quads', 'hamstrings', 'glutes', 'calves'],
+        'rep_step_min' => 1,
+        'rep_step_max' => 2,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Workout timing
+    |--------------------------------------------------------------------------
+    | Used to estimate session length: seconds of work per set.
+    */
+    'seconds_per_set' => 40,
+    'warmup_minutes' => 8,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nutrition
+    |--------------------------------------------------------------------------
+    */
+    'water' => [
+        'ml_per_kg' => 35,
+        'training_day_bonus_ml' => 500,
+        'default_glass_ml' => 250,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Optional AI coach (server-side only; the app works fully without it)
+    |--------------------------------------------------------------------------
+    */
+    'coach' => [
+        'enabled' => (bool) env('COACH_ENABLED', false),
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('COACH_MODEL'),
+        'daily_message_limit' => (int) env('COACH_DAILY_MESSAGE_LIMIT', 20),
+        'max_output_tokens' => 700,
+        'history_messages' => 12,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Equipment a user can tick during onboarding (profile -> exercise tags)
+    |--------------------------------------------------------------------------
+    */
+    'equipment' => [
+        'barbell' => 'Barbell and plates',
+        'dumbbell' => 'Dumbbells',
+        'cable' => 'Cable machine',
+        'machine' => 'Weight machines',
+        'bench' => 'Bench (flat / incline)',
+        'squat_rack' => 'Squat rack',
+        'pull_up_bar' => 'Pull-up bar',
+        'bodyweight' => 'Bodyweight only',
+    ],
+
+    /** Exercise equipment tags that are satisfied by a profile equipment key. */
+    'equipment_map' => [
+        'rope' => 'cable',
+        'incline_bench' => 'bench',
+        'preacher_bench' => 'bench',
+        'assist_machine' => 'machine',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Motivation
+    |--------------------------------------------------------------------------
+    */
+    'quotes' => [
+        'Muscle is built during recovery, not in the gym.',
+        'Add a rep or a plate. Progress is the whole game.',
+        'You do not need to feel ready. You just need to start the first set.',
+        'Consistency beats intensity. Show up, then do it again tomorrow.',
+        'Strong is built one honest rep at a time.',
+        'Your only competition is who you were last week.',
+        'Sleep, eat, lift, repeat. Boring works.',
+        'The last two reps are where the growth is.',
+        'Control the weight. Do not let it control you.',
+        'Small weekly progress becomes a different body in a year.',
+        'Discipline is choosing what you want most over what you want now.',
+        'Warm up well, train hard, recover harder.',
+        'Form first. Load second. Ego never.',
+        'A short workout beats a skipped workout.',
+        'Today is a training day for the person you are becoming.',
+        'Hydrate. Your muscles are mostly water.',
+        'Earn your rest day.',
+        'Track it, beat it, repeat it.',
+        'You are one workout away from a better mood.',
+        'Progressive overload: the number one driver of muscle growth.',
+        'Eat enough protein, lift heavy things, be patient.',
+        'Make the plan boring and the results exciting.',
+        'Every expert was once a beginner who kept showing up.',
+        'Breathe out on the effort, in on the way back.',
+        'Recovery is part of the program.',
+        'Stay consistent with your creatine and your sleep.',
+        'Pain of discipline weighs ounces. Regret weighs tons.',
+        'Leave the gym knowing you left nothing on the bench.',
+        'Make every rep look the same.',
+        'Be the person your future self thanks.',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation (an item is shown only when its route exists)
+    |--------------------------------------------------------------------------
+    */
+    'nav' => [
+        ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home', 'tab' => true],
+        ['route' => 'plan.index', 'label' => 'Plan', 'icon' => 'calendar', 'tab' => true],
+        ['route' => 'workout.start', 'label' => 'Train', 'icon' => 'dumbbell', 'tab' => 'center', 'match' => 'workout.*'],
+        ['route' => 'posture.index', 'label' => 'Posture Lab', 'icon' => 'scan', 'tab' => true, 'match' => 'posture.*'],
+        ['route' => 'diet.index', 'label' => 'Diet', 'icon' => 'utensils', 'match' => 'diet.*'],
+        ['route' => 'food.index', 'label' => 'Food log', 'icon' => 'apple', 'match' => 'food.*'],
+        ['route' => 'progress.index', 'label' => 'Progress', 'icon' => 'chart', 'match' => 'progress.*'],
+        ['route' => 'library.index', 'label' => 'Exercise library', 'icon' => 'book', 'match' => 'library.*'],
+        ['route' => 'recovery.index', 'label' => 'Recovery', 'icon' => 'moon', 'match' => 'recovery.*'],
+        ['route' => 'badges.index', 'label' => 'Badges', 'icon' => 'trophy', 'match' => 'badges.*'],
+        ['route' => 'reports.index', 'label' => 'Weekly report', 'icon' => 'file', 'match' => 'reports.*'],
+        ['route' => 'coach.index', 'label' => 'AI coach', 'icon' => 'message', 'match' => 'coach.*', 'feature' => 'coach'],
+        ['route' => 'profile.edit', 'label' => 'Profile', 'icon' => 'user', 'match' => 'profile.*'],
+        ['route' => 'admin.index', 'label' => 'Admin', 'icon' => 'shield', 'match' => 'admin.*', 'admin' => true],
+    ],
+];
