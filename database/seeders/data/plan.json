@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "source": "Mujtaba Ahssan 5-Day Push / Pull / Legs Workout Plan",
+    "created": "2026-10",
+    "version": 1,
+    "weekly_split": "Mon PUSH (Chest) / Tue PULL (Back) / Wed LEGS / Thu PUSH (Shoulders) / Fri PULL (Biceps) / Sat REST / Sun REST",
+    "day_of_week_convention": "ISO-8601: 1 = Monday ... 7 = Sunday"
+  },
+  "default_profile": {
+    "name": "Mujtaba Ahssan",
+    "age": 27,
+    "sex": null,
+    "height_cm": 178,
+    "weight_kg": 78,
+    "goal": "recomposition",
+    "days_per_week": 5,
+    "training_days": [1, 2, 3, 4, 5]
+  },
+  "rest_defaults": {
+    "compound": { "min_seconds": 120, "max_seconds": 180, "default_seconds": 150 },
+    "isolation": { "min_seconds": 60, "max_seconds": 90, "default_seconds": 75 }
+  },
+  "rules": {
+    "progressive_overload": {
+      "add_reps": [1, 2],
+      "add_weight_kg": [2.5, 5],
+      "cadence": "weekly",
+      "note": "Add 1-2 reps OR increase weight by 2.5-5 kg each week. This is the number one driver of muscle growth."
+    },
+    "creatine": {
+      "grams": 5,
+      "frequency": "daily",
+      "note": "Timing does not matter. Stay consistent."
+    },
+    "sleep": {
+      "hours_min": 7,
+      "hours_max": 8,
+      "note": "Muscle is built during recovery, not in the gym."
+    }
+  },
+  "plan_days": [
+    { "day_of_week": 1, "slug": "monday-push-chest", "name": "Monday", "session_type": "push", "label": "PUSH", "focus": "Chest", "is_rest": false },
+    { "day_of_week": 2, "slug": "tuesday-pull-back", "name": "Tuesday", "session_type": "pull", "label": "PULL", "focus": "Back", "is_rest": false },
+    { "day_of_week": 3, "slug": "wednesday-legs", "name": "Wednesday", "session_type": "legs", "label": "LEGS", "focus": "Legs", "is_rest": false },
+    { "day_of_week": 4, "slug": "thursday-push-shoulders", "name": "Thursday", "session_type": "push", "label": "PUSH", "focus": "Shoulders", "is_rest": false },
+    { "day_of_week": 5, "slug": "friday-pull-biceps", "name": "Friday", "session_type": "pull", "label": "PULL", "focus": "Biceps", "is_rest": false },
+    { "day_of_week": 6, "slug": "saturday-rest", "name": "Saturday", "session_type": "rest", "label": "REST", "focus": "Recovery", "is_rest": true },
+    { "day_of_week": 7, "slug": "sunday-rest", "name": "Sunday", "session_type": "rest", "label": "REST", "focus": "Recovery", "is_rest": true }
+  ],
+  "exercises": [
+    { "slug": "flat-barbell-bench-press", "name": "Flat Barbell Bench Press", "muscle_group": "chest", "mechanic": "compound", "equipment": ["barbell", "bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "incline-dumbbell-press", "name": "Incline Dumbbell Press", "muscle_group": "chest", "mechanic": "compound", "equipment": ["dumbbell", "incline_bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "cable-lower-chest-fly", "name": "Cable Lower Chest Fly", "muscle_group": "chest", "mechanic": "isolation", "equipment": ["cable"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "seated-db-overhead-press", "name": "Seated DB Overhead Press", "muscle_group": "shoulders", "mechanic": "compound", "equipment": ["dumbbell", "bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "side-lateral-raise", "name": "Side Lateral Raise", "muscle_group": "shoulders", "mechanic": "isolation", "equipment": ["dumbbell"], "difficulty": "beginner", "posture_tier": "full" },
+    { "slug": "skull-crushers", "name": "Skull Crushers", "muscle_group": "triceps", "mechanic": "isolation", "equipment": ["barbell", "bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "rope-tricep-pushdown", "name": "Rope Tricep Pushdown", "muscle_group": "triceps", "mechanic": "isolation", "equipment": ["cable", "rope"], "difficulty": "beginner", "posture_tier": "simplified" },
+
+    { "slug": "barbell-row", "name": "Barbell Row", "muscle_group": "back", "mechanic": "compound", "equipment": ["barbell"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "lat-pulldown", "name": "Lat Pulldown", "muscle_group": "back", "mechanic": "isolation", "equipment": ["cable", "machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "seated-cable-row", "name": "Seated Cable Row", "muscle_group": "back", "mechanic": "compound", "equipment": ["cable"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "straight-arm-pulldown", "name": "Straight Arm Pulldown", "muscle_group": "back", "mechanic": "isolation", "equipment": ["cable"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "face-pull", "name": "Face Pull", "muscle_group": "shoulders", "mechanic": "isolation", "equipment": ["cable", "rope"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "barbell-curl", "name": "Barbell Curl", "muscle_group": "biceps", "mechanic": "isolation", "equipment": ["barbell"], "difficulty": "beginner", "posture_tier": "full" },
+    { "slug": "dumbbell-hammer-curl", "name": "Dumbbell Hammer Curl", "muscle_group": "biceps", "mechanic": "isolation", "equipment": ["dumbbell"], "difficulty": "beginner", "posture_tier": "full" },
+
+    { "slug": "barbell-squat", "name": "Barbell Squat", "muscle_group": "quads", "mechanic": "compound", "equipment": ["barbell", "squat_rack"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "leg-press", "name": "Leg Press", "muscle_group": "quads", "mechanic": "compound", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "romanian-deadlift", "name": "Romanian Deadlift", "muscle_group": "hamstrings", "mechanic": "compound", "equipment": ["barbell"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "hamstring-curl", "name": "Hamstring Curl", "muscle_group": "hamstrings", "mechanic": "isolation", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "leg-extension", "name": "Leg Extension", "muscle_group": "quads", "mechanic": "isolation", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "standing-calf-raise", "name": "Standing Calf Raise", "muscle_group": "calves", "mechanic": "isolation", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "full" },
+
+    { "slug": "arnold-press", "name": "Arnold Press", "muscle_group": "shoulders", "mechanic": "compound", "equipment": ["dumbbell", "bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "reverse-pec-deck-rear-delts", "name": "Reverse Pec Deck (Rear Delts)", "muscle_group": "shoulders", "mechanic": "isolation", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "incline-bench-press", "name": "Incline Bench Press", "muscle_group": "chest", "mechanic": "compound", "equipment": ["barbell", "incline_bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "butterfly-machine", "name": "Butterfly Machine", "muscle_group": "chest", "mechanic": "isolation", "equipment": ["machine"], "difficulty": "beginner", "posture_tier": "simplified" },
+    { "slug": "cable-overhead-tricep-extension", "name": "Cable Overhead Tricep Extension", "muscle_group": "triceps", "mechanic": "isolation", "equipment": ["cable", "rope"], "difficulty": "beginner", "posture_tier": "simplified", "notes": "Posture tier assumed: not named in either spec list." },
+    { "slug": "reverse-grip-tricep-pushdown", "name": "Reverse Grip Tricep Pushdown", "muscle_group": "triceps", "mechanic": "isolation", "equipment": ["cable"], "difficulty": "beginner", "posture_tier": "simplified" },
+
+    { "slug": "pull-ups-assisted-pull-ups", "name": "Pull-Ups / Assisted Pull-Ups", "muscle_group": "back", "mechanic": "compound", "equipment": ["pull_up_bar", "assist_machine"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "single-arm-dumbbell-row", "name": "Single Arm Dumbbell Row", "muscle_group": "back", "mechanic": "compound", "equipment": ["dumbbell", "bench"], "difficulty": "beginner", "posture_tier": "full" },
+    { "slug": "shrugs-db-or-barbell", "name": "Shrugs (DB or Barbell)", "muscle_group": "traps", "mechanic": "isolation", "equipment": ["dumbbell", "barbell"], "difficulty": "beginner", "posture_tier": "full" },
+    { "slug": "spider-curl", "name": "Spider Curl", "muscle_group": "biceps", "mechanic": "isolation", "equipment": ["dumbbell", "incline_bench"], "difficulty": "intermediate", "posture_tier": "full" },
+    { "slug": "preacher-curl", "name": "Preacher Curl", "muscle_group": "biceps", "mechanic": "isolation", "equipment": ["barbell", "preacher_bench"], "difficulty": "beginner", "posture_tier": "full" }
+  ],
+  "plan_day_exercises": [
+    { "day": 1, "position": 1, "exercise": "flat-barbell-bench-press", "sets": 3, "reps_min": 6, "reps_max": 10, "focus": "Overall chest mass" },
+    { "day": 1, "position": 2, "exercise": "incline-dumbbell-press", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Upper chest" },
+    { "day": 1, "position": 3, "exercise": "cable-lower-chest-fly", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Lower chest definition" },
+    { "day": 1, "position": 4, "exercise": "seated-db-overhead-press", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Front + side delts" },
+    { "day": 1, "position": 5, "exercise": "side-lateral-raise", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Shoulder width" },
+    { "day": 1, "position": 6, "exercise": "skull-crushers", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Tricep mass" },
+    { "day": 1, "position": 7, "exercise": "rope-tricep-pushdown", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Tricep isolation" },
+
+    { "day": 2, "position": 1, "exercise": "barbell-row", "sets": 3, "reps_min": 6, "reps_max": 10, "focus": "Back thickness" },
+    { "day": 2, "position": 2, "exercise": "lat-pulldown", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Lat width" },
+    { "day": 2, "position": 3, "exercise": "seated-cable-row", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Mid-back" },
+    { "day": 2, "position": 4, "exercise": "straight-arm-pulldown", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Lat isolation" },
+    { "day": 2, "position": 5, "exercise": "face-pull", "sets": 3, "reps_min": 15, "reps_max": 20, "focus": "Rear delts + rotator cuff" },
+    { "day": 2, "position": 6, "exercise": "barbell-curl", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Bicep mass" },
+    { "day": 2, "position": 7, "exercise": "dumbbell-hammer-curl", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Brachialis + forearms" },
+
+    { "day": 3, "position": 1, "exercise": "barbell-squat", "sets": 3, "reps_min": 6, "reps_max": 10, "focus": "Overall leg mass" },
+    { "day": 3, "position": 2, "exercise": "leg-press", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Quad volume" },
+    { "day": 3, "position": 3, "exercise": "romanian-deadlift", "sets": 3, "reps_min": 8, "reps_max": 10, "focus": "Hamstrings + glutes" },
+    { "day": 3, "position": 4, "exercise": "hamstring-curl", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Hamstring isolation" },
+    { "day": 3, "position": 5, "exercise": "leg-extension", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Quad isolation" },
+    { "day": 3, "position": 6, "exercise": "standing-calf-raise", "sets": 3, "reps_min": 15, "reps_max": 20, "focus": "Calf size" },
+
+    { "day": 4, "position": 1, "exercise": "seated-db-overhead-press", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Shoulder mass" },
+    { "day": 4, "position": 2, "exercise": "arnold-press", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Full delt activation" },
+    { "day": 4, "position": 3, "exercise": "side-lateral-raise", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Shoulder width" },
+    { "day": 4, "position": 4, "exercise": "reverse-pec-deck-rear-delts", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Rear delt" },
+    { "day": 4, "position": 5, "exercise": "incline-bench-press", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Upper chest" },
+    { "day": 4, "position": 6, "exercise": "butterfly-machine", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Chest squeeze" },
+    { "day": 4, "position": 7, "exercise": "cable-overhead-tricep-extension", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Tricep long head" },
+    { "day": 4, "position": 8, "exercise": "reverse-grip-tricep-pushdown", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Tricep outer head" },
+
+    { "day": 5, "position": 1, "exercise": "pull-ups-assisted-pull-ups", "sets": 3, "reps_min": 6, "reps_max": 10, "focus": "Lat width + strength" },
+    { "day": 5, "position": 2, "exercise": "single-arm-dumbbell-row", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Back thickness" },
+    { "day": 5, "position": 3, "exercise": "lat-pulldown", "label": "Lat Pulldown (Wide Grip)", "sets": 3, "reps_min": 8, "reps_max": 12, "focus": "Lat spread" },
+    { "day": 5, "position": 4, "exercise": "seated-cable-row", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Mid-back" },
+    { "day": 5, "position": 5, "exercise": "shrugs-db-or-barbell", "sets": 3, "reps_min": 12, "reps_max": 15, "focus": "Traps" },
+    { "day": 5, "position": 6, "exercise": "spider-curl", "sets": 3, "reps_min": 10, "reps_max": 12, "focus": "Bicep peak" },
+    { "day": 5, "position": 7, "exercise": "preacher-curl", "sets": 3, "reps_min": 8, "reps_max": 10, "focus": "Lower bicep" }
+  ]
+}
