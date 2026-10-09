@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\FoodController;
+use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Api\PostureSessionController;
 use App\Http\Controllers\Api\SwapController;
 use App\Http\Controllers\Api\WorkoutSessionController;
@@ -28,3 +30,15 @@ Route::prefix('workout-sessions/{session}')->whereNumber('session')->name('worko
 
 // Posture Lab: store the numeric summary of a set (nothing from the camera ever leaves the device)
 Route::post('/posture-sessions', [PostureSessionController::class, 'store'])->name('posture.store');
+
+// Food log: search, custom foods and the day's entries
+Route::get('/foods/search', [FoodController::class, 'search'])->name('foods.search');
+Route::get('/foods/recent', [FoodController::class, 'recent'])->name('foods.recent');
+Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
+Route::get('/foods/{food}', [FoodController::class, 'show'])->whereNumber('food')->name('foods.show');
+Route::delete('/foods/{food}', [FoodController::class, 'destroy'])->whereNumber('food')->name('foods.destroy');
+Route::post('/food-logs', [FoodLogController::class, 'store'])->name('food-logs.store');
+Route::post('/food-logs/batch', [FoodLogController::class, 'batch'])->name('food-logs.batch');
+Route::post('/food-logs/copy', [FoodLogController::class, 'copy'])->name('food-logs.copy');
+Route::patch('/food-logs/{log}', [FoodLogController::class, 'update'])->whereNumber('log')->name('food-logs.update');
+Route::delete('/food-logs/{log}', [FoodLogController::class, 'destroy'])->whereNumber('log')->name('food-logs.destroy');

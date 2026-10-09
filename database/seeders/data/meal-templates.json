@@ -1,0 +1,1216 @@
+{
+ "_comment": "Sample meals. Items are [food name, grams] and must exist in foods.json; macros are computed from the foods when seeded. A template is allowed for a user whose diet is at least as permissive as the template diet (vegan < vegetarian < eggetarian < nonveg).",
+ "templates": [
+  {
+   "diet": "vegan",
+   "slot": "breakfast",
+   "name": "Oats with soy milk, banana and almonds",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Oats, rolled, dry",
+     60
+    ],
+    [
+     "Soy milk, unsweetened",
+     250
+    ],
+    [
+     "Banana",
+     118
+    ],
+    [
+     "Almonds",
+     15
+    ],
+    [
+     "Chia seeds",
+     10
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "breakfast",
+   "name": "Tofu scramble with whole wheat toast",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Tofu, firm",
+     150
+    ],
+    [
+     "Onion",
+     40
+    ],
+    [
+     "Tomato",
+     60
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     7
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Spinach (palak), raw",
+     30
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "breakfast",
+   "name": "Poha with peanuts, sprouts and an orange",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Poha, cooked",
+     200
+    ],
+    [
+     "Peanuts, roasted",
+     15
+    ],
+    [
+     "Sprouted moong, raw",
+     50
+    ],
+    [
+     "Orange",
+     130
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "lunch",
+   "name": "Moong dal, brown rice and vegetables",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Moong dal, cooked",
+     200
+    ],
+    [
+     "Brown rice, cooked",
+     200
+    ],
+    [
+     "Mixed vegetable curry",
+     150
+    ],
+    [
+     "Cucumber",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "lunch",
+   "name": "Chole with roti and salad",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Chole masala",
+     200
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ],
+    [
+     "Onion",
+     40
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "lunch",
+   "name": "Rajma rice bowl",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Rajma (kidney beans), boiled",
+     180
+    ],
+    [
+     "White rice, cooked",
+     200
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     5
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "snack",
+   "name": "Roasted chana and an apple",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Roasted chana (roasted gram)",
+     40
+    ],
+    [
+     "Apple",
+     180
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "snack",
+   "name": "Peanut butter on whole wheat toast with banana",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Peanut butter",
+     24
+    ],
+    [
+     "Banana",
+     118
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "snack",
+   "name": "Soya chunks stir fry",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Soya chunks, dry",
+     40
+    ],
+    [
+     "Capsicum (bell pepper)",
+     80
+    ],
+    [
+     "Onion",
+     40
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     5
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "dinner",
+   "name": "Tofu and vegetable stir fry with quinoa",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Tofu, firm",
+     180
+    ],
+    [
+     "Broccoli, boiled",
+     120
+    ],
+    [
+     "Capsicum (bell pepper)",
+     80
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     8
+    ],
+    [
+     "Quinoa, cooked",
+     185
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "dinner",
+   "name": "Vegetable khichdi with salad",
+   "tags": [
+    "indian",
+    "light"
+   ],
+   "items": [
+    [
+     "Khichdi (dal rice)",
+     300
+    ],
+    [
+     "Mixed vegetable curry",
+     100
+    ],
+    [
+     "Cucumber",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegan",
+   "slot": "dinner",
+   "name": "Lentil soup with whole wheat bread",
+   "tags": [
+    "light"
+   ],
+   "items": [
+    [
+     "Lentils (masoor dal), cooked",
+     250
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ],
+    [
+     "Olive oil",
+     5
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "breakfast",
+   "name": "Greek yogurt, oats and blueberries",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Greek yogurt, plain, non-fat",
+     200
+    ],
+    [
+     "Oats, rolled, dry",
+     40
+    ],
+    [
+     "Blueberries",
+     80
+    ],
+    [
+     "Almonds",
+     15
+    ],
+    [
+     "Honey",
+     7
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "breakfast",
+   "name": "Paneer bhurji with whole wheat toast",
+   "tags": [
+    "high_protein",
+    "indian"
+   ],
+   "items": [
+    [
+     "Paneer",
+     100
+    ],
+    [
+     "Onion",
+     40
+    ],
+    [
+     "Tomato",
+     60
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     6
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "breakfast",
+   "name": "Idli with sambar and curd",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Idli",
+     160
+    ],
+    [
+     "Sambar",
+     200
+    ],
+    [
+     "Curd (dahi), whole milk",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "lunch",
+   "name": "Palak paneer, roti and curd",
+   "tags": [
+    "indian",
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Palak paneer",
+     200
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ],
+    [
+     "Curd (dahi), whole milk",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "lunch",
+   "name": "Dal tadka, rice and raita",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Dal tadka",
+     200
+    ],
+    [
+     "White rice, cooked",
+     200
+    ],
+    [
+     "Raita (curd with cucumber)",
+     120
+    ],
+    [
+     "Green salad (mixed leaves)",
+     80
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "lunch",
+   "name": "Matar paneer with roti and chaas",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Matar paneer",
+     200
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Cucumber",
+     100
+    ],
+    [
+     "Buttermilk (chaas)",
+     250
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "snack",
+   "name": "Whey shake with banana",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Whey protein powder",
+     30
+    ],
+    [
+     "Milk, toned (3% fat)",
+     250
+    ],
+    [
+     "Banana",
+     118
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "snack",
+   "name": "Curd with mango and almonds",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Curd (dahi), whole milk",
+     200
+    ],
+    [
+     "Mango",
+     100
+    ],
+    [
+     "Almonds",
+     10
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "snack",
+   "name": "Cottage cheese, cucumber and walnuts",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Cottage cheese, low fat",
+     150
+    ],
+    [
+     "Cucumber",
+     100
+    ],
+    [
+     "Walnuts",
+     15
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "dinner",
+   "name": "Paneer and vegetable skewers with roti",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Paneer",
+     120
+    ],
+    [
+     "Capsicum (bell pepper)",
+     80
+    ],
+    [
+     "Onion",
+     40
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     6
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "dinner",
+   "name": "Moong dal with vegetable pulao and raita",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Moong dal, cooked",
+     200
+    ],
+    [
+     "Vegetable pulao",
+     200
+    ],
+    [
+     "Raita (curd with cucumber)",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "vegetarian",
+   "slot": "dinner",
+   "name": "Whole wheat pasta with paneer and broccoli",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Pasta, whole wheat, cooked",
+     210
+    ],
+    [
+     "Paneer",
+     80
+    ],
+    [
+     "Broccoli, boiled",
+     100
+    ],
+    [
+     "Olive oil",
+     8
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "breakfast",
+   "name": "Omelette with whole wheat toast and orange",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Omelette (2 eggs, cooked in oil)",
+     110
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Orange",
+     130
+    ],
+    [
+     "Milk, toned (3% fat)",
+     200
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "breakfast",
+   "name": "Boiled eggs with oats porridge and banana",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Egg, whole, boiled",
+     150
+    ],
+    [
+     "Oats porridge, cooked in water",
+     240
+    ],
+    [
+     "Banana",
+     118
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "breakfast",
+   "name": "Egg bhurji with roti",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Egg bhurji (scrambled with onion)",
+     150
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Tomato",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "lunch",
+   "name": "Egg curry with rice and salad",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Egg curry",
+     200
+    ],
+    [
+     "White rice, cooked",
+     200
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "lunch",
+   "name": "Toor dal, boiled eggs and roti",
+   "tags": [
+    "indian",
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Toor dal, cooked (thin dal)",
+     200
+    ],
+    [
+     "Egg, whole, boiled",
+     100
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Cucumber",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "lunch",
+   "name": "Egg and chickpea salad bowl",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Egg, whole, boiled",
+     100
+    ],
+    [
+     "Chickpeas (kabuli chana), boiled",
+     100
+    ],
+    [
+     "Paneer",
+     60
+    ],
+    [
+     "Green salad (mixed leaves)",
+     150
+    ],
+    [
+     "Olive oil",
+     8
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "snack",
+   "name": "Boiled eggs and an apple",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Egg, whole, boiled",
+     100
+    ],
+    [
+     "Apple",
+     180
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "snack",
+   "name": "Egg whites on whole wheat toast",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Egg white, boiled",
+     150
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Tomato",
+     60
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "snack",
+   "name": "Whey shake with oats",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Whey protein powder",
+     30
+    ],
+    [
+     "Milk, toned (3% fat)",
+     250
+    ],
+    [
+     "Oats, rolled, dry",
+     30
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "dinner",
+   "name": "Omelette with saut\u00e9ed vegetables and roti",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Omelette (2 eggs, cooked in oil)",
+     110
+    ],
+    [
+     "Mixed vegetable curry",
+     150
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Cucumber",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "dinner",
+   "name": "Egg curry with brown rice and broccoli",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Egg curry",
+     200
+    ],
+    [
+     "Brown rice, cooked",
+     150
+    ],
+    [
+     "Broccoli, boiled",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "eggetarian",
+   "slot": "dinner",
+   "name": "Lentil and egg bowl",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Lentils (masoor dal), cooked",
+     250
+    ],
+    [
+     "Egg, whole, boiled",
+     100
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "breakfast",
+   "name": "Omelette, chicken sausage and toast",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Omelette (2 eggs, cooked in oil)",
+     110
+    ],
+    [
+     "Chicken sausage",
+     100
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "breakfast",
+   "name": "Boiled eggs, toast and banana",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Egg, whole, boiled",
+     150
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Banana",
+     118
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "breakfast",
+   "name": "Oats with whey, milk and blueberries",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Oats, rolled, dry",
+     60
+    ],
+    [
+     "Whey protein powder",
+     30
+    ],
+    [
+     "Milk, toned (3% fat)",
+     250
+    ],
+    [
+     "Blueberries",
+     80
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "lunch",
+   "name": "Grilled chicken, rice and broccoli",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Chicken breast, cooked",
+     150
+    ],
+    [
+     "White rice, cooked",
+     200
+    ],
+    [
+     "Broccoli, boiled",
+     120
+    ],
+    [
+     "Cooking oil (sunflower / mustard)",
+     8
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "lunch",
+   "name": "Chicken curry, roti and salad",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Chicken curry, home style",
+     200
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Green salad (mixed leaves)",
+     100
+    ],
+    [
+     "Curd (dahi), whole milk",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "lunch",
+   "name": "Fish curry with basmati rice and beans",
+   "tags": [
+    "indian"
+   ],
+   "items": [
+    [
+     "Rohu fish curry",
+     200
+    ],
+    [
+     "Basmati rice, cooked",
+     200
+    ],
+    [
+     "Green beans, boiled",
+     100
+    ],
+    [
+     "Cucumber",
+     80
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "snack",
+   "name": "Tuna on whole wheat toast with cucumber",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Tuna, canned in water",
+     110
+    ],
+    [
+     "Bread, whole wheat",
+     56
+    ],
+    [
+     "Cucumber",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "snack",
+   "name": "Boiled eggs, almonds and an apple",
+   "tags": [
+    "quick"
+   ],
+   "items": [
+    [
+     "Egg, whole, boiled",
+     100
+    ],
+    [
+     "Almonds",
+     20
+    ],
+    [
+     "Apple",
+     180
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "snack",
+   "name": "Whey shake with banana",
+   "tags": [
+    "high_protein",
+    "quick"
+   ],
+   "items": [
+    [
+     "Whey protein powder",
+     30
+    ],
+    [
+     "Milk, toned (3% fat)",
+     250
+    ],
+    [
+     "Banana",
+     118
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "dinner",
+   "name": "Salmon, sweet potato and broccoli",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Salmon, cooked",
+     150
+    ],
+    [
+     "Sweet potato, boiled",
+     150
+    ],
+    [
+     "Broccoli, boiled",
+     120
+    ],
+    [
+     "Olive oil",
+     5
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "dinner",
+   "name": "Chicken tikka with roti, salad and raita",
+   "tags": [
+    "indian",
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Chicken tikka",
+     150
+    ],
+    [
+     "Roti / chapati, whole wheat",
+     80
+    ],
+    [
+     "Green salad (mixed leaves)",
+     150
+    ],
+    [
+     "Raita (curd with cucumber)",
+     100
+    ]
+   ]
+  },
+  {
+   "diet": "nonveg",
+   "slot": "dinner",
+   "name": "Prawn stir fry with quinoa",
+   "tags": [
+    "high_protein"
+   ],
+   "items": [
+    [
+     "Prawns (shrimp), cooked",
+     150
+    ],
+    [
+     "Quinoa, cooked",
+     185
+    ],
+    [
+     "Capsicum (bell pepper)",
+     80
+    ],
+    [
+     "Broccoli, boiled",
+     100
+    ],
+    [
+     "Olive oil",
+     8
+    ]
+   ]
+  }
+ ]
+}

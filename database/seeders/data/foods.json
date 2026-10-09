@@ -1,0 +1,3127 @@
+{
+  "_comment": "Reference values per 100 g (100 ml for drinks): USDA FoodData Central, IFCT 2017 and typical labels. Real foods vary by brand, ripeness and cooking; treat as estimates.",
+  "foods": [
+    {
+      "name": "Chicken breast, cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 165,
+      "protein_100g": 31,
+      "carbs_100g": 0,
+      "fat_100g": 3.6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 palm-size piece (120 g)",
+          "grams": 120,
+          "is_default": true
+        },
+        {
+          "label": "1 small breast (150 g)",
+          "grams": 150,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Chicken breast, raw",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 120,
+      "protein_100g": 22.5,
+      "carbs_100g": 0,
+      "fat_100g": 2.6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 breast (170 g)",
+          "grams": 170,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chicken thigh, cooked, skinless",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 209,
+      "protein_100g": 26,
+      "carbs_100g": 0,
+      "fat_100g": 10.9,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 thigh (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chicken curry, home style",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 148,
+      "protein_100g": 13,
+      "carbs_100g": 4,
+      "fat_100g": 8.5,
+      "fibre_100g": 0.8,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        },
+        {
+          "label": "1 bowl (250 g)",
+          "grams": 250,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Chicken tikka",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 148,
+      "protein_100g": 22,
+      "carbs_100g": 3,
+      "fat_100g": 5,
+      "fibre_100g": 0.5,
+      "servings": [
+        {
+          "label": "4 pieces (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mutton (goat) curry",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 175,
+      "protein_100g": 16,
+      "carbs_100g": 4,
+      "fat_100g": 11,
+      "fibre_100g": 0.8,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Goat meat, roasted",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 143,
+      "protein_100g": 27,
+      "carbs_100g": 0,
+      "fat_100g": 3,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Beef, lean, grilled",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 217,
+      "protein_100g": 26,
+      "carbs_100g": 0,
+      "fat_100g": 12,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 steak (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Rohu fish curry",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 130,
+      "protein_100g": 17,
+      "carbs_100g": 3,
+      "fat_100g": 5.5,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Salmon, cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 206,
+      "protein_100g": 22,
+      "carbs_100g": 0,
+      "fat_100g": 12.4,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 fillet (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tuna, canned in water",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 116,
+      "protein_100g": 25.5,
+      "carbs_100g": 0,
+      "fat_100g": 0.8,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 small can drained (110 g)",
+          "grams": 110,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tilapia, cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 128,
+      "protein_100g": 26,
+      "carbs_100g": 0,
+      "fat_100g": 2.7,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 fillet (115 g)",
+          "grams": 115,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Prawns (shrimp), cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 99,
+      "protein_100g": 24,
+      "carbs_100g": 0.2,
+      "fat_100g": 0.3,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "10 medium prawns (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Turkey breast, cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 135,
+      "protein_100g": 30,
+      "carbs_100g": 0,
+      "fat_100g": 0.7,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chicken biryani",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 175,
+      "protein_100g": 9,
+      "carbs_100g": 21,
+      "fat_100g": 6,
+      "fibre_100g": 1,
+      "servings": [
+        {
+          "label": "1 plate (300 g)",
+          "grams": 300,
+          "is_default": true
+        },
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Egg, whole, boiled",
+      "category": "eggs",
+      "diet_type": "eggetarian",
+      "kcal_100g": 155,
+      "protein_100g": 12.6,
+      "carbs_100g": 1.1,
+      "fat_100g": 10.6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 large egg (50 g)",
+          "grams": 50,
+          "is_default": true
+        },
+        {
+          "label": "2 large eggs (100 g)",
+          "grams": 100,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Egg white, boiled",
+      "category": "eggs",
+      "diet_type": "eggetarian",
+      "kcal_100g": 52,
+      "protein_100g": 10.9,
+      "carbs_100g": 0.7,
+      "fat_100g": 0.2,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 egg white (33 g)",
+          "grams": 33,
+          "is_default": true
+        },
+        {
+          "label": "3 egg whites (100 g)",
+          "grams": 100,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Omelette (2 eggs, cooked in oil)",
+      "category": "eggs",
+      "diet_type": "eggetarian",
+      "kcal_100g": 154,
+      "protein_100g": 10.6,
+      "carbs_100g": 0.6,
+      "fat_100g": 11.7,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 omelette (110 g)",
+          "grams": 110,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Egg bhurji (scrambled with onion)",
+      "category": "eggs",
+      "diet_type": "eggetarian",
+      "kcal_100g": 165,
+      "protein_100g": 11,
+      "carbs_100g": 3,
+      "fat_100g": 12,
+      "fibre_100g": 0.5,
+      "servings": [
+        {
+          "label": "1 serving (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Milk, whole",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 61,
+      "protein_100g": 3.2,
+      "carbs_100g": 4.8,
+      "fat_100g": 3.3,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        },
+        {
+          "label": "1 cup (200 ml)",
+          "grams": 200,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Milk, toned (3% fat)",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 58,
+      "protein_100g": 3.1,
+      "carbs_100g": 4.8,
+      "fat_100g": 3,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Milk, skimmed",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 34,
+      "protein_100g": 3.4,
+      "carbs_100g": 5,
+      "fat_100g": 0.1,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Curd (dahi), whole milk",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 61,
+      "protein_100g": 3.5,
+      "carbs_100g": 4.7,
+      "fat_100g": 3.3,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        },
+        {
+          "label": "1 bowl (250 g)",
+          "grams": 250,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Greek yogurt, plain, non-fat",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 59,
+      "protein_100g": 10.2,
+      "carbs_100g": 3.6,
+      "fat_100g": 0.4,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 cup (170 g)",
+          "grams": 170,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Raita (curd with cucumber)",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 55,
+      "protein_100g": 3,
+      "carbs_100g": 5,
+      "fat_100g": 2.5,
+      "fibre_100g": 0.3,
+      "servings": [
+        {
+          "label": "1 katori (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Paneer",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 296,
+      "protein_100g": 18.3,
+      "carbs_100g": 3.4,
+      "fat_100g": 22.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (100 g)",
+          "grams": 100,
+          "is_default": true
+        },
+        {
+          "label": "1 cube (25 g)",
+          "grams": 25,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Cottage cheese, low fat",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 72,
+      "protein_100g": 12.4,
+      "carbs_100g": 2.7,
+      "fat_100g": 1,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1/2 cup (115 g)",
+          "grams": 115,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cheddar cheese",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 403,
+      "protein_100g": 25,
+      "carbs_100g": 1.3,
+      "fat_100g": 33,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 slice (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mozzarella, part skim",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 254,
+      "protein_100g": 24,
+      "carbs_100g": 2.8,
+      "fat_100g": 16,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Ghee",
+      "category": "oils_fats",
+      "diet_type": "vegetarian",
+      "kcal_100g": 900,
+      "protein_100g": 0,
+      "carbs_100g": 0,
+      "fat_100g": 99.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (5 g)",
+          "grams": 5,
+          "is_default": true
+        },
+        {
+          "label": "1 tablespoon (14 g)",
+          "grams": 14,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Butter",
+      "category": "oils_fats",
+      "diet_type": "vegetarian",
+      "kcal_100g": 717,
+      "protein_100g": 0.9,
+      "carbs_100g": 0.1,
+      "fat_100g": 81,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (5 g)",
+          "grams": 5,
+          "is_default": true
+        },
+        {
+          "label": "1 tablespoon (14 g)",
+          "grams": 14,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Buttermilk (chaas)",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 40,
+      "protein_100g": 3.3,
+      "carbs_100g": 4.8,
+      "fat_100g": 0.9,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Lassi, sweet",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 98,
+      "protein_100g": 3,
+      "carbs_100g": 16,
+      "fat_100g": 2.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Ice cream, vanilla",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 207,
+      "protein_100g": 3.5,
+      "carbs_100g": 23.6,
+      "fat_100g": 11,
+      "fibre_100g": 0.7,
+      "servings": [
+        {
+          "label": "1 scoop (65 g)",
+          "grams": 65,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Lentils (masoor dal), cooked",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 116,
+      "protein_100g": 9,
+      "carbs_100g": 20,
+      "fat_100g": 0.4,
+      "fibre_100g": 7.9,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Moong dal, cooked",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 105,
+      "protein_100g": 7,
+      "carbs_100g": 19,
+      "fat_100g": 0.4,
+      "fibre_100g": 7.6,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Toor dal, cooked (thin dal)",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 105,
+      "protein_100g": 6.5,
+      "carbs_100g": 16,
+      "fat_100g": 1.5,
+      "fibre_100g": 4,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        },
+        {
+          "label": "1 bowl (250 g)",
+          "grams": 250,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Dal tadka",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 130,
+      "protein_100g": 6,
+      "carbs_100g": 15,
+      "fat_100g": 5,
+      "fibre_100g": 3.5,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chickpeas (kabuli chana), boiled",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 164,
+      "protein_100g": 8.9,
+      "carbs_100g": 27.4,
+      "fat_100g": 2.6,
+      "fibre_100g": 7.6,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chole masala",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 150,
+      "protein_100g": 6,
+      "carbs_100g": 19,
+      "fat_100g": 5.5,
+      "fibre_100g": 5,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Rajma (kidney beans), boiled",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 127,
+      "protein_100g": 8.7,
+      "carbs_100g": 22.8,
+      "fat_100g": 0.5,
+      "fibre_100g": 6.4,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Black beans, boiled",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 132,
+      "protein_100g": 8.9,
+      "carbs_100g": 23.7,
+      "fat_100g": 0.5,
+      "fibre_100g": 8.7,
+      "servings": [
+        {
+          "label": "1 cup (170 g)",
+          "grams": 170,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Green peas, boiled",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 84,
+      "protein_100g": 5.4,
+      "carbs_100g": 15.6,
+      "fat_100g": 0.2,
+      "fibre_100g": 5.5,
+      "servings": [
+        {
+          "label": "1/2 cup (80 g)",
+          "grams": 80,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sprouted moong, raw",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 30,
+      "protein_100g": 3,
+      "carbs_100g": 6,
+      "fat_100g": 0.2,
+      "fibre_100g": 1.8,
+      "servings": [
+        {
+          "label": "1 bowl (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Soya chunks, dry",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 345,
+      "protein_100g": 52,
+      "carbs_100g": 33,
+      "fat_100g": 0.5,
+      "fibre_100g": 13,
+      "servings": [
+        {
+          "label": "1 handful (30 g)",
+          "grams": 30,
+          "is_default": true
+        },
+        {
+          "label": "1 cup dry (60 g)",
+          "grams": 60,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Tofu, firm",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 144,
+      "protein_100g": 17.3,
+      "carbs_100g": 2.8,
+      "fat_100g": 8.7,
+      "fibre_100g": 2.3,
+      "servings": [
+        {
+          "label": "1 serving (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tempeh",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 192,
+      "protein_100g": 20,
+      "carbs_100g": 7.6,
+      "fat_100g": 10.8,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Hummus",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 166,
+      "protein_100g": 7.9,
+      "carbs_100g": 14.3,
+      "fat_100g": 9.6,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "2 tablespoons (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Gram flour (besan)",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 387,
+      "protein_100g": 22,
+      "carbs_100g": 58,
+      "fat_100g": 6.7,
+      "fibre_100g": 11,
+      "servings": [
+        {
+          "label": "1/4 cup (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Peanut butter",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 588,
+      "protein_100g": 25,
+      "carbs_100g": 20,
+      "fat_100g": 50,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1 tablespoon (16 g)",
+          "grams": 16,
+          "is_default": true
+        },
+        {
+          "label": "2 tablespoons (32 g)",
+          "grams": 32,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "White rice, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 130,
+      "protein_100g": 2.7,
+      "carbs_100g": 28.2,
+      "fat_100g": 0.3,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        },
+        {
+          "label": "1 plate (250 g)",
+          "grams": 250,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Basmati rice, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 121,
+      "protein_100g": 3.5,
+      "carbs_100g": 25,
+      "fat_100g": 0.4,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        },
+        {
+          "label": "1 plate (250 g)",
+          "grams": 250,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Brown rice, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 123,
+      "protein_100g": 2.7,
+      "carbs_100g": 25.6,
+      "fat_100g": 1,
+      "fibre_100g": 1.6,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Roti / chapati, whole wheat",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 264,
+      "protein_100g": 9.1,
+      "carbs_100g": 50.4,
+      "fat_100g": 3.7,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1 roti (40 g)",
+          "grams": 40,
+          "is_default": true
+        },
+        {
+          "label": "2 rotis (80 g)",
+          "grams": 80,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Paratha, plain (with ghee)",
+      "category": "grains",
+      "diet_type": "vegetarian",
+      "kcal_100g": 326,
+      "protein_100g": 7.5,
+      "carbs_100g": 44,
+      "fat_100g": 13,
+      "fibre_100g": 3.5,
+      "servings": [
+        {
+          "label": "1 paratha (80 g)",
+          "grams": 80,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Naan",
+      "category": "grains",
+      "diet_type": "vegetarian",
+      "kcal_100g": 310,
+      "protein_100g": 9.6,
+      "carbs_100g": 50.4,
+      "fat_100g": 5.1,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 naan (90 g)",
+          "grams": 90,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Bread, white",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 265,
+      "protein_100g": 9,
+      "carbs_100g": 49,
+      "fat_100g": 3.2,
+      "fibre_100g": 2.7,
+      "servings": [
+        {
+          "label": "1 slice (28 g)",
+          "grams": 28,
+          "is_default": true
+        },
+        {
+          "label": "2 slices (56 g)",
+          "grams": 56,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Bread, whole wheat",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 252,
+      "protein_100g": 12.5,
+      "carbs_100g": 42.7,
+      "fat_100g": 3.5,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1 slice (28 g)",
+          "grams": 28,
+          "is_default": true
+        },
+        {
+          "label": "2 slices (56 g)",
+          "grams": 56,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Oats, rolled, dry",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 379,
+      "protein_100g": 13.2,
+      "carbs_100g": 67.7,
+      "fat_100g": 6.5,
+      "fibre_100g": 10.1,
+      "servings": [
+        {
+          "label": "1/2 cup (40 g)",
+          "grams": 40,
+          "is_default": true
+        },
+        {
+          "label": "1 cup (80 g)",
+          "grams": 80,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Oats porridge, cooked in water",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 71,
+      "protein_100g": 2.5,
+      "carbs_100g": 12,
+      "fat_100g": 1.5,
+      "fibre_100g": 1.7,
+      "servings": [
+        {
+          "label": "1 bowl (240 g)",
+          "grams": 240,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Poha, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 130,
+      "protein_100g": 2.5,
+      "carbs_100g": 25,
+      "fat_100g": 2.3,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 plate (180 g)",
+          "grams": 180,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Upma",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 135,
+      "protein_100g": 3.5,
+      "carbs_100g": 22,
+      "fat_100g": 4,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 plate (200 g)",
+          "grams": 200,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Idli",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 130,
+      "protein_100g": 3.9,
+      "carbs_100g": 25,
+      "fat_100g": 0.4,
+      "fibre_100g": 1.2,
+      "servings": [
+        {
+          "label": "1 idli (40 g)",
+          "grams": 40,
+          "is_default": true
+        },
+        {
+          "label": "3 idlis (120 g)",
+          "grams": 120,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Dosa, plain",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 165,
+      "protein_100g": 3.9,
+      "carbs_100g": 26.5,
+      "fat_100g": 4.9,
+      "fibre_100g": 1.2,
+      "servings": [
+        {
+          "label": "1 dosa (80 g)",
+          "grams": 80,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Khichdi (dal rice)",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 120,
+      "protein_100g": 4.5,
+      "carbs_100g": 20,
+      "fat_100g": 2.5,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 bowl (250 g)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Quinoa, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 120,
+      "protein_100g": 4.4,
+      "carbs_100g": 21.3,
+      "fat_100g": 1.9,
+      "fibre_100g": 2.8,
+      "servings": [
+        {
+          "label": "1 cup (185 g)",
+          "grams": 185,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pasta, white, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 158,
+      "protein_100g": 5.8,
+      "carbs_100g": 30.9,
+      "fat_100g": 0.9,
+      "fibre_100g": 1.8,
+      "servings": [
+        {
+          "label": "1 cup (140 g)",
+          "grams": 140,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pasta, whole wheat, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 124,
+      "protein_100g": 5.3,
+      "carbs_100g": 26.5,
+      "fat_100g": 0.5,
+      "fibre_100g": 4.5,
+      "servings": [
+        {
+          "label": "1 cup (140 g)",
+          "grams": 140,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Whole wheat flour (atta), dry",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 340,
+      "protein_100g": 13.2,
+      "carbs_100g": 72,
+      "fat_100g": 2.5,
+      "fibre_100g": 10.7,
+      "servings": [
+        {
+          "label": "1/4 cup (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cornflakes",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 357,
+      "protein_100g": 7.5,
+      "carbs_100g": 84,
+      "fat_100g": 0.4,
+      "fibre_100g": 3.3,
+      "servings": [
+        {
+          "label": "1 bowl (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Potato, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 87,
+      "protein_100g": 1.9,
+      "carbs_100g": 20.1,
+      "fat_100g": 0.1,
+      "fibre_100g": 1.8,
+      "servings": [
+        {
+          "label": "1 medium (170 g)",
+          "grams": 170,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sweet potato, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 76,
+      "protein_100g": 1.4,
+      "carbs_100g": 17.7,
+      "fat_100g": 0.1,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 medium (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sweet corn, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 96,
+      "protein_100g": 3.4,
+      "carbs_100g": 21,
+      "fat_100g": 1.5,
+      "fibre_100g": 2.4,
+      "servings": [
+        {
+          "label": "1 cob kernels (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Broccoli, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 35,
+      "protein_100g": 2.4,
+      "carbs_100g": 7.2,
+      "fat_100g": 0.4,
+      "fibre_100g": 3.3,
+      "servings": [
+        {
+          "label": "1 cup (90 g)",
+          "grams": 90,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Spinach (palak), raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 23,
+      "protein_100g": 2.9,
+      "carbs_100g": 3.6,
+      "fat_100g": 0.4,
+      "fibre_100g": 2.2,
+      "servings": [
+        {
+          "label": "1 bunch (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Palak sabzi (cooked with oil)",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 75,
+      "protein_100g": 3,
+      "carbs_100g": 5,
+      "fat_100g": 5,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 katori (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cauliflower (gobi), raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 25,
+      "protein_100g": 1.9,
+      "carbs_100g": 5,
+      "fat_100g": 0.3,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 cup (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cabbage, raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 25,
+      "protein_100g": 1.3,
+      "carbs_100g": 5.8,
+      "fat_100g": 0.1,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 cup shredded (70 g)",
+          "grams": 70,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Carrot, raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 41,
+      "protein_100g": 0.9,
+      "carbs_100g": 9.6,
+      "fat_100g": 0.2,
+      "fibre_100g": 2.8,
+      "servings": [
+        {
+          "label": "1 medium (60 g)",
+          "grams": 60,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cucumber",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 15,
+      "protein_100g": 0.7,
+      "carbs_100g": 3.6,
+      "fat_100g": 0.1,
+      "fibre_100g": 0.5,
+      "servings": [
+        {
+          "label": "1 medium (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tomato",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 18,
+      "protein_100g": 0.9,
+      "carbs_100g": 3.9,
+      "fat_100g": 0.2,
+      "fibre_100g": 1.2,
+      "servings": [
+        {
+          "label": "1 medium (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Onion",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 40,
+      "protein_100g": 1.1,
+      "carbs_100g": 9.3,
+      "fat_100g": 0.1,
+      "fibre_100g": 1.7,
+      "servings": [
+        {
+          "label": "1 medium (110 g)",
+          "grams": 110,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Capsicum (bell pepper)",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 31,
+      "protein_100g": 1,
+      "carbs_100g": 6,
+      "fat_100g": 0.3,
+      "fibre_100g": 2.1,
+      "servings": [
+        {
+          "label": "1 medium (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Okra (bhindi), cooked",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 22,
+      "protein_100g": 1.9,
+      "carbs_100g": 4.5,
+      "fat_100g": 0.2,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 katori (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Bhindi fry (with oil)",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 90,
+      "protein_100g": 2,
+      "carbs_100g": 8,
+      "fat_100g": 6,
+      "fibre_100g": 3,
+      "servings": [
+        {
+          "label": "1 katori (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Brinjal (eggplant), cooked",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 35,
+      "protein_100g": 0.8,
+      "carbs_100g": 8.7,
+      "fat_100g": 0.2,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 cup (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mushrooms, raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 22,
+      "protein_100g": 3.1,
+      "carbs_100g": 3.3,
+      "fat_100g": 0.3,
+      "fibre_100g": 1,
+      "servings": [
+        {
+          "label": "1 cup sliced (70 g)",
+          "grams": 70,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Green beans, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 35,
+      "protein_100g": 1.9,
+      "carbs_100g": 7.9,
+      "fat_100g": 0.3,
+      "fibre_100g": 3.2,
+      "servings": [
+        {
+          "label": "1 cup (125 g)",
+          "grams": 125,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Bottle gourd (lauki), raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 14,
+      "protein_100g": 0.6,
+      "carbs_100g": 3.4,
+      "fat_100g": 0.1,
+      "fibre_100g": 0.5,
+      "servings": [
+        {
+          "label": "1 katori cooked (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Beetroot, boiled",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 44,
+      "protein_100g": 1.7,
+      "carbs_100g": 10,
+      "fat_100g": 0.2,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 medium (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mixed vegetable curry",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 80,
+      "protein_100g": 2,
+      "carbs_100g": 9,
+      "fat_100g": 4,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Green salad (mixed leaves)",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 17,
+      "protein_100g": 1.4,
+      "carbs_100g": 3.3,
+      "fat_100g": 0.2,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 bowl (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Avocado",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 160,
+      "protein_100g": 2,
+      "carbs_100g": 8.5,
+      "fat_100g": 14.7,
+      "fibre_100g": 6.7,
+      "servings": [
+        {
+          "label": "1/2 avocado (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Banana",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 89,
+      "protein_100g": 1.1,
+      "carbs_100g": 22.8,
+      "fat_100g": 0.3,
+      "fibre_100g": 2.6,
+      "servings": [
+        {
+          "label": "1 medium (118 g)",
+          "grams": 118,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Apple",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 52,
+      "protein_100g": 0.3,
+      "carbs_100g": 13.8,
+      "fat_100g": 0.2,
+      "fibre_100g": 2.4,
+      "servings": [
+        {
+          "label": "1 medium (180 g)",
+          "grams": 180,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Orange",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 47,
+      "protein_100g": 0.9,
+      "carbs_100g": 11.8,
+      "fat_100g": 0.1,
+      "fibre_100g": 2.4,
+      "servings": [
+        {
+          "label": "1 medium (130 g)",
+          "grams": 130,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mango",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 60,
+      "protein_100g": 0.8,
+      "carbs_100g": 15,
+      "fat_100g": 0.4,
+      "fibre_100g": 1.6,
+      "servings": [
+        {
+          "label": "1 cup chopped (165 g)",
+          "grams": 165,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Papaya",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 43,
+      "protein_100g": 0.5,
+      "carbs_100g": 10.8,
+      "fat_100g": 0.3,
+      "fibre_100g": 1.7,
+      "servings": [
+        {
+          "label": "1 cup (140 g)",
+          "grams": 140,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Watermelon",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 30,
+      "protein_100g": 0.6,
+      "carbs_100g": 7.6,
+      "fat_100g": 0.2,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 cup (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Grapes",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 69,
+      "protein_100g": 0.7,
+      "carbs_100g": 18.1,
+      "fat_100g": 0.2,
+      "fibre_100g": 0.9,
+      "servings": [
+        {
+          "label": "1 cup (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pomegranate",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 83,
+      "protein_100g": 1.7,
+      "carbs_100g": 18.7,
+      "fat_100g": 1.2,
+      "fibre_100g": 4,
+      "servings": [
+        {
+          "label": "1/2 cup seeds (87 g)",
+          "grams": 87,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pineapple",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 50,
+      "protein_100g": 0.5,
+      "carbs_100g": 13.1,
+      "fat_100g": 0.1,
+      "fibre_100g": 1.4,
+      "servings": [
+        {
+          "label": "1 cup (165 g)",
+          "grams": 165,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Strawberries",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 32,
+      "protein_100g": 0.7,
+      "carbs_100g": 7.7,
+      "fat_100g": 0.3,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 cup (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Blueberries",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 57,
+      "protein_100g": 0.7,
+      "carbs_100g": 14.5,
+      "fat_100g": 0.3,
+      "fibre_100g": 2.4,
+      "servings": [
+        {
+          "label": "1 cup (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Guava",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 68,
+      "protein_100g": 2.6,
+      "carbs_100g": 14.3,
+      "fat_100g": 1,
+      "fibre_100g": 5.4,
+      "servings": [
+        {
+          "label": "1 medium (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Kiwi",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 61,
+      "protein_100g": 1.1,
+      "carbs_100g": 14.7,
+      "fat_100g": 0.5,
+      "fibre_100g": 3,
+      "servings": [
+        {
+          "label": "1 kiwi (75 g)",
+          "grams": 75,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pear",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 57,
+      "protein_100g": 0.4,
+      "carbs_100g": 15.2,
+      "fat_100g": 0.1,
+      "fibre_100g": 3.1,
+      "servings": [
+        {
+          "label": "1 medium (180 g)",
+          "grams": 180,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Dates (khajoor)",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 277,
+      "protein_100g": 1.8,
+      "carbs_100g": 75,
+      "fat_100g": 0.2,
+      "fibre_100g": 6.7,
+      "servings": [
+        {
+          "label": "1 date (8 g)",
+          "grams": 8,
+          "is_default": true
+        },
+        {
+          "label": "3 dates (24 g)",
+          "grams": 24,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Raisins",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 299,
+      "protein_100g": 3.1,
+      "carbs_100g": 79.2,
+      "fat_100g": 0.5,
+      "fibre_100g": 3.7,
+      "servings": [
+        {
+          "label": "1 handful (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Almonds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 579,
+      "protein_100g": 21.2,
+      "carbs_100g": 21.6,
+      "fat_100g": 49.9,
+      "fibre_100g": 12.5,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        },
+        {
+          "label": "5 almonds (6 g)",
+          "grams": 6,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Cashews",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 553,
+      "protein_100g": 18.2,
+      "carbs_100g": 30.2,
+      "fat_100g": 43.9,
+      "fibre_100g": 3.3,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Walnuts",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 654,
+      "protein_100g": 15.2,
+      "carbs_100g": 13.7,
+      "fat_100g": 65.2,
+      "fibre_100g": 6.7,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Peanuts, roasted",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 585,
+      "protein_100g": 23.7,
+      "carbs_100g": 21.5,
+      "fat_100g": 49.7,
+      "fibre_100g": 8,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pistachios",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 560,
+      "protein_100g": 20.2,
+      "carbs_100g": 27.2,
+      "fat_100g": 45.3,
+      "fibre_100g": 10.6,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chia seeds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 486,
+      "protein_100g": 16.5,
+      "carbs_100g": 42.1,
+      "fat_100g": 30.7,
+      "fibre_100g": 34.4,
+      "servings": [
+        {
+          "label": "1 tablespoon (12 g)",
+          "grams": 12,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Flax seeds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 534,
+      "protein_100g": 18.3,
+      "carbs_100g": 28.9,
+      "fat_100g": 42.2,
+      "fibre_100g": 27.3,
+      "servings": [
+        {
+          "label": "1 tablespoon (10 g)",
+          "grams": 10,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sunflower seeds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 584,
+      "protein_100g": 20.8,
+      "carbs_100g": 20,
+      "fat_100g": 51.5,
+      "fibre_100g": 8.6,
+      "servings": [
+        {
+          "label": "1 tablespoon (9 g)",
+          "grams": 9,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pumpkin seeds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 559,
+      "protein_100g": 30.2,
+      "carbs_100g": 10.7,
+      "fat_100g": 49,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1 handful (28 g)",
+          "grams": 28,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Coconut, fresh",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 354,
+      "protein_100g": 3.3,
+      "carbs_100g": 15.2,
+      "fat_100g": 33.5,
+      "fibre_100g": 9,
+      "servings": [
+        {
+          "label": "1 piece (45 g)",
+          "grams": 45,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Makhana (fox nuts), roasted",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 347,
+      "protein_100g": 9.7,
+      "carbs_100g": 77,
+      "fat_100g": 0.1,
+      "fibre_100g": 14.5,
+      "servings": [
+        {
+          "label": "1 cup (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Olive oil",
+      "category": "oils_fats",
+      "diet_type": "vegan",
+      "kcal_100g": 884,
+      "protein_100g": 0,
+      "carbs_100g": 0,
+      "fat_100g": 100,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (4.5 g)",
+          "grams": 4.5,
+          "is_default": true
+        },
+        {
+          "label": "1 tablespoon (13.5 g)",
+          "grams": 13.5,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Cooking oil (sunflower / mustard)",
+      "category": "oils_fats",
+      "diet_type": "vegan",
+      "kcal_100g": 884,
+      "protein_100g": 0,
+      "carbs_100g": 0,
+      "fat_100g": 100,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (4.5 g)",
+          "grams": 4.5,
+          "is_default": true
+        },
+        {
+          "label": "1 tablespoon (13.5 g)",
+          "grams": 13.5,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Sugar",
+      "category": "sweets_snacks",
+      "diet_type": "vegan",
+      "kcal_100g": 387,
+      "protein_100g": 0,
+      "carbs_100g": 100,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (4 g)",
+          "grams": 4,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Honey",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 304,
+      "protein_100g": 0.3,
+      "carbs_100g": 82.4,
+      "fat_100g": 0,
+      "fibre_100g": 0.2,
+      "servings": [
+        {
+          "label": "1 teaspoon (7 g)",
+          "grams": 7,
+          "is_default": true
+        },
+        {
+          "label": "1 tablespoon (21 g)",
+          "grams": 21,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Jaggery (gur)",
+      "category": "sweets_snacks",
+      "diet_type": "vegan",
+      "kcal_100g": 383,
+      "protein_100g": 0.4,
+      "carbs_100g": 98,
+      "fat_100g": 0.1,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 small piece (10 g)",
+          "grams": 10,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Dark chocolate (70-85%)",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 598,
+      "protein_100g": 7.8,
+      "carbs_100g": 45.9,
+      "fat_100g": 42.6,
+      "fibre_100g": 10.9,
+      "servings": [
+        {
+          "label": "2 squares (20 g)",
+          "grams": 20,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Biscuits, plain (Marie type)",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 427,
+      "protein_100g": 7.4,
+      "carbs_100g": 75,
+      "fat_100g": 10.5,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "2 biscuits (15 g)",
+          "grams": 15,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Samosa",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 262,
+      "protein_100g": 3.5,
+      "carbs_100g": 24,
+      "fat_100g": 17,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 samosa (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Potato chips",
+      "category": "sweets_snacks",
+      "diet_type": "vegan",
+      "kcal_100g": 536,
+      "protein_100g": 7,
+      "carbs_100g": 53,
+      "fat_100g": 35,
+      "fibre_100g": 4.4,
+      "servings": [
+        {
+          "label": "1 small packet (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Popcorn, air-popped",
+      "category": "sweets_snacks",
+      "diet_type": "vegan",
+      "kcal_100g": 387,
+      "protein_100g": 12.9,
+      "carbs_100g": 77.8,
+      "fat_100g": 4.5,
+      "fibre_100g": 14.5,
+      "servings": [
+        {
+          "label": "3 cups (24 g)",
+          "grams": 24,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tea with milk and sugar (chai)",
+      "category": "beverages",
+      "diet_type": "vegetarian",
+      "kcal_100g": 50,
+      "protein_100g": 1.3,
+      "carbs_100g": 7.5,
+      "fat_100g": 1.6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 cup (150 ml)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Coffee, black",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 1,
+      "protein_100g": 0.1,
+      "carbs_100g": 0,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 cup (240 ml)",
+          "grams": 240,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Latte (whole milk)",
+      "category": "beverages",
+      "diet_type": "vegetarian",
+      "kcal_100g": 54,
+      "protein_100g": 2.9,
+      "carbs_100g": 4.7,
+      "fat_100g": 2.7,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 cup (240 ml)",
+          "grams": 240,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Orange juice",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 45,
+      "protein_100g": 0.7,
+      "carbs_100g": 10.4,
+      "fat_100g": 0.2,
+      "fibre_100g": 0.2,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Coconut water",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 19,
+      "protein_100g": 0.7,
+      "carbs_100g": 3.7,
+      "fat_100g": 0.2,
+      "fibre_100g": 1.1,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cola",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 42,
+      "protein_100g": 0,
+      "carbs_100g": 10.6,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 can (330 ml)",
+          "grams": 330,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Whey protein powder",
+      "category": "supplements",
+      "diet_type": "vegetarian",
+      "kcal_100g": 400,
+      "protein_100g": 80,
+      "carbs_100g": 8,
+      "fat_100g": 6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 scoop (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Plant protein powder (pea)",
+      "category": "supplements",
+      "diet_type": "vegan",
+      "kcal_100g": 380,
+      "protein_100g": 75,
+      "carbs_100g": 8,
+      "fat_100g": 6,
+      "fibre_100g": 3,
+      "servings": [
+        {
+          "label": "1 scoop (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Protein bar",
+      "category": "supplements",
+      "diet_type": "vegetarian",
+      "kcal_100g": 370,
+      "protein_100g": 30,
+      "carbs_100g": 35,
+      "fat_100g": 12,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1 bar (60 g)",
+          "grams": 60,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Creatine monohydrate",
+      "category": "supplements",
+      "diet_type": "vegan",
+      "kcal_100g": 0,
+      "protein_100g": 0,
+      "carbs_100g": 0,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 teaspoon (5 g)",
+          "grams": 5,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mutton keema (mince curry)",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 200,
+      "protein_100g": 17,
+      "carbs_100g": 4,
+      "fat_100g": 13,
+      "fibre_100g": 1,
+      "servings": [
+        {
+          "label": "1 katori (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sardines, canned in oil, drained",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 208,
+      "protein_100g": 24.6,
+      "carbs_100g": 0,
+      "fat_100g": 11.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 can drained (90 g)",
+          "grams": 90,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "White fish (cod), cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 105,
+      "protein_100g": 22.8,
+      "carbs_100g": 0,
+      "fat_100g": 0.9,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 fillet (140 g)",
+          "grams": 140,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chicken liver, cooked",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 167,
+      "protein_100g": 24.5,
+      "carbs_100g": 0.9,
+      "fat_100g": 6.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 serving (85 g)",
+          "grams": 85,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Chicken sausage",
+      "category": "meat_fish",
+      "diet_type": "nonveg",
+      "kcal_100g": 172,
+      "protein_100g": 16,
+      "carbs_100g": 3,
+      "fat_100g": 10.6,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 sausage (50 g)",
+          "grams": 50,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Egg curry",
+      "category": "eggs",
+      "diet_type": "eggetarian",
+      "kcal_100g": 150,
+      "protein_100g": 9.5,
+      "carbs_100g": 5,
+      "fat_100g": 10.5,
+      "fibre_100g": 1,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Soy milk, unsweetened",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 33,
+      "protein_100g": 2.9,
+      "carbs_100g": 1.7,
+      "fat_100g": 1.8,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Almond milk, unsweetened",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 15,
+      "protein_100g": 0.6,
+      "carbs_100g": 0.3,
+      "fat_100g": 1.2,
+      "fibre_100g": 0.2,
+      "servings": [
+        {
+          "label": "1 glass (250 ml)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cheese slice, processed",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 305,
+      "protein_100g": 18,
+      "carbs_100g": 5.5,
+      "fat_100g": 23.5,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 slice (20 g)",
+          "grams": 20,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Kheer (rice pudding)",
+      "category": "sweets_snacks",
+      "diet_type": "vegetarian",
+      "kcal_100g": 130,
+      "protein_100g": 3.5,
+      "carbs_100g": 20,
+      "fat_100g": 4,
+      "fibre_100g": 0.2,
+      "servings": [
+        {
+          "label": "1 katori (120 g)",
+          "grams": 120,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Edamame, boiled",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 121,
+      "protein_100g": 11.9,
+      "carbs_100g": 8.9,
+      "fat_100g": 5.2,
+      "fibre_100g": 5.2,
+      "servings": [
+        {
+          "label": "1 cup (155 g)",
+          "grams": 155,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sambar",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 60,
+      "protein_100g": 3,
+      "carbs_100g": 8,
+      "fat_100g": 1.8,
+      "fibre_100g": 2,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Palak paneer",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 150,
+      "protein_100g": 8,
+      "carbs_100g": 5,
+      "fat_100g": 11,
+      "fibre_100g": 1.8,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Matar paneer",
+      "category": "dairy",
+      "diet_type": "vegetarian",
+      "kcal_100g": 160,
+      "protein_100g": 8,
+      "carbs_100g": 8,
+      "fat_100g": 10.5,
+      "fibre_100g": 2.5,
+      "servings": [
+        {
+          "label": "1 katori (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Vegetable pulao",
+      "category": "grains",
+      "diet_type": "vegetarian",
+      "kcal_100g": 140,
+      "protein_100g": 3,
+      "carbs_100g": 22,
+      "fat_100g": 4.5,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 plate (250 g)",
+          "grams": 250,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Curd rice",
+      "category": "grains",
+      "diet_type": "vegetarian",
+      "kcal_100g": 110,
+      "protein_100g": 3.5,
+      "carbs_100g": 17,
+      "fat_100g": 3,
+      "fibre_100g": 0.4,
+      "servings": [
+        {
+          "label": "1 katori (200 g)",
+          "grams": 200,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Barley, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 123,
+      "protein_100g": 2.3,
+      "carbs_100g": 28.2,
+      "fat_100g": 0.4,
+      "fibre_100g": 3.8,
+      "servings": [
+        {
+          "label": "1 cup (157 g)",
+          "grams": 157,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Couscous, cooked",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 112,
+      "protein_100g": 3.8,
+      "carbs_100g": 23.2,
+      "fat_100g": 0.2,
+      "fibre_100g": 1.4,
+      "servings": [
+        {
+          "label": "1 cup (157 g)",
+          "grams": 157,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Granola",
+      "category": "grains",
+      "diet_type": "vegetarian",
+      "kcal_100g": 471,
+      "protein_100g": 10,
+      "carbs_100g": 64,
+      "fat_100g": 20,
+      "fibre_100g": 6,
+      "servings": [
+        {
+          "label": "1/2 cup (50 g)",
+          "grams": 50,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Ragi (finger millet) flour, dry",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 328,
+      "protein_100g": 7.3,
+      "carbs_100g": 72,
+      "fat_100g": 1.3,
+      "fibre_100g": 11.5,
+      "servings": [
+        {
+          "label": "1/4 cup (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Roasted chana (roasted gram)",
+      "category": "legumes",
+      "diet_type": "vegan",
+      "kcal_100g": 364,
+      "protein_100g": 19,
+      "carbs_100g": 61,
+      "fat_100g": 5,
+      "fibre_100g": 17,
+      "servings": [
+        {
+          "label": "1 handful (30 g)",
+          "grams": 30,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Puffed rice (murmura)",
+      "category": "grains",
+      "diet_type": "vegan",
+      "kcal_100g": 402,
+      "protein_100g": 6,
+      "carbs_100g": 90,
+      "fat_100g": 0.5,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 bowl (30 g)",
+          "grams": 30,
+          "is_default": true
+        },
+        {
+          "label": "1 cup (14 g)",
+          "grams": 14,
+          "is_default": false
+        }
+      ]
+    },
+    {
+      "name": "Zucchini",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 17,
+      "protein_100g": 1.2,
+      "carbs_100g": 3.1,
+      "fat_100g": 0.3,
+      "fibre_100g": 1,
+      "servings": [
+        {
+          "label": "1 medium (200 g)",
+          "grams": 200,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Pumpkin, cooked",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 20,
+      "protein_100g": 0.7,
+      "carbs_100g": 4.9,
+      "fat_100g": 0.1,
+      "fibre_100g": 1.1,
+      "servings": [
+        {
+          "label": "1 cup (245 g)",
+          "grams": 245,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Kale, raw",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 49,
+      "protein_100g": 4.3,
+      "carbs_100g": 8.8,
+      "fat_100g": 0.9,
+      "fibre_100g": 3.6,
+      "servings": [
+        {
+          "label": "1 cup (67 g)",
+          "grams": 67,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Lettuce",
+      "category": "vegetables",
+      "diet_type": "vegan",
+      "kcal_100g": 15,
+      "protein_100g": 1.4,
+      "carbs_100g": 2.9,
+      "fat_100g": 0.2,
+      "fibre_100g": 1.3,
+      "servings": [
+        {
+          "label": "1 cup (36 g)",
+          "grams": 36,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Litchi",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 66,
+      "protein_100g": 0.8,
+      "carbs_100g": 16.5,
+      "fat_100g": 0.4,
+      "fibre_100g": 1.3,
+      "servings": [
+        {
+          "label": "10 litchis (100 g)",
+          "grams": 100,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Peach",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 39,
+      "protein_100g": 0.9,
+      "carbs_100g": 9.5,
+      "fat_100g": 0.3,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 medium (150 g)",
+          "grams": 150,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Cherries",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 63,
+      "protein_100g": 1.1,
+      "carbs_100g": 16,
+      "fat_100g": 0.2,
+      "fibre_100g": 2.1,
+      "servings": [
+        {
+          "label": "1 cup (138 g)",
+          "grams": 138,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Jackfruit",
+      "category": "fruits",
+      "diet_type": "vegan",
+      "kcal_100g": 95,
+      "protein_100g": 1.7,
+      "carbs_100g": 23.3,
+      "fat_100g": 0.6,
+      "fibre_100g": 1.5,
+      "servings": [
+        {
+          "label": "1 cup (165 g)",
+          "grams": 165,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sesame seeds",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 573,
+      "protein_100g": 17.7,
+      "carbs_100g": 23.5,
+      "fat_100g": 49.7,
+      "fibre_100g": 11.8,
+      "servings": [
+        {
+          "label": "1 tablespoon (9 g)",
+          "grams": 9,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tahini",
+      "category": "nuts_seeds",
+      "diet_type": "vegan",
+      "kcal_100g": 595,
+      "protein_100g": 17,
+      "carbs_100g": 21.2,
+      "fat_100g": 53.8,
+      "fibre_100g": 9.3,
+      "servings": [
+        {
+          "label": "1 tablespoon (15 g)",
+          "grams": 15,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Green tea",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 1,
+      "protein_100g": 0.2,
+      "carbs_100g": 0,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 cup (240 ml)",
+          "grams": 240,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Sports drink",
+      "category": "beverages",
+      "diet_type": "vegan",
+      "kcal_100g": 26,
+      "protein_100g": 0,
+      "carbs_100g": 6.4,
+      "fat_100g": 0,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 bottle (500 ml)",
+          "grams": 500,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Tomato ketchup",
+      "category": "sweets_snacks",
+      "diet_type": "vegan",
+      "kcal_100g": 101,
+      "protein_100g": 1,
+      "carbs_100g": 25,
+      "fat_100g": 0.1,
+      "fibre_100g": 0.3,
+      "servings": [
+        {
+          "label": "1 tablespoon (17 g)",
+          "grams": 17,
+          "is_default": true
+        }
+      ]
+    },
+    {
+      "name": "Mayonnaise",
+      "category": "oils_fats",
+      "diet_type": "eggetarian",
+      "kcal_100g": 680,
+      "protein_100g": 1,
+      "carbs_100g": 0.6,
+      "fat_100g": 75,
+      "fibre_100g": 0,
+      "servings": [
+        {
+          "label": "1 tablespoon (14 g)",
+          "grams": 14,
+          "is_default": true
+        }
+      ]
+    }
+  ]
+}

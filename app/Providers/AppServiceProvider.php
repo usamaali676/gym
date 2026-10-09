@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\DietCalculatorService;
 use App\View\Composers\NavComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,10 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(DietCalculatorService::class, fn () => new DietCalculatorService(
+            (float) config('ironpulse.water.ml_per_kg'),
+            (int) config('ironpulse.water.training_day_bonus_ml'),
+        ));
     }
 
     public function boot(): void

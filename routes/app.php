@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\DemoGalleryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DietController;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PostureLabController;
@@ -30,6 +32,11 @@ Route::get('/library/{exercise}', [LibraryController::class, 'show'])->name('lib
 Route::get('/workout', [WorkoutController::class, 'start'])->name('workout.start');
 Route::get('/workout/{session}', [WorkoutController::class, 'play'])->whereNumber('session')->name('workout.play');
 Route::get('/workout/{session}/summary', [WorkoutController::class, 'summary'])->whereNumber('session')->name('workout.summary');
+
+// Diet and food log
+Route::get('/diet', [DietController::class, 'index'])->name('diet.index');
+Route::post('/diet/recalculate', [DietController::class, 'recalculate'])->name('diet.recalculate');
+Route::get('/food', [FoodController::class, 'index'])->name('food.index');
 
 // Posture Lab
 Route::get('/posture', [PostureLabController::class, 'index'])->name('posture.index');

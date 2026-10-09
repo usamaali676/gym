@@ -1,6 +1,8 @@
 <?php
 
 use Database\Seeders\ExerciseLibrarySeeder;
+use Database\Seeders\FoodSeeder;
+use Database\Seeders\MealTemplateSeeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\PostureRuleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -54,6 +56,12 @@ function seedPosture(): void
 {
     seedLibrary();
     test()->seed(PostureRuleSeeder::class);
+}
+
+function seedFoods(): void
+{
+    test()->seed(FoodSeeder::class);
+    test()->seed(MealTemplateSeeder::class);
 }
 
 /** A valid onboarding / body-profile payload. */
