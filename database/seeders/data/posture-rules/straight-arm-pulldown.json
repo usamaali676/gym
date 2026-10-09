@@ -1,0 +1,100 @@
+{
+  "exercise": "straight-arm-pulldown",
+  "tier": "simplified",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "arm_sweep": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "shoulder",
+          "wrist"
+        ]
+      },
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "arm_sweep",
+      "start": 150,
+      "peak": 40,
+      "tolerance": 18,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Sweep your straight arms all the way down to your thighs."
+    },
+    "checks": [
+      {
+        "id": "bent_arms",
+        "label": "Arms bending",
+        "message": "Keep your arms nearly straight. The lats do the work, not your triceps.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 140,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't use your torso to swing the weight down. Hinge once, then hold still.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 15,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at shoulder height with your arms clear of the cable."
+    },
+    "tracks": [
+      "reps from arm sweep",
+      "arms bending",
+      "body swinging"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

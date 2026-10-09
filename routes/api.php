@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PostureSessionController;
 use App\Http\Controllers\Api\SwapController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,6 @@ Route::prefix('workout-sessions/{session}')->whereNumber('session')->name('worko
     Route::post('/finish', [WorkoutSessionController::class, 'finish'])->name('finish');
     Route::post('/abandon', [WorkoutSessionController::class, 'abandon'])->name('abandon');
 });
+
+// Posture Lab: store the numeric summary of a set (nothing from the camera ever leaves the device)
+Route::post('/posture-sessions', [PostureSessionController::class, 'store'])->name('posture.store');

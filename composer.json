@@ -67,7 +67,7 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --seed --force --ansi",
             "npm install",
-            "npm run vendor:mediapipe",
+            "npm run vendor:mediapipe -- --soft",
             "npm run build"
         ],
         "test": [

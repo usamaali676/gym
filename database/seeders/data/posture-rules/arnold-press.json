@@ -1,0 +1,93 @@
+{
+  "exercise": "arnold-press",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 62,
+      "peak": 165,
+      "tolerance": 14,
+      "min_ms": 900,
+      "max_ms": 14000,
+      "partial_message": "Press all the way up until your arms are straight overhead."
+    },
+    "checks": [
+      {
+        "id": "lean_back",
+        "label": "Leaning back",
+        "message": "Don't arch back to press. Brace your core and keep your ribs down.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 14,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "lockout",
+        "label": "Not locking out",
+        "message": "Press until your arms are straight overhead.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 155,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at shoulder height. The palm rotation that defines this lift cannot be seen by a single camera; only elbow range and torso position are tracked."
+    },
+    "tracks": [
+      "reps from elbow",
+      "leaning back",
+      "not locking out"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

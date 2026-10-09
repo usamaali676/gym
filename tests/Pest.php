@@ -2,6 +2,7 @@
 
 use Database\Seeders\ExerciseLibrarySeeder;
 use Database\Seeders\PlanSeeder;
+use Database\Seeders\PostureRuleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,6 +48,12 @@ function seedLibrary(): void
 {
     seedPlan();
     test()->seed(ExerciseLibrarySeeder::class);
+}
+
+function seedPosture(): void
+{
+    seedLibrary();
+    test()->seed(PostureRuleSeeder::class);
 }
 
 /** A valid onboarding / body-profile payload. */

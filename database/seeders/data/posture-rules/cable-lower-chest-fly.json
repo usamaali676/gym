@@ -1,0 +1,106 @@
+{
+  "exercise": "cable-lower-chest-fly",
+  "tier": "simplified",
+  "camera_view": "front",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "both",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "l_shoulder",
+      "r_shoulder",
+      "l_elbow",
+      "r_elbow",
+      "l_wrist",
+      "r_wrist",
+      "l_hip",
+      "r_hip"
+    ],
+    "measures": {
+      "wrist_gap": {
+        "type": "ratio",
+        "num": [
+          "l_wrist",
+          "r_wrist"
+        ],
+        "den": [
+          "l_shoulder",
+          "r_shoulder"
+        ]
+      },
+      "elbow_bend": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "mid_hip",
+        "to": "mid_shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "wrist_gap",
+      "start": 2.4,
+      "peak": 0.4,
+      "tolerance": 0.35,
+      "min_ms": 900,
+      "max_ms": 14000,
+      "partial_message": "Bring your hands all the way together in front of you."
+    },
+    "checks": [
+      {
+        "id": "elbows_bending",
+        "label": "Turning it into a press",
+        "message": "Keep a soft, fixed bend in your elbows and hug the weight in an arc.",
+        "measure": "elbow_bend",
+        "op": "<",
+        "value": 105,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "forearm"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Stay braced. Do not lean into the weight.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 10,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Face the camera",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away at chest height, with you facing it.",
+        "Stand far enough back that both hands stay in frame at the top of every rep.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your shoulders and elbows are visible."
+      ],
+      "note": "Stand facing the camera between the cable stacks, with both hands in view at the top and the bottom."
+    },
+    "tracks": [
+      "reps from wrist gap",
+      "turning it into a press",
+      "body swinging"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

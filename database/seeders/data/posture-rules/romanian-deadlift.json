@@ -1,0 +1,138 @@
+{
+  "exercise": "romanian-deadlift",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "hip",
+      "knee",
+      "ankle"
+    ],
+    "measures": {
+      "hip_angle": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "hip",
+          "knee"
+        ]
+      },
+      "knee": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "knee",
+          "ankle"
+        ]
+      },
+      "neck_neutral": {
+        "type": "angle",
+        "points": [
+          "ear",
+          "shoulder",
+          "hip"
+        ]
+      },
+      "bar_distance": {
+        "type": "offset",
+        "from": "ankle",
+        "to": "wrist",
+        "axis": "forward",
+        "norm": "thigh"
+      }
+    },
+    "rep": {
+      "signal": "hip_angle",
+      "start": 168,
+      "peak": 98,
+      "tolerance": 14,
+      "min_ms": 1200,
+      "max_ms": 16000,
+      "partial_message": "Push your hips back until you feel your hamstrings stretch."
+    },
+    "checks": [
+      {
+        "id": "knees_bending",
+        "label": "Knees bending too much",
+        "message": "Soft knees, not a squat. Push your hips back instead of dropping down.",
+        "measure": "knee",
+        "op": "<",
+        "value": 132,
+        "severity": "minor",
+        "frames": 6,
+        "segments": [
+          "thigh",
+          "shin"
+        ]
+      },
+      {
+        "id": "neck_rounding",
+        "label": "Neck or back rounding",
+        "message": "Keep your neck in line with your spine and your chest proud.",
+        "measure": "neck_neutral",
+        "op": "<",
+        "value": 135,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "neck",
+          "torso"
+        ]
+      },
+      {
+        "id": "bar_away",
+        "label": "Bar drifting away",
+        "message": "Keep the bar close, brushing your thighs and shins.",
+        "measure": "bar_distance",
+        "op": ">",
+        "value": 0.55,
+        "severity": "minor",
+        "frames": 6,
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      },
+      {
+        "id": "stand_tall",
+        "label": "Not standing tall",
+        "message": "Finish each rep standing tall, squeezing your glutes.",
+        "measure": "hip_angle",
+        "op": "<",
+        "value": 158,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at hip height. The bar must not cover your hip or knee."
+    },
+    "tracks": [
+      "reps from hip angle",
+      "knees bending too much",
+      "neck or back rounding",
+      "bar drifting away",
+      "not standing tall"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

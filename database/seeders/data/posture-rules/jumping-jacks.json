@@ -1,0 +1,100 @@
+{
+  "exercise": "jumping-jacks",
+  "tier": "generic",
+  "camera_view": "front",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "both",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "l_shoulder",
+      "r_shoulder",
+      "l_wrist",
+      "r_wrist",
+      "l_hip",
+      "r_hip",
+      "l_ankle",
+      "r_ankle"
+    ],
+    "measures": {
+      "arm_raise": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "shoulder",
+          "wrist"
+        ]
+      },
+      "feet_gap": {
+        "type": "ratio",
+        "num": [
+          "l_ankle",
+          "r_ankle"
+        ],
+        "den": [
+          "l_shoulder",
+          "r_shoulder"
+        ]
+      }
+    },
+    "rep": {
+      "signal": "arm_raise",
+      "start": 25,
+      "peak": 150,
+      "tolerance": 22,
+      "min_ms": 400,
+      "max_ms": 6000,
+      "partial_message": "Reach your arms all the way overhead."
+    },
+    "checks": [
+      {
+        "id": "narrow_feet",
+        "label": "Feet too close",
+        "message": "Jump your feet wider than your shoulders.",
+        "measure": "feet_gap",
+        "op": "<",
+        "value": 1.3,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "leg"
+        ]
+      },
+      {
+        "id": "low_arms",
+        "label": "Arms not overhead",
+        "message": "Reach your arms all the way overhead.",
+        "measure": "arm_raise",
+        "op": "<",
+        "value": 135,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Face the camera",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away at chest height, with you facing it.",
+        "Stand far enough back that both hands stay in frame at the top of every rep.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your shoulders and elbows are visible."
+      ],
+      "note": "Stand 3 m from the camera facing it, with your hands and feet in frame at full stretch."
+    },
+    "tracks": [
+      "reps from arm raise",
+      "feet too close",
+      "arms not overhead"
+    ],
+    "accuracy": "This is a warm-up helper with simple rules. It counts reps and flags the most common mistakes, nothing more."
+  }
+}

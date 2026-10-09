@@ -1,0 +1,77 @@
+{
+  "exercise": "single-arm-dumbbell-row",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 160,
+      "peak": 82,
+      "tolerance": 14,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Pull the dumbbell up towards your hip."
+    },
+    "checks": [
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't twist or heave. Brace your torso and pull with your back.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 13,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on, with the rowing arm nearest the camera. Torso rotation cannot be seen from the side."
+    },
+    "tracks": [
+      "reps from elbow",
+      "body swinging"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

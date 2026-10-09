@@ -1,0 +1,120 @@
+{
+  "exercise": "barbell-row",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_tilt": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "horizontal"
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      },
+      "neck_neutral": {
+        "type": "angle",
+        "points": [
+          "ear",
+          "shoulder",
+          "hip"
+        ]
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 165,
+      "peak": 88,
+      "tolerance": 14,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Row the bar to your lower ribs."
+    },
+    "checks": [
+      {
+        "id": "too_upright",
+        "label": "Not hinged enough",
+        "message": "Hinge forward from your hips until your torso is closer to parallel with the floor.",
+        "measure": "torso_tilt",
+        "op": ">",
+        "value": 62,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't heave the bar. Keep your torso still and pull with your back.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 14,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "neck_rounding",
+        "label": "Neck or back rounding",
+        "message": "Keep your neck in line with your spine and your chest proud.",
+        "measure": "neck_neutral",
+        "op": "<",
+        "value": 135,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "neck",
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at hip height. Keep the camera-side hand and the end of the bar in view."
+    },
+    "tracks": [
+      "reps from elbow",
+      "not hinged enough",
+      "body swinging",
+      "neck or back rounding"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

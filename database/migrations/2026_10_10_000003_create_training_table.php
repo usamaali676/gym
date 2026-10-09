@@ -72,6 +72,7 @@ return new class extends Migration
             $table->foreignId('exercise_id')->constrained()->restrictOnDelete();
             $table->foreignId('posture_rule_id')->nullable()->constrained('posture_rules')->nullOnDelete();
             $table->foreignId('workout_session_id')->nullable()->constrained('workout_sessions')->nullOnDelete();
+            $table->uuid('client_uuid')->unique(); // generated in the browser so a retried save cannot be stored twice
             $table->unsignedInteger('rule_version')->default(1);
             $table->string('camera_view', 20);
             $table->timestamp('started_at');

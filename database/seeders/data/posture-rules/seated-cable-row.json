@@ -1,0 +1,100 @@
+{
+  "exercise": "seated-cable-row",
+  "tier": "simplified",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      },
+      "neck_neutral": {
+        "type": "angle",
+        "points": [
+          "ear",
+          "shoulder",
+          "hip"
+        ]
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 162,
+      "peak": 82,
+      "tolerance": 14,
+      "min_ms": 900,
+      "max_ms": 14000,
+      "partial_message": "Pull the handle to your lower ribs and squeeze your shoulder blades."
+    },
+    "checks": [
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't rock back and forth. Keep your torso tall and still.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 15,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "neck_rounding",
+        "label": "Neck or back rounding",
+        "message": "Sit tall with your chest up and your neck in line with your spine.",
+        "measure": "neck_neutral",
+        "op": "<",
+        "value": 135,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "neck",
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at hip height, with the cable between you and the machine kept clear of your arm."
+    },
+    "tracks": [
+      "reps from elbow",
+      "body swinging",
+      "neck or back rounding"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

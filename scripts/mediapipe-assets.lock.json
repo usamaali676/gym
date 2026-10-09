@@ -1,0 +1,21 @@
+{
+    "_comment": "Pinned MediaPipe assets. Regenerate with `npm run vendor:mediapipe -- --force --write-lock` after bumping @mediapipe/tasks-vision.",
+    "package": {
+        "name": "@mediapipe/tasks-vision",
+        "version": "1.1.0"
+    },
+    "wasm": {
+        "vision_wasm_internal.js": "7c652617b5bef832f42878ce8c5f752b0724bca6054e4bc1013a37d4b1949723",
+        "vision_wasm_internal.wasm": "782eda3ec1f414fdb4f1d66a8b59093eb4d5ab437e06117796abf05962d68eef",
+        "vision_wasm_module_internal.js": "70eff3956521b7de058d7173a4935c95e4a223c26ea624b9f5a936d3a043dcb0",
+        "vision_wasm_module_internal.wasm": "ee03b14a878e6c3c053a1bfa62e166dc45244be54dc0bbe61c578f710b771f6a",
+        "vision_wasm_nosimd_internal.js": "510fc70a170eb8b46767a7abab2af89a7a8341fa5b3ebfb8a5de41a79b7fa9df",
+        "vision_wasm_nosimd_internal.wasm": "b802041d105876865d6a0806f2ff7c4419a7f1b80bc01340fe36e759c2030011"
+    },
+    "model": {
+        "file": "pose_landmarker_lite.task",
+        "url": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+        "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+        "bytes": 5777746
+    }
+}

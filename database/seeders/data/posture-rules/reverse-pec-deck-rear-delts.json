@@ -1,0 +1,106 @@
+{
+  "exercise": "reverse-pec-deck-rear-delts",
+  "tier": "simplified",
+  "camera_view": "three_quarter",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "both",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "l_shoulder",
+      "r_shoulder",
+      "l_elbow",
+      "r_elbow",
+      "l_hip",
+      "r_hip"
+    ],
+    "measures": {
+      "abduction": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "shoulder",
+          "elbow"
+        ]
+      },
+      "neck_gap": {
+        "type": "ratio",
+        "num": [
+          "ear",
+          "shoulder"
+        ],
+        "den": [
+          "l_shoulder",
+          "r_shoulder"
+        ],
+        "relative": "ratio"
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "mid_hip",
+        "to": "mid_shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "abduction",
+      "start": 38,
+      "peak": 92,
+      "tolerance": 12,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Sweep your arms back and out to shoulder height."
+    },
+    "checks": [
+      {
+        "id": "shrugging",
+        "label": "Shrugging",
+        "message": "Keep your shoulders down and think of pulling with your rear delts.",
+        "measure": "neck_gap",
+        "op": "<",
+        "value": 0.8,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "shoulders",
+          "neck"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Keep your chest on the pad. Do not rock back to move the weight.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 10,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from 45 degrees",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away at about chest height, 45 degrees to the front of you.",
+        "Both arms and your upper body must stay in view for the whole rep. If the machine hides an arm, move the camera a little.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible."
+      ],
+      "note": "Camera at 45 degrees behind and to one side of the machine so both elbows stay visible."
+    },
+    "tracks": [
+      "reps from abduction",
+      "shrugging",
+      "body swinging"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

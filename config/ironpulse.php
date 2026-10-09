@@ -25,11 +25,27 @@ return [
         'personal_record' => 25,
         'posture_session' => 20,
         'posture_good_rep' => 1,
+        // Posture scores are computed on the user's device, so XP from them is capped rather than trusted.
+        'posture_good_rep_session_cap' => 30,
+        'posture_good_rep_daily_cap' => 100,
+        'posture_session_min_good_reps' => 3,
+        'posture_session_min_hold_seconds' => 15,
         'water_goal' => 10,
         'creatine' => 5,
         'sleep_goal' => 10,
         'protein_goal' => 15,
         'streak_milestones' => [3 => 25, 7 => 75, 14 => 150, 30 => 400],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Posture Lab
+    |--------------------------------------------------------------------------
+    | Where `npm run vendor:mediapipe` installs the self-hosted MediaPipe runtime and model.
+    */
+    'posture' => [
+        'assets_dir' => public_path('vendor/mediapipe'),
+        'assets_url' => '/vendor/mediapipe',
     ],
 
     /*

@@ -1,0 +1,109 @@
+{
+  "exercise": "push-up",
+  "tier": "generic",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip",
+      "ankle"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "hip_line": {
+        "type": "line_offset",
+        "from": "shoulder",
+        "to": "ankle",
+        "point": "hip",
+        "norm": "torso"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 160,
+      "peak": 85,
+      "tolerance": 14,
+      "min_ms": 700,
+      "max_ms": 12000,
+      "partial_message": "Lower until your elbows reach 90 degrees or your chest is near the floor."
+    },
+    "checks": [
+      {
+        "id": "hips_sagging",
+        "label": "Hips sagging",
+        "message": "Squeeze your glutes and abs. Keep one straight line from head to heels.",
+        "measure": "hip_line",
+        "op": "<",
+        "value": -0.14,
+        "severity": "major",
+        "frames": 5,
+        "segments": [
+          "torso",
+          "thigh"
+        ]
+      },
+      {
+        "id": "hips_piking",
+        "label": "Hips too high",
+        "message": "Lower your hips so your body is one straight line.",
+        "measure": "hip_line",
+        "op": ">",
+        "value": 0.16,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "torso",
+          "thigh"
+        ]
+      },
+      {
+        "id": "lockout",
+        "label": "Not locking out",
+        "message": "Press up until your arms are straight.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 150,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at floor level, about 2 m away, with your whole body in frame."
+    },
+    "tracks": [
+      "reps from elbow",
+      "hips sagging",
+      "hips too high",
+      "not locking out"
+    ],
+    "accuracy": "This is a warm-up helper with simple rules. It counts reps and flags the most common mistakes, nothing more."
+  }
+}

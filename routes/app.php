@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DemoGalleryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PostureLabController;
 use App\Http\Controllers\WorkoutController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,10 @@ Route::get('/library/{exercise}', [LibraryController::class, 'show'])->name('lib
 Route::get('/workout', [WorkoutController::class, 'start'])->name('workout.start');
 Route::get('/workout/{session}', [WorkoutController::class, 'play'])->whereNumber('session')->name('workout.play');
 Route::get('/workout/{session}/summary', [WorkoutController::class, 'summary'])->whereNumber('session')->name('workout.summary');
+
+// Posture Lab
+Route::get('/posture', [PostureLabController::class, 'index'])->name('posture.index');
+Route::get('/posture/{exercise}', [PostureLabController::class, 'show'])->name('posture.show');
 
 // Admin tools (the full admin panel arrives in a later phase)
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

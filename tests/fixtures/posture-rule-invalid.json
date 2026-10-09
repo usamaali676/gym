@@ -1,0 +1,229 @@
+{
+    "_comment": "Shared by tests/js/rule-engine.test.mjs and tests/Unit/PostureRuleValidatorTest.php so the JS engine and the PHP validator reject the same mistakes with the same messages. `set` and `unset` take dot paths into the base rule's config (numbers index arrays).",
+    "valid_base": "barbell-curl",
+    "cases": [
+        {
+            "name": "wrong schema version",
+            "set": {
+                "schema": 2
+            },
+            "expect": "schema must be 1"
+        },
+        {
+            "name": "unknown side",
+            "set": {
+                "side": "middle"
+            },
+            "expect": "side must be one of auto, left, right, both"
+        },
+        {
+            "name": "min visibility out of range",
+            "set": {
+                "min_visibility": 0.01
+            },
+            "expect": "min_visibility must be a number between 0.1 and 0.95"
+        },
+        {
+            "name": "good score out of range",
+            "set": {
+                "good_score": 140
+            },
+            "expect": "good_score must be a number between 0 and 100"
+        },
+        {
+            "name": "unknown required point",
+            "set": {
+                "required": [
+                    "shoulder",
+                    "banana"
+                ]
+            },
+            "expect": "unknown point \"banana\" in required"
+        },
+        {
+            "name": "angle needs three points",
+            "set": {
+                "measures.elbow.points": [
+                    "shoulder",
+                    "elbow"
+                ]
+            },
+            "expect": "measure \"elbow\": points must list exactly 3 points"
+        },
+        {
+            "name": "unknown point inside a measure",
+            "set": {
+                "measures.elbow.points": [
+                    "shoulder",
+                    "elbow",
+                    "pinky_toe"
+                ]
+            },
+            "expect": "unknown point \"pinky_toe\" in measure \"elbow\""
+        },
+        {
+            "name": "unknown measure type",
+            "set": {
+                "measures.elbow.type": "spin"
+            },
+            "expect": "measure \"elbow\" has unknown type \"spin\""
+        },
+        {
+            "name": "inclination reference",
+            "set": {
+                "measures.torso_sway.ref": "diagonal"
+            },
+            "expect": "measure \"torso_sway\": ref must be vertical or horizontal"
+        },
+        {
+            "name": "bad relative mode",
+            "set": {
+                "measures.torso_sway.relative": "percent"
+            },
+            "expect": "measure \"torso_sway\": relative must be one of delta, ratio"
+        },
+        {
+            "name": "rep signal must be a measure",
+            "set": {
+                "rep.signal": "nope"
+            },
+            "expect": "rep.signal \"nope\" is not a measure"
+        },
+        {
+            "name": "start equals peak",
+            "set": {
+                "rep.peak": 162
+            },
+            "expect": "rep.start and rep.peak must differ"
+        },
+        {
+            "name": "tolerance too large",
+            "set": {
+                "rep.tolerance": 70
+            },
+            "expect": "rep.tolerance must be smaller than half the range between start and peak"
+        },
+        {
+            "name": "max below min",
+            "set": {
+                "rep.max_ms": 500
+            },
+            "expect": "rep.max_ms must be greater than rep.min_ms"
+        },
+        {
+            "name": "partial message must be short text",
+            "set": {
+                "rep.partial_message": ""
+            },
+            "expect": "rep.partial_message must be a short text (110 characters at most)"
+        },
+        {
+            "name": "duplicate check id",
+            "set": {
+                "checks.1.id": "body_swing"
+            },
+            "expect": "duplicate check id \"body_swing\""
+        },
+        {
+            "name": "check measure must exist",
+            "set": {
+                "checks.0.measure": "ghost"
+            },
+            "expect": "check \"body_swing\": measure \"ghost\" does not exist"
+        },
+        {
+            "name": "bad operator",
+            "set": {
+                "checks.0.op": "=="
+            },
+            "expect": "check \"body_swing\": op must be one of <, >, outside, inside"
+        },
+        {
+            "name": "outside needs a range",
+            "set": {
+                "checks.0.op": "outside"
+            },
+            "expect": "check \"body_swing\": value must be [low, high] for outside"
+        },
+        {
+            "name": "rep check needs a stat",
+            "unset": [
+                "checks.2.stat"
+            ],
+            "expect": "check \"lockout\": stat must be one of min, max, peak, range"
+        },
+        {
+            "name": "unknown segment",
+            "set": {
+                "checks.0.segments": [
+                    "torso",
+                    "tail"
+                ]
+            },
+            "expect": "check \"body_swing\": unknown segment \"tail\""
+        },
+        {
+            "name": "frames out of range",
+            "set": {
+                "checks.0.frames": 0
+            },
+            "expect": "check \"body_swing\": frames must be a whole number between 1 and 30"
+        },
+        {
+            "name": "unknown phase",
+            "set": {
+                "checks.0.phases": [
+                    "rest",
+                    "sprint"
+                ]
+            },
+            "expect": "check \"body_swing\": phases must be a list of rest, out, peak, back, hold"
+        },
+        {
+            "name": "message is required",
+            "set": {
+                "checks.0.message": ""
+            },
+            "expect": "check \"body_swing\": message is required"
+        },
+        {
+            "name": "hold needs conditions",
+            "base": "plank",
+            "set": {
+                "rep.in_position": []
+            },
+            "expect": "rep.in_position must list at least one condition for a hold"
+        },
+        {
+            "name": "hold conditions reference measures",
+            "base": "plank",
+            "set": {
+                "rep.in_position": [
+                    {
+                        "measure": "ghost",
+                        "op": "<",
+                        "value": 20
+                    }
+                ]
+            },
+            "expect": "rep.in_position[0] must reference a measure"
+        },
+        {
+            "name": "rep checks are not allowed in a hold",
+            "base": "plank",
+            "set": {
+                "checks.0.scope": "rep",
+                "checks.0.stat": "max"
+            },
+            "expect": "check \"hips_sagging\": rep-scope checks need a movement rep, not a hold"
+        },
+        {
+            "name": "diff must reference measures",
+            "base": "side-lateral-raise",
+            "set": {
+                "measures.arm_unevenness.a": "elbow_bend_missing"
+            },
+            "expect": "measure \"arm_unevenness\": a must reference another measure"
+        }
+    ]
+}

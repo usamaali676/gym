@@ -1,0 +1,137 @@
+{
+  "exercise": "barbell-squat",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "hip",
+      "knee",
+      "ankle"
+    ],
+    "measures": {
+      "knee": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "knee",
+          "ankle"
+        ]
+      },
+      "torso_lean": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical"
+      },
+      "knee_over_toe": {
+        "type": "offset",
+        "from": "foot_index",
+        "to": "knee",
+        "axis": "forward",
+        "norm": "shank"
+      },
+      "heel_rise": {
+        "type": "offset",
+        "from": "foot_index",
+        "to": "heel",
+        "axis": "up",
+        "norm": "shank",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "knee",
+      "start": 168,
+      "peak": 78,
+      "tolerance": 15,
+      "min_ms": 1100,
+      "max_ms": 16000,
+      "fast_ms": 1300,
+      "partial_message": "Squat deeper: aim for hips at or just below your knees."
+    },
+    "checks": [
+      {
+        "id": "forward_lean",
+        "label": "Torso too far forward",
+        "message": "Chest up. Keep your torso more upright.",
+        "measure": "torso_lean",
+        "op": ">",
+        "value": 68,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "knees_forward",
+        "label": "Knees far past toes",
+        "message": "Sit your hips back so your knees do not shoot far past your toes.",
+        "measure": "knee_over_toe",
+        "op": ">",
+        "value": 0.32,
+        "severity": "minor",
+        "frames": 6,
+        "segments": [
+          "thigh",
+          "shin"
+        ]
+      },
+      {
+        "id": "heels_lifting",
+        "label": "Heels lifting",
+        "message": "Keep your whole foot on the floor, with your weight over mid-foot.",
+        "measure": "heel_rise",
+        "op": ">",
+        "value": 0.1,
+        "severity": "minor",
+        "frames": 6,
+        "segments": [
+          "foot",
+          "shin"
+        ]
+      },
+      {
+        "id": "stand_tall",
+        "label": "Not standing tall",
+        "message": "Stand all the way up at the top of each rep.",
+        "measure": "knee",
+        "op": "<",
+        "value": 160,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "thigh",
+          "shin"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at hip height, with your whole body and the bar in frame. The rack uprights may hide you; stand clear of them if you can."
+    },
+    "tracks": [
+      "reps from knee",
+      "torso too far forward",
+      "knees far past toes",
+      "heels lifting",
+      "not standing tall"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

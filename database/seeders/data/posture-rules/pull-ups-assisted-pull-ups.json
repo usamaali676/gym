@@ -1,0 +1,118 @@
+{
+  "exercise": "pull-ups-assisted-pull-ups",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "chin_over": {
+        "type": "offset",
+        "from": "wrist",
+        "to": "nose",
+        "axis": "up",
+        "norm": "torso"
+      },
+      "hip_shift": {
+        "type": "offset",
+        "from": "shoulder",
+        "to": "hip",
+        "axis": "x",
+        "norm": "torso",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 160,
+      "peak": 72,
+      "tolerance": 15,
+      "min_ms": 1000,
+      "max_ms": 20000,
+      "partial_message": "Pull higher, until your chin clears the bar."
+    },
+    "checks": [
+      {
+        "id": "swinging",
+        "label": "Swinging",
+        "message": "Stop swinging. Squeeze your glutes and keep your legs still.",
+        "measure": "hip_shift",
+        "op": ">",
+        "value": 0.32,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso",
+          "thigh"
+        ]
+      },
+      {
+        "id": "chin_short",
+        "label": "Chin below the bar",
+        "message": "Pull until your chin clears the bar.",
+        "measure": "chin_over",
+        "op": "<",
+        "value": -0.12,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "neck",
+          "upper_arm"
+        ]
+      },
+      {
+        "id": "dead_hang",
+        "label": "Not hanging fully",
+        "message": "Lower all the way until your arms are straight.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 150,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at mid-height so the bar, your hands and your hips stay in frame. On an assisted machine the pad may cover your legs; that is fine."
+    },
+    "tracks": [
+      "reps from elbow",
+      "swinging",
+      "chin below the bar",
+      "not hanging fully"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

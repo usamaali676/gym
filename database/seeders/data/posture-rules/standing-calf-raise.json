@@ -1,0 +1,101 @@
+{
+  "exercise": "standing-calf-raise",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "hip",
+      "knee",
+      "ankle",
+      "heel",
+      "foot_index"
+    ],
+    "measures": {
+      "heel_rise": {
+        "type": "offset",
+        "from": "foot_index",
+        "to": "heel",
+        "axis": "up",
+        "norm": "shank",
+        "relative": "delta"
+      },
+      "knee": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "knee",
+          "ankle"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "heel_rise",
+      "start": 0,
+      "peak": 0.2,
+      "tolerance": 0.05,
+      "min_ms": 700,
+      "max_ms": 12000,
+      "partial_message": "Rise as high as you can onto your toes."
+    },
+    "checks": [
+      {
+        "id": "bent_knees",
+        "label": "Knees bending",
+        "message": "Keep your legs straight. The movement is at the ankle only.",
+        "measure": "knee",
+        "op": "<",
+        "value": 158,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "thigh",
+          "shin"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't bounce or lean. Rise straight up and lower slowly.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 10,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at calf height with your whole foot in frame. Bare feet or thin shoes track best."
+    },
+    "tracks": [
+      "reps from heel rise",
+      "knees bending",
+      "body swinging"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}
