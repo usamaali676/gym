@@ -88,6 +88,14 @@
                                     <li class="chip">{{ $ex->mechanic->label() }}</li>
                                     <li class="chip">{{ $ex->muscle_group->label() }}</li>
                                 </ul>
+                                @if (isset($targets[$view->item->id]))
+                                    @php $target = $targets[$view->item->id]; @endphp
+                                    <dl class="mt-3 grid grid-cols-2 gap-2 text-xs" aria-label="Progressive overload">
+                                        <div class="rounded-lg border border-line bg-white/[0.03] px-3 py-2"><dt class="text-muted">Last time</dt><dd class="num mt-0.5 text-sm">{{ $target['last'] }}</dd></div>
+                                        <div class="rounded-lg border border-neon/30 bg-neon/10 px-3 py-2"><dt class="text-neon">Next target</dt><dd class="num mt-0.5 text-sm text-neon">{{ $target['next'] }}</dd></div>
+                                    </dl>
+                                    <p class="mt-1.5 text-xs text-muted">{{ $target['reason'] }}</p>
+                                @endif
                                 <div class="mt-3 flex flex-wrap gap-2">
                                     <a class="btn btn-ghost btn-sm" href="{{ route('library.show', $ex) }}"><x-icon name="info" class="size-4"/>Form tips</a>
                                     <button type="button" class="btn btn-ghost btn-sm" @click="show({{ $view->item->id }}, @js($view->name()))"><x-icon name="swap" class="size-4"/>Swap</button>

@@ -98,6 +98,8 @@ return new class extends Migration
             $table->foreignId('exercise_id')->constrained()->cascadeOnDelete();
             $table->enum('type', ['max_weight', 'max_reps', 'est_1rm', 'best_set_volume']);
             $table->decimal('value', 8, 2);
+            // The best value from before the current holder's session (the baseline a PR must beat).
+            $table->decimal('previous_value', 8, 2)->nullable();
             $table->decimal('weight_kg', 6, 2)->nullable();
             $table->unsignedTinyInteger('reps')->nullable();
             $table->foreignId('session_set_id')->nullable()->constrained('session_sets')->nullOnDelete();

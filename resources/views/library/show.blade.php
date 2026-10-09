@@ -28,6 +28,12 @@
                 <p class="mt-4 rounded-xl border border-line-strong bg-neon/5 p-3 text-sm"><x-icon name="info" class="mr-1 inline size-4 text-neon"/>This needs equipment that is not in your profile. <a class="font-semibold text-neon underline underline-offset-4" href="{{ route('profile.edit') }}">Update your equipment</a>.</p>
             @endunless
 
+            <div class="demo-stage relative mt-5 grid aspect-[4/3] min-h-[16rem] w-full place-items-center overflow-hidden rounded-2xl border border-line bg-black/30"
+                 data-demo="{{ $exercise->demo_key ?: $exercise->slug }}" data-group="{{ $exercise->muscle_group->value }}" @if($exercise->glb_path) data-glb="{{ asset('storage/'.$exercise->glb_path) }}" @endif
+                 data-regions="{{ json_encode($exercise->target_regions ?? ['primary' => [], 'secondary' => []]) }}">
+                <x-icon name="dumbbell" class="size-16 text-neon/40"/>
+            </div>
+
             <div class="mt-5 flex flex-wrap gap-2">
                 @if ($postureUrl)<a href="{{ $postureUrl }}" class="btn btn-primary"><x-icon name="scan" class="size-4"/>Check my posture</a>@endif
             </div>
@@ -35,12 +41,7 @@
 
         <aside class="glass p-5 lg:col-span-2" aria-labelledby="muscles-title">
             <h2 id="muscles-title" class="eyebrow">Target muscles</h2>
-            <div class="demo-stage mt-3 grid aspect-square place-items-center rounded-xl border border-line bg-black/30"
-                 data-demo="{{ $exercise->demo_key ?: $exercise->slug }}" data-group="{{ $exercise->muscle_group->value }}"
-                 data-regions="{{ json_encode($exercise->target_regions ?? ['primary' => [], 'secondary' => []]) }}">
-                <x-icon name="dumbbell" class="size-16 text-neon/40"/>
-            </div>
-            <dl class="mt-4 space-y-3 text-sm">
+            <dl class="mt-3 space-y-3 text-sm">
                 <div><dt class="label !mb-1">Primary</dt><dd class="flex flex-wrap gap-1.5">@forelse ($primary as $r)<span class="chip chip-neon">{{ $regions[$r] ?? $r }}</span>@empty<span class="text-muted">-</span>@endforelse</dd></div>
                 @if ($secondary)<div><dt class="label !mb-1">Assisting</dt><dd class="flex flex-wrap gap-1.5">@foreach ($secondary as $r)<span class="chip">{{ $regions[$r] ?? $r }}</span>@endforeach</dd></div>@endif
             </dl>

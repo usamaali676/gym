@@ -7,6 +7,7 @@ use App\Models\Exercise;
 use App\Models\PlanDay;
 use App\Models\User;
 use App\Services\PlanService;
+use App\Services\ProgressiveOverloadService;
 use App\Services\WorkoutSessionService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,7 @@ class PlanController extends Controller
     public function __construct(
         private readonly PlanService $plans,
         private readonly WorkoutSessionService $sessions,
+        private readonly ProgressiveOverloadService $overload,
     ) {}
 
     /** Week timeline: every day of the plan with its status. */
@@ -61,13 +63,15 @@ class PlanController extends Controller
         $today = $user->localToday();
 
         $session = $planDay->is_rest ? null : $this->sessions->sessionOn($user, $planDay, $date);
+        $views = $this->plans->effectiveItems($user, $planDay);
 
         return view('plan.day', [
             'day' => $planDay,
             'date' => $date,
             'status' => $entry['status'] ?? 'upcoming',
             'session' => $session,
-            'views' => $this->plans->effectiveItems($user, $planDay),
+            'views' => $views,
+            'targets' => $planDay->is_rest ? [] : $this->overload->forViews($user, $views),
             'minutes' => $this->plans->estimatedMinutes($planDay),
             'canAct' => ! $planDay->is_rest && $date->lte($today)
                 && $date->gte($today->subDays(WorkoutSessionService::BACKFILL_DAYS)),

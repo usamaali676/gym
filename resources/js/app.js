@@ -53,19 +53,22 @@ Alpine.data('appShell', () => ({
     },
 }));
 
-Alpine.start();
-
-// Heavy, page-specific bundles (Three.js, MediaPipe, Chart.js) are code-split and only loaded
-// on the page that declares them with <body data-page="...">.
+// Heavy, page-specific code (the workout engine, Three.js, MediaPipe, Chart.js) is code-split and only
+// loaded on the page that declares it with <body data-page="...">. A page may export
+// `register(Alpine)` to define its Alpine components *before* Alpine scans the DOM, and a default
+// function that runs once the page is live.
 const pages = import.meta.glob('./pages/*.js');
 
-document.addEventListener('DOMContentLoaded', async () => {
-    initEffects(document);
+async function boot() {
+    const pageName = document.body.dataset.page;
+    const loadPage = pageName ? pages[`./pages/${pageName}.js`] : null;
+    const pageModule = loadPage ? await loadPage() : null;
 
-    const page = document.body.dataset.page;
-    const loader = page && pages[`./pages/${page}.js`];
-    if (loader) {
-        const module = await loader();
-        if (typeof module.default === 'function') module.default();
-    }
-});
+    pageModule?.register?.(Alpine);
+    Alpine.start();
+
+    initEffects(document);
+    pageModule?.default?.();
+}
+
+boot();

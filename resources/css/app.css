@@ -233,6 +233,8 @@
     .dot-missed, .dot-skipped { background: rgba(255, 59, 59, 0.7); }
     .dot-in_progress { background: var(--color-neon2); animation: var(--animate-pulse-neon); }
 
+    .intro-num { animation: intro-pop 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+    @keyframes intro-pop { from { transform: scale(2.4); opacity: 0; } 35% { opacity: 1; } to { transform: scale(1); opacity: 1; } }
     .rise { animation: var(--animate-rise); animation-delay: calc(var(--i, 0) * 70ms); }
     .page-in { animation: page-in 0.4s ease backwards; }
     .skeleton { background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 0.6rem; }

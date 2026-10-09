@@ -11,7 +11,7 @@ class PersonalRecord extends Model
 
     protected function casts(): array
     {
-        return ['value' => 'float', 'weight_kg' => 'float', 'achieved_at' => 'datetime'];
+        return ['value' => 'float', 'previous_value' => 'float', 'weight_kg' => 'float', 'achieved_at' => 'datetime'];
     }
 
     public function user(): BelongsTo

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SessionSet extends Model
 {
@@ -33,6 +34,11 @@ class SessionSet extends Model
     public function exercise(): BelongsTo
     {
         return $this->belongsTo(Exercise::class);
+    }
+
+    public function personalRecords(): HasMany
+    {
+        return $this->hasMany(PersonalRecord::class);
     }
 
     public function volume(): float

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\DemoGalleryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\WorkoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +24,13 @@ Route::delete('/plan/{day}/skip', [PlanController::class, 'unskip'])->whereNumbe
 // Exercise library
 Route::get('/library', [LibraryController::class, 'index'])->name('library.index');
 Route::get('/library/{exercise}', [LibraryController::class, 'show'])->name('library.show');
+
+// Workout (game mode)
+Route::get('/workout', [WorkoutController::class, 'start'])->name('workout.start');
+Route::get('/workout/{session}', [WorkoutController::class, 'play'])->whereNumber('session')->name('workout.play');
+Route::get('/workout/{session}/summary', [WorkoutController::class, 'summary'])->whereNumber('session')->name('workout.summary');
+
+// Admin tools (the full admin panel arrives in a later phase)
+Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/demos', DemoGalleryController::class)->name('demos');
+});
