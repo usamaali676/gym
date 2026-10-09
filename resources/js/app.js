@@ -4,6 +4,8 @@ import { initEffects } from './modules/effects';
 import bodyForm from './modules/body-form';
 import swapSheet from './modules/swap';
 import { toast, toastBadges } from './modules/toast';
+import { initPwa, installApp } from './modules/pwa';
+import { notifyPermission, startReminders } from './modules/reminders';
 
 window.Alpine = Alpine;
 window.toast = toast;
@@ -11,6 +13,8 @@ window.toastBadges = toastBadges;
 Alpine.plugin(focus);
 Alpine.data('bodyForm', bodyForm);
 Alpine.data('swapSheet', swapSheet);
+Alpine.data('installApp', installApp);
+Alpine.data('notifyPermission', notifyPermission);
 
 /** Per-user preference helpers: storage can throw (private mode, blocked cookies), so always guard. */
 window.safeStorage = {
@@ -72,6 +76,8 @@ async function boot() {
 
     initEffects(document);
     pageModule?.default?.();
+    initPwa();
+    startReminders();
 }
 
 boot();

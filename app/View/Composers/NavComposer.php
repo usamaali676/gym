@@ -2,6 +2,7 @@
 
 namespace App\View\Composers;
 
+use App\Services\ReminderConfigService;
 use App\Services\StreakService;
 use App\Services\XpService;
 use Illuminate\Support\Facades\Request;
@@ -11,7 +12,11 @@ use Illuminate\View\View;
 /** Builds the sidebar / tab-bar items, showing only entries whose route exists. */
 class NavComposer
 {
-    public function __construct(private readonly XpService $xp, private readonly StreakService $streaks) {}
+    public function __construct(
+        private readonly XpService $xp,
+        private readonly StreakService $streaks,
+        private readonly ReminderConfigService $reminders,
+    ) {}
 
     public function compose(View $view): void
     {
@@ -33,6 +38,7 @@ class NavComposer
             'navItems' => $items,
             'navXp' => $this->xp->progress($user->xp_total),
             'navStreak' => $this->streaks->current($user),
+            'reminderConfig' => $this->reminders->forUser($user),
         ]);
     }
 }

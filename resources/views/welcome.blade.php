@@ -6,10 +6,7 @@
     <meta name="theme-color" content="#07090A">
     <meta name="description" content="IronPulse turns your push / pull / legs plan into a guided, game-like training experience with an AI posture checker and nutrition tools.">
     <title>{{ config('app.name') }} · Train. Track. Transform.</title>
-    @if (file_exists(public_path('manifest.webmanifest')))
-        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <link rel="icon" href="{{ asset('icons/icon.svg') }}" type="image/svg+xml">
-    @endif
+    <x-pwa-head/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body x-data>

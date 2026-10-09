@@ -64,6 +64,16 @@
                     <input type="hidden" name="ai_coach_opt_in" value="0">
                     <label class="flex items-center gap-3 text-sm"><input type="checkbox" class="check" name="ai_coach_opt_in" value="1" @checked(old('ai_coach_opt_in', $profile->ai_coach_opt_in))> Use the AI coach (sends your questions and basic stats to the AI service)</label>
                 @endif
+                <div class="rounded-xl border border-line p-3 text-sm" x-data="notifyPermission">
+                    <p class="font-semibold">Browser notifications on this device</p>
+                    <p class="mt-1 text-muted">Reminders appear while IronPulse is open in a tab or installed as an app. There is no push service, so nothing is sent when it is closed.</p>
+                    <p class="mt-2 text-muted" x-show="!supported">This browser does not support notifications.</p>
+                    <div class="mt-3 flex flex-wrap items-center gap-2" x-show="supported">
+                        <button type="button" class="btn btn-ghost btn-sm" x-show="state === 'default'" @click="request()">Allow notifications</button>
+                        <button type="button" class="btn btn-ghost btn-sm" x-show="state === 'granted'" @click="test()">Send a test</button>
+                        <span class="text-xs" :class="state === 'granted' ? 'text-neon' : 'text-muted'" x-text="state === 'granted' ? 'Allowed on this device' : (state === 'denied' ? 'Blocked: allow them in your browser site settings' : 'Not allowed yet')"></span>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <x-field name="workout_reminder_at" type="time" label="Workout reminder" :value="$notifications->workout_reminder_at ? substr($notifications->workout_reminder_at, 0, 5) : null"/>
                     <x-field name="creatine_reminder_at" type="time" label="Creatine reminder" :value="$notifications->creatine_reminder_at ? substr($notifications->creatine_reminder_at, 0, 5) : null"/>
@@ -76,6 +86,7 @@
                 </div>
                 <button class="btn btn-primary">Save settings</button>
             </form>
+            <x-install-app class="mt-4 max-w-xs"/>
         </section>
 
         {{-- Body profile --}}

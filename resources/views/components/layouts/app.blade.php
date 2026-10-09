@@ -16,10 +16,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#07090A">
     <title>{{ $title ? $title.' · ' : '' }}{{ config('app.name') }}</title>
-    @if (file_exists(public_path('manifest.webmanifest')))
-        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <link rel="icon" href="{{ asset('icons/icon.svg') }}" type="image/svg+xml">
-    @endif
+    <x-pwa-head/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{ $head ?? '' }}
 </head>
@@ -128,11 +125,15 @@
                     </a>
                 @endforeach
             </div>
+            <x-install-app class="mt-3"/>
             <form method="POST" action="{{ route('logout') }}" class="mt-3">@csrf
                 <button class="btn btn-ghost w-full"><x-icon name="logout" class="size-4"/>Log out</button>
             </form>
         </div>
     </div>
+    @if ($reminderConfig)
+        <script type="application/json" id="reminder-config">@json($reminderConfig)</script>
+    @endif
     {{ $scripts ?? '' }}
 </body>
 </html>
