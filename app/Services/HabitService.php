@@ -16,8 +16,23 @@ class HabitService
         private readonly DailyLogService $daily,
     ) {}
 
+    /** Everything the browser component needs: today's state and the API addresses. @return array<string, mixed> */
+    public function clientConfig(User $user, CarbonInterface $date, bool $history = true): array
+    {
+        return [
+            'state' => $this->state($user, $date, history: $history),
+            'urls' => [
+                'water' => route('api.water.add'),
+                'undoWater' => route('api.water.undo'),
+                'creatine' => route('api.creatine.set'),
+                'sleep' => route('api.sleep.set'),
+                'mobility' => route('api.mobility.set'),
+            ],
+        ];
+    }
+
     /** @return array<string, mixed> */
-    public function state(User $user, CarbonInterface $date, int $waterXp = 0): array
+    public function state(User $user, CarbonInterface $date, int $waterXp = 0, bool $history = true): array
     {
         $user->loadMissing('profile');
         $log = $this->daily->forDate($user, $date);
@@ -41,7 +56,8 @@ class HabitService
                 'average' => $this->daily->sleepAverage($user, $date, 7),
             ],
             'mobility_minutes' => (int) ($log?->mobility_minutes ?? 0),
-            'history' => $this->history($user, $date, 14),
+            // The dashboard tile does not draw the 14-day strips, so it skips those queries.
+            'history' => $history ? $this->history($user, $date, 14) : [],
         ];
     }
 

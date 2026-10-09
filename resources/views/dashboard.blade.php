@@ -153,6 +153,30 @@
         </article>
     </div>
 
+    {{-- Water and creatine, one tap each --}}
+    <section class="glass mt-4 p-5" aria-labelledby="habits-title" x-data="habits">
+        <script type="application/json" id="habit-config">@json($habitConfig)</script>
+        <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+            <h2 id="habits-title" class="eyebrow flex items-center gap-2"><x-icon name="droplet" class="size-4"/>Water and creatine</h2>
+            <p class="text-xs text-muted" role="status" aria-live="polite" x-text="message" x-show="message" x-cloak></p>
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+                <p><span class="num text-2xl" x-text="s.water.total_ml"></span> <span class="text-sm text-muted">/ <span x-text="s.water.goal_ml"></span> ml</span> <span class="ml-1 text-xs" :class="s.water.reached ? 'text-neon' : 'text-muted'" x-text="s.water.reached ? 'Goal reached' : (s.water.goal_ml - s.water.total_ml) + ' ml to go'"></span></p>
+                <div class="mt-2 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Water today" :aria-valuenow="s.water.pct" aria-valuemin="0" aria-valuemax="100"><div class="h-full rounded-full bg-[#4DA3FF] transition-[width] duration-500 motion-reduce:transition-none" :style="`width: ${Math.min(100, s.water.pct)}%`"></div></div>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-ghost btn-sm" @click="drink(250)" :disabled="busy">+ Glass (250)</button>
+                    <button type="button" class="btn btn-ghost btn-sm" @click="drink(500)" :disabled="busy">+ Bottle (500)</button>
+                    <button type="button" class="btn btn-ghost btn-sm" @click="undoDrink()" :disabled="busy || !s.water.entries.length" aria-label="Undo last drink"><x-icon name="rotate" class="size-4"/>Undo</button>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn w-full sm:w-auto" :class="s.creatine.taken ? 'btn-primary' : 'btn-ghost'" @click="toggleCreatine()" :disabled="busy" :aria-pressed="s.creatine.taken"><x-icon name="pill" class="size-4"/><span x-text="s.creatine.taken ? 'Creatine taken' : 'Take creatine (' + s.creatine.dose_g + ' g)'"></span></button>
+                <p class="mt-2 text-xs text-muted"><span class="num text-ink" x-text="s.creatine.current"></span> day streak · longest <span class="num text-ink" x-text="s.creatine.longest"></span>. <a href="{{ route_if('recovery.index') }}" class="text-neon underline underline-offset-4">Sleep and recovery</a></p>
+            </div>
+        </div>
+    </section>
+
     {{-- Quick actions (a tile appears once its section exists) --}}
     @php
         $actions = collect([

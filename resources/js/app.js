@@ -3,6 +3,7 @@ import focus from '@alpinejs/focus';
 import { initEffects } from './modules/effects';
 import bodyForm from './modules/body-form';
 import swapSheet from './modules/swap';
+import habits from './modules/habits';
 import { toast, toastBadges } from './modules/toast';
 import { initPwa, installApp } from './modules/pwa';
 import { notifyPermission, startReminders } from './modules/reminders';
@@ -14,6 +15,8 @@ Alpine.plugin(focus);
 Alpine.data('bodyForm', bodyForm);
 Alpine.data('swapSheet', swapSheet);
 Alpine.data('installApp', installApp);
+// Water and creatine controls (dashboard tile and recovery page); the config is read when a component starts.
+Alpine.data('habits', () => habits(JSON.parse(document.getElementById('habit-config').textContent)));
 Alpine.data('notifyPermission', notifyPermission);
 
 /** Per-user preference helpers: storage can throw (private mode, blocked cookies), so always guard. */

@@ -68,3 +68,11 @@ test('the dashboard stays within a small query budget', function () {
 
     expect(count(DB::getQueryLog()))->toBeLessThan(30);
 });
+
+test('the dashboard has a one-tap water and creatine tile fed by the habit service', function () {
+    $user = User::factory()->onboarded(['weight_kg' => 80])->create();
+
+    $page = $this->actingAs($user)->get('/dashboard')->assertOk()->assertSee('Water and creatine')->assertSee('id="habit-config"', false);
+
+    expect($page->getContent())->toContain('"goal_ml":')->toContain('\\/api\\/water')->toContain('\\/api\\/creatine');
+});

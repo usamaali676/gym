@@ -33,16 +33,7 @@ class RecoveryController extends Controller
         $routine = $planDay ? $this->routines->forDay($planDay, $type) : null;
 
         return view('recovery.index', [
-            'habitConfig' => [
-                'state' => $this->habits->state($user, $today),
-                'urls' => [
-                    'water' => route('api.water.add'),
-                    'undoWater' => route('api.water.undo'),
-                    'creatine' => route('api.creatine.set'),
-                    'sleep' => route('api.sleep.set'),
-                    'mobility' => route('api.mobility.set'),
-                ],
-            ],
+            'habitConfig' => $this->habits->clientConfig($user, $today),
             'days' => $days,
             'dayNo' => $dayNo,
             'planDay' => $planDay,

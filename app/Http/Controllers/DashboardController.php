@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SessionStatus;
 use App\Models\WorkoutSession;
+use App\Services\HabitService;
 use App\Services\NutritionTotalsService;
 use App\Services\PlanService;
 use App\Services\StreakService;
@@ -19,6 +20,7 @@ class DashboardController extends Controller
         XpService $xp,
         StreakService $streaks,
         NutritionTotalsService $nutrition,
+        HabitService $habits,
     ): View {
         $user = $request->user()->load('profile');
         $now = $user->localNow();
@@ -57,6 +59,7 @@ class DashboardController extends Controller
             'dietPlan' => $dietPlan,
             'totals' => $nutrition->totalsFor($user, $today),
             'targets' => $nutrition->targetsFor($user, $today, $dietPlan),
+            'habitConfig' => $habits->clientConfig($user, $today, history: false),
             'quote' => $quotes[$now->dayOfYear % count($quotes)],
         ]);
     }

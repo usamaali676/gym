@@ -103,7 +103,7 @@
                             <p class="mt-0.5 text-sm text-muted" x-show="current.focus" x-text="current.focus"></p>
                             <p class="chip chip-neon mt-2 !text-[0.65rem]" x-show="current.swappedFrom" x-cloak><x-icon name="swap" class="size-3"/><span x-text="`Swapped from ${current.swappedFrom}`"></span></p>
                         </div>
-                        <button type="button" class="btn btn-ghost btn-sm shrink-0" @click="ui.jump = true"><x-icon name="list" class="size-4"/><span class="hidden sm:inline">Exercises</span></button>
+                        <button type="button" class="btn btn-ghost btn-sm shrink-0" @click="ui.jump = true" aria-label="Exercises"><x-icon name="list" class="size-4"/><span class="hidden sm:inline">Exercises</span></button>
                     </div>
 
                     <ul class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -140,8 +140,8 @@
                         <p class="label text-center">Reps <span class="normal-case tracking-normal">(tap once per rep)</span></p>
                         <div class="flex items-center justify-center gap-4">
                             <button type="button" class="btn btn-ghost btn-icon" @click="bumpReps(-1)" aria-label="Remove one rep"><x-icon name="minus" class="size-5"/></button>
-                            <button type="button" @click="tapRep()" class="grid size-40 place-items-center rounded-full border-2 border-neon/70 bg-neon/5 shadow-[0_0_44px_rgba(57,255,20,.2)] transition active:scale-95 active:bg-neon/15 sm:size-44" aria-live="off" :aria-label="`Reps: ${reps}. Tap to add a rep.`">
-                                <span class="flex flex-col items-center leading-none"><span class="num text-8xl text-neon text-glow" x-text="reps"></span><span class="mt-1 text-[0.65rem] uppercase tracking-widest text-muted" x-text="`target ${current.repsMin}-${current.repsMax}`"></span></span>
+                            <button type="button" @click="tapRep()" class="grid size-40 place-items-center rounded-full border-2 border-neon/70 bg-neon/5 shadow-[0_0_44px_rgba(57,255,20,.2)] transition active:scale-95 active:bg-neon/15 sm:size-44" aria-live="off" :aria-label="`${reps} target ${current.repsMin}-${current.repsMax}, tap to add a rep`">
+                                <span class="flex flex-col items-center leading-none"><span class="num text-8xl text-neon text-glow" x-text="reps"></span> <span class="mt-1 text-[0.65rem] uppercase tracking-widest text-muted" x-text="`target ${current.repsMin}-${current.repsMax}`"></span></span>
                             </button>
                             <button type="button" class="btn btn-ghost btn-icon" @click="bumpReps(1)" aria-label="Add one rep"><x-icon name="plus" class="size-5"/></button>
                         </div>

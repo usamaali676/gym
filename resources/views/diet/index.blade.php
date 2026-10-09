@@ -59,18 +59,16 @@
                     <dl class="space-y-3 sm:col-span-3">
                         @foreach ($macroMeta as $key => [$label, $color, $kcalPerG])
                             @php $share = round($targets[$key] * $kcalPerG / max(1, $targets['calories']) * 100); @endphp
-                            <div>
-                                <div class="flex items-baseline justify-between gap-2">
-                                    <dt class="flex items-center gap-2 text-sm font-semibold"><span class="size-2.5 rounded-sm" style="background: {{ $color }}" aria-hidden="true"></span>{{ $label }}</dt>
-                                    <dd><span class="num text-xl">{{ $targets[$key] }}</span> g <span class="text-xs text-muted">· {{ $share }}%</span></dd>
-                                </div>
-                                <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10"><div class="h-full rounded-full" style="width: {{ $share }}%; background: {{ $color }}"></div></div>
+                            <div class="grid grid-cols-[1fr_auto] items-baseline gap-x-2">
+                                <dt class="flex items-center gap-2 text-sm font-semibold"><span class="size-2.5 rounded-sm" style="background: {{ $color }}" aria-hidden="true"></span>{{ $label }}</dt>
+                                <dd><span class="num text-xl">{{ $targets[$key] }}</span> g <span class="text-xs text-muted">· {{ $share }}%</span></dd>
+                                <dd class="col-span-2 mt-1 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden="true"><span class="block h-full rounded-full" style="width: {{ $share }}%; background: {{ $color }}"></span></dd>
                             </div>
                         @endforeach
-                        <div class="grid grid-cols-2 gap-3 pt-1 text-sm">
+                    </dl>
+                    <dl class="grid grid-cols-2 gap-3 pt-1 text-sm sm:col-span-3">
                             <div class="rounded-xl border border-line bg-white/[0.03] p-3"><dt class="text-xs font-semibold uppercase tracking-wider text-muted">Fibre</dt><dd class="num mt-0.5 text-lg">{{ $targets['fibre_g'] }} g</dd></div>
                             <div class="rounded-xl border border-line bg-white/[0.03] p-3"><dt class="text-xs font-semibold uppercase tracking-wider text-muted">Water</dt><dd class="num mt-0.5 text-lg">{{ number_format($plan->water_ml + ($isTraining ? config('ironpulse.water.training_day_bonus_ml') : 0)) }} ml</dd></div>
-                        </div>
                     </dl>
                 </div>
 
