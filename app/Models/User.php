@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use App\Services\ProgressPhotoService;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -40,7 +42,14 @@ class User extends Authenticatable
             'role' => Role::class,
             'last_workout_on' => 'date',
             'onboarded_at' => 'datetime',
+            'last_seen_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Database rows cascade, files do not: progress photos live on disk and must go with the account.
+        static::deleting(fn (User $user) => Storage::disk(ProgressPhotoService::DISK)->deleteDirectory("progress/{$user->id}"));
     }
 
     public function profile(): HasOne

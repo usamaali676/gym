@@ -10,6 +10,8 @@ return [
     | row (is_guest = true) that can later be "claimed" with an email/password.
     */
     'guest_mode' => (bool) env('IRONPULSE_GUEST_MODE', true),
+    // Guests nobody has come back to for this many days are deleted by `ironpulse:prune-guests`.
+    'guest_ttl_days' => (int) env('IRONPULSE_GUEST_TTL_DAYS', 30),
 
     /*
     |--------------------------------------------------------------------------

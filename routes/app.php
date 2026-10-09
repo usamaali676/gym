@@ -10,6 +10,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PostureLabController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\RecoveryController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkoutController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,13 @@ Route::get('/recovery', [RecoveryController::class, 'index'])->name('recovery.in
 
 // Badges and leaderboard
 Route::get('/badges', [BadgeController::class, 'index'])->name('badges.index');
+
+// Weekly reports: page, PDF, share links
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/reports/{week}', [ReportController::class, 'show'])->where('week', '\d{4}-\d{2}-\d{2}')->name('reports.show');
+Route::get('/reports/{week}/pdf', [ReportController::class, 'pdf'])->where('week', '\d{4}-\d{2}-\d{2}')->middleware('throttle:20,1')->name('reports.pdf');
+Route::post('/reports/{week}/share', [ReportController::class, 'share'])->where('week', '\d{4}-\d{2}-\d{2}')->name('reports.share');
+Route::delete('/reports/{week}/share', [ReportController::class, 'unshare'])->where('week', '\d{4}-\d{2}-\d{2}')->name('reports.unshare');
 
 // Posture Lab
 Route::get('/posture', [PostureLabController::class, 'index'])->name('posture.index');

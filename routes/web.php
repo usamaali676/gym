@@ -1,16 +1,25 @@
 <?php
 
 use App\Http\Controllers\AccountClaimController;
+use App\Http\Controllers\DigestUnsubscribeController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\PwaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/manifest.webmanifest', [PwaController::class, 'manifest'])->name('pwa.manifest');
 Route::get('/offline', [PwaController::class, 'offline'])->name('pwa.offline');
+
+Route::get('/r/{token}', [PublicReportController::class, 'show'])->middleware('throttle:60,1')->where('token', '[A-Za-z0-9]{32}')->name('reports.public');
+
+Route::middleware(['signed', 'throttle:20,1'])->group(function () {
+    Route::get('/digest/unsubscribe/{user}', [DigestUnsubscribeController::class, 'confirm'])->whereNumber('user')->name('digest.unsubscribe');
+    Route::post('/digest/unsubscribe/{user}', [DigestUnsubscribeController::class, 'unsubscribe'])->whereNumber('user');
+});
 
 Route::post('/guest', [GuestController::class, 'store'])
     ->middleware(['guest', 'throttle:guest'])
