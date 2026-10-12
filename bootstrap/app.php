@@ -1,12 +1,15 @@
 <?php
 
+use App\Exceptions\ApiException;
 use App\Http\Middleware\Api\AssignRequestId;
 use App\Http\Middleware\Api\EnsureAccountActive;
 use App\Http\Middleware\Api\EnsureOnboardedApi;
 use App\Http\Middleware\Api\ForceJson;
 use App\Http\Middleware\Api\TouchDevice;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureEntitled;
 use App\Http\Middleware\EnsureOnboarded;
+use App\Http\Middleware\RejectSuspendedUsers;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TouchLastSeen;
 use App\Support\Api\ErrorRenderer;
@@ -43,13 +46,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.active' => EnsureAccountActive::class,
             'api.onboarded' => EnsureOnboardedApi::class,
             'api.touch' => TouchDevice::class,
+            'entitled' => EnsureEntitled::class,
         ]);
         $middleware->group('api.v1', [AssignRequestId::class, ForceJson::class]);
         // Mail apps POST one-click unsubscribes with no session or CSRF token; the signed URL authenticates it.
         $middleware->validateCsrfTokens(except: ['digest/unsubscribe/*']);
-        $middleware->web(append: [SecurityHeaders::class, TouchLastSeen::class]);
+        $middleware->web(append: [RejectSuspendedUsers::class, SecurityHeaders::class, TouchLastSeen::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // One error envelope for /api/v1 (other routes keep Laravel's defaults).
+        // Domain errors with a stable code (entitlement_required, account_suspended, ...) are expected, not bugs.
+        $exceptions->dontReport(ApiException::class);
         $exceptions->render(fn (Throwable $e, Request $request) => ErrorRenderer::render($e, $request));
     })->create();

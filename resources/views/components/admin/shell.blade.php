@@ -3,6 +3,7 @@
     $tabs = [
         'index' => ['Overview', 'admin.index', 'admin.index'],
         'users' => ['Users', 'admin.users.index', 'admin.users.*'],
+        'memberships' => ['Memberships', 'admin.memberships.index', 'admin.memberships.*|admin.subscriptions.*'],
         'plan' => ['Plan', 'admin.plan.index', 'admin.plan.*'],
         'exercises' => ['Exercises', 'admin.exercises.index', 'admin.exercises.*'],
         'posture' => ['Posture rules', 'admin.posture.index', 'admin.posture.*'],
@@ -18,7 +19,7 @@
     </div>
     <nav class="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Admin sections">
         @foreach ($tabs as $key => [$label, $route, $match])
-            <a href="{{ route($route) }}" class="chip whitespace-nowrap {{ request()->routeIs($match) ? '!border-neon !text-neon' : '' }}" @if(request()->routeIs($match)) aria-current="page" @endif>{{ $label }}</a>
+            <a href="{{ route($route) }}" class="chip whitespace-nowrap {{ request()->routeIs(...explode('|', $match)) ? '!border-neon !text-neon' : '' }}" @if(request()->routeIs(...explode('|', $match))) aria-current="page" @endif>{{ $label }}</a>
         @endforeach
     </nav>
     {{ $slot }}

@@ -54,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('v1-auth', fn (Request $request) => Limit::perMinute(20)->by($request->ip()));
         RateLimiter::for('v1', fn (Request $request) => Limit::perMinute(240)->by($key($request)));
         RateLimiter::for('v1-sync', fn (Request $request) => Limit::perMinute(60)->by($key($request)));
+        RateLimiter::for('v1-purchases', fn (Request $request) => Limit::perMinute(10)->by($key($request)));
         RateLimiter::for('v1-uploads', fn (Request $request) => Limit::perMinute(20)->by($key($request)));
 
         View::composer('components.layouts.app', NavComposer::class);

@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Models\FoodLog;
+use App\Models\MembershipPlan;
 use App\Models\PostureSession;
 use App\Models\ProgressPhoto;
 use App\Models\User;
 use App\Models\WorkoutSession;
+use App\Services\Api\MobileTokenService;
+use App\Services\Membership\EntitlementService;
 use App\Support\AdminAudit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -48,7 +52,41 @@ class UserController extends Controller
                 'photos' => ProgressPhoto::where('user_id', $user->id)->count(),
             ],
             'lastAdmin' => $this->isLastAdmin($user),
+            'subscriptions' => $user->subscriptions()->with('plan:id,name,slug')->latest('id')->get(),
+            'plans' => MembershipPlan::query()->orderBy('sort_order')->orderBy('price_minor')->get(['id', 'name', 'status']),
+            'currentPlan' => app(EntitlementService::class)->for($user)->plan,
         ]);
+    }
+
+    /** Suspend or restore an account. Suspension ends website sessions and every mobile token at once. */
+    public function updateStatus(Request $request, User $user, MobileTokenService $tokens): RedirectResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', Rule::in(['active', 'suspended'])],
+            'reason' => ['nullable', 'string', 'max:190'],
+        ]);
+
+        if ($user->is($request->user())) {
+            return back()->withErrors(['status' => 'You cannot suspend your own account.']);
+        }
+        if ($data['status'] === 'suspended' && $this->isLastAdmin($user)) {
+            return back()->withErrors(['status' => 'The only admin cannot be suspended.']);
+        }
+
+        $suspend = $data['status'] === 'suspended';
+        $user->forceFill([
+            'status' => $data['status'],
+            'suspended_reason' => $suspend ? ($data['reason'] ?? null) : null,
+            'suspended_at' => $suspend ? now() : null,
+        ])->save();
+
+        if ($suspend) {
+            $tokens->revokeAll($user);
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+        AdminAudit::record($suspend ? 'user.suspend' : 'user.restore', ['user_id' => $user->id]);
+
+        return back()->with('status', $suspend ? 'Account suspended and signed out everywhere.' : 'Account restored.');
     }
 
     public function updateRole(Request $request, User $user): RedirectResponse

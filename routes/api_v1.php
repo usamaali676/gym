@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AppConfigController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\MeController;
+use App\Http\Controllers\Api\V1\MembershipController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 // Public
 Route::middleware('throttle:v1-public')->group(function () {
     Route::get('/app/config', AppConfigController::class)->name('app.config');
+    Route::get('/membership/plans', [MembershipController::class, 'plans'])->name('membership.plans');
 });
 
 Route::middleware('throttle:v1-auth')->prefix('auth')->name('auth.')->group(function () {
@@ -42,6 +44,13 @@ Route::middleware(['auth:sanctum', 'api.active', 'api.touch', 'throttle:v1'])->g
         Route::post('/claim', [MeController::class, 'claim'])->name('claim');
         Route::post('/onboarding', [MeController::class, 'onboarding'])->name('onboarding');
         Route::get('/profile', [MeController::class, 'profile'])->name('profile');
+    });
+
+    Route::prefix('membership')->name('membership.')->group(function () {
+        Route::get('/', [MembershipController::class, 'show'])->name('show');
+        Route::get('/entitlements', [MembershipController::class, 'entitlements'])->name('entitlements');
+        Route::post('/purchases/verify', [MembershipController::class, 'verify'])->middleware('throttle:v1-purchases')->name('verify');
+        Route::post('/restore', [MembershipController::class, 'restore'])->middleware('throttle:v1-purchases')->name('restore');
     });
 
     // Everything below needs a finished profile.

@@ -70,6 +70,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Membership payments
+    |--------------------------------------------------------------------------
+    | Digital subscriptions bought inside the mobile apps must go through Apple / Google billing. The app sends the
+    | store receipt; a verifier here confirms it with the store. A store only appears as "available" once its
+    | verifier reports that its server credentials are configured. No verifier ships enabled: see
+    | docs/mobile/payments.md for what each store needs.
+    */
+    'payments' => [
+        'verifiers' => [
+            // 'apple' => \App\Services\Membership\AppleStoreVerifier::class,
+            // 'google' => \App\Services\Membership\GooglePlayVerifier::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Progressive overload
     |--------------------------------------------------------------------------
     | The plan says: add 1-2 reps OR add 2.5-5 kg each week.
