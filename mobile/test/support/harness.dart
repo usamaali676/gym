@@ -123,6 +123,10 @@ class TestWorld {
     server.reply('GET', '/programs/1', 200, {'data': programmeDetailJson()});
     server.on('GET', '/exercises', (o) => exercisePageReply(o));
     server.reply('GET', '/nutrition/day', 200, {'data': nutritionDayJson()});
+    server.reply('GET', '/progress/summary', 200, {'data': progressSummaryJson()});
+    server.reply('GET', '/progress/measurements', 200, {'data': [measurementJson(7, '2026-10-12', 80.2), measurementJson(6, '2026-10-04', 80.9, notes: 'After holiday')]});
+    server.reply('GET', '/progress/records', 200, {'data': recordsJson()});
+    server.reply('GET', '/achievements', 200, {'data': achievementsJson()});
   }
 }
 

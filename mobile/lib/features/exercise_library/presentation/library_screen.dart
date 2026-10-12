@@ -17,7 +17,10 @@ import 'library_controller.dart';
 
 /// Library tab: search and filter the exercise catalogue.
 class LibraryScreen extends ConsumerStatefulWidget {
-  const LibraryScreen({super.key});
+  const LibraryScreen({super.key, this.embedded = false});
+
+  /// Inside another screen (the Train tab): no safe area and no title of its own.
+  final bool embedded;
 
   @override
   ConsumerState<LibraryScreen> createState() => _LibraryScreenState();
@@ -82,14 +85,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final levels = config?.libraryChoices('difficulty') ?? const <ProfileOption>[];
     final f = state.filters;
 
-    return SafeArea(
-      bottom: false,
-      child: Column(children: [
+    final content = Column(children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+          padding: EdgeInsets.fromLTRB(20, widget.embedded ? 4 : 20, 20, 8),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('LIBRARY', style: IpText.eyebrow(color: IpColors.neon)),
-            const SizedBox(height: 10),
+            if (!widget.embedded) ...[Text('LIBRARY', style: IpText.eyebrow(color: IpColors.neon)), const SizedBox(height: 10)],
             TextField(
               controller: _search,
               onChanged: controller.search,
@@ -125,8 +125,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         ),
         if (state.fromCache) const OfflineBanner(),
         Expanded(child: _body(context, state, controller)),
-      ]),
-    );
+      ]);
+    return widget.embedded ? content : SafeArea(bottom: false, child: content);
   }
 
   Widget _body(BuildContext context, LibraryState state, LibraryController controller) {

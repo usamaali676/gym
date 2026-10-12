@@ -11,7 +11,6 @@ import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/register_screen.dart';
 import '../features/authentication/presentation/welcome_screen.dart';
 import '../features/exercise_library/presentation/exercise_detail_screen.dart';
-import '../features/exercise_library/presentation/library_screen.dart';
 import '../features/home/presentation/account_screen.dart';
 import '../features/home/presentation/app_shell.dart';
 import '../features/membership/presentation/membership_screen.dart';
@@ -19,6 +18,8 @@ import '../features/nutrition/presentation/food_amount_screen.dart';
 import '../features/nutrition/presentation/food_search_screen.dart';
 import '../features/nutrition/presentation/nutrition_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/progress/presentation/progress_screen.dart';
+import '../features/progress/presentation/strength_screen.dart';
 import '../features/workout_programs/presentation/day_detail_screen.dart';
 import '../features/workout_sessions/presentation/workout_screen.dart';
 import '../features/workout_sessions/presentation/workout_summary_screen.dart';
@@ -40,6 +41,8 @@ abstract final class Routes {
   static const train = '/train';
   static const trainDay = '/train/day';
   static const programme = '/train/programme';
+  static const progress = '/progress';
+  static const strength = '/progress/strength';
   static const library = '/library';
   static const workout = '/workout';
   static const fuel = '/fuel';
@@ -51,7 +54,7 @@ abstract final class Routes {
   static const signedOutPages = {welcome, login, register, forgotPassword};
 
   /// The signed-in app. Feature routes added later live under one of these prefixes.
-  static const signedInAreas = [home, train, fuel, library, account, membership, workout];
+  static const signedInAreas = [home, train, fuel, progress, library, account, membership, workout];
 
   static bool inSignedInArea(String location) => signedInAreas.any(location.startsWith);
 }
@@ -122,6 +125,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      GoRoute(path: '${Routes.strength}/:slug', builder: (_, state) => StrengthScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.workout}/:id', builder: (_, state) => WorkoutScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.workout}/:id/summary', builder: (_, state) => WorkoutSummaryScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.exercise}/:slug', builder: (_, state) => ExerciseDetailScreen(slug: state.pathParameters['slug'] ?? '')),
@@ -132,7 +136,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [GoRoute(path: Routes.home, builder: (_, _) => const DashboardScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.train, builder: (_, _) => const TrainScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.fuel, builder: (_, _) => const NutritionScreen())]),
-          StatefulShellBranch(routes: [GoRoute(path: Routes.library, builder: (_, _) => const LibraryScreen())]),
+          StatefulShellBranch(routes: [GoRoute(path: Routes.progress, builder: (_, _) => const ProgressScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen())]),
         ],
       ),

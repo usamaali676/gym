@@ -178,7 +178,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('train_week.png'));
 
-    await tester.tap(find.text('LIBRARY'));
+    await tester.tap(find.text('Exercises'));
     await pumpUntil(tester, find.text('Exercise 1'));
     await tester.pump(const Duration(milliseconds: 400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('library.png'));

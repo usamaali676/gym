@@ -22,6 +22,7 @@ import 'package:ironpulse/features/exercise_library/data/exercise_repository.dar
 import 'package:ironpulse/features/exercise_library/domain/exercise.dart';
 import 'package:ironpulse/features/membership/data/membership_repository.dart';
 import 'package:ironpulse/features/nutrition/data/nutrition_repository.dart';
+import 'package:ironpulse/features/progress/data/progress_repository.dart';
 import 'package:ironpulse/features/workout_programs/data/plan_repository.dart';
 import 'package:ironpulse/features/workout_sessions/data/session_repository.dart';
 import 'package:ironpulse/features/workout_sessions/domain/session_engine.dart';
@@ -223,6 +224,28 @@ void main() {
     // ---- finished work shows on the dashboard / week
     final after = (await planRepo.week()).data;
     expect(after.done, greaterThanOrEqualTo(1));
+
+    // ---- progress: a measurement, the server's own numbers, records, strength curve and badges
+    final progress = ProgressRepository(api: api, cache: cache);
+    await progress.saveMeasurement(date: DateTime.now(), weightKg: 80.5, bodyFatPct: 18.2, waistCm: 85);
+    final measurements = (await progress.measurements()).data;
+    expect(measurements, hasLength(1));
+    expect(measurements.single.weightKg, 80.5);
+    final overview = (await progress.summary()).data;
+    expect(overview.latest?.weightKg, 80.5);
+    expect(overview.weightPoints, hasLength(1));
+    if (overview.bmi != null) expect(overview.bmiCategory, isNotNull);
+    final records = (await progress.records()).data; // one logged set: it may or may not count as a record yet
+    for (final r in records) {
+      expect(r.slug, isNotEmpty);
+    }
+    if (records.isNotEmpty) expect((await progress.strength(records.first.slug)).data.points, isNotNull);
+    final badges = (await progress.achievements()).data;
+    expect(badges.badges, isNotEmpty);
+    expect(badges.level, greaterThanOrEqualTo(1));
+    expect(badges.xpTotal, greaterThan(0), reason: 'finishing a workout earned XP');
+    await progress.deleteMeasurement(measurements.single.id);
+    expect((await progress.measurements()).data, isEmpty);
 
     // ---- the server refuses what it should
     await expectLater(api.get('/me', auth: false), throwsA(isA<ApiError>().having((e) => e.kind, 'kind', ApiErrorKind.unauthenticated)));

@@ -15,7 +15,9 @@ Future<void> openLibrary(WidgetTester tester, TestWorld w) async {
   await w.storeSession();
   await pumpApp(tester, w);
   await pumpUntilHome(tester);
-  await tester.tap(find.text('LIBRARY'));
+  await tester.tap(find.text('TRAIN'));
+  await pumpUntil(tester, find.text('Exercises'));
+  await tester.tap(find.text('Exercises'));
   await pumpUntil(tester, find.text('Exercise 1'));
 }
 
@@ -244,7 +246,9 @@ void main() {
       await w.storeSession();
       await pumpApp(tester, w);
       await pumpUntilHome(tester);
-      await tester.tap(find.text('LIBRARY'));
+      await tester.tap(find.text('TRAIN'));
+      await pumpUntil(tester, find.text('Exercises'));
+      await tester.tap(find.text('Exercises'));
       await pumpUntil(tester, find.text('Something went wrong'));
 
       w.server.on('GET', '/exercises', (o) => exercisePageReply(o));

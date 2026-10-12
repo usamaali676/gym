@@ -509,3 +509,51 @@ Map<String, dynamic> nutritionDayJson({String date = '2026-10-12', List<Map<Stri
         {'meal': 'dinner', 'label': 'Dinner', 'kcal': 0, 'protein_g': 0, 'entries': []},
       ],
     };
+
+// -------------------------------------------------------------------------------------------------- progress
+
+Map<String, dynamic> measurementJson(int id, String date, double weight, {double? fat = 18.5, double? waist = 85, String? notes}) =>
+    {'id': id, 'measured_on': date, 'weight_kg': weight, 'body_fat_pct': fat, 'notes': notes, 'neck_cm': null, 'shoulders_cm': null, 'chest_cm': null, 'waist_cm': waist, 'hips_cm': null, 'bicep_left_cm': null, 'bicep_right_cm': null, 'thigh_cm': null, 'calf_cm': null};
+
+Map<String, dynamic> progressSummaryJson({bool points = true}) => {
+      'latest': measurementJson(7, '2026-10-12', 80.2),
+      'weight_points': points
+          ? [
+              {'date': '2026-09-20', 'weight_kg': 82.0},
+              {'date': '2026-09-27', 'weight_kg': 81.4},
+              {'date': '2026-10-04', 'weight_kg': 80.9},
+              {'date': '2026-10-12', 'weight_kg': 80.2},
+            ]
+          : [],
+      'target_weight_kg': 78.0,
+      'change_30d_kg': -1.8,
+      'trend_per_week_kg': -0.57,
+      'bmi': 25.3,
+      'bmi_category': 'Overweight range',
+      'body_fat_pct': 18.5,
+      'body_fat_source': 'logged',
+      'lean_kg': 65.4,
+    };
+
+Map<String, dynamic> achievementsJson() => {
+      'xp': {'total': 130, 'level': 2, 'into': 30, 'needed': 300, 'pct': 0.1, 'next_at': 400},
+      'streak': {'current': 2, 'longest': 4},
+      'earned_count': 1,
+      'badges': [
+        {'slug': 'workouts-10', 'name': 'Getting Serious', 'description': 'Finish 10 workouts.', 'icon': 'dumbbell', 'category': 'training', 'tier': 'bronze', 'xp_reward': 25, 'earned': false, 'awarded_at': null, 'progress': {'value': 3, 'target': 10, 'pct': 0.3}},
+        {'slug': 'first-workout', 'name': 'First Workout', 'description': 'Finish your first workout.', 'icon': 'dumbbell', 'category': 'training', 'tier': 'bronze', 'xp_reward': 25, 'earned': true, 'awarded_at': '2026-10-05T10:00:00+00:00', 'progress': {'value': 1, 'target': 1, 'pct': 1}},
+        {'slug': 'streak-7', 'name': '7-Day Streak', 'description': 'Train 7 scheduled days in a row.', 'icon': 'flame', 'category': 'training', 'tier': 'silver', 'xp_reward': 50, 'earned': false, 'awarded_at': null, 'progress': {'value': 2, 'target': 7, 'pct': 0.29}},
+      ],
+    };
+
+List<Map<String, dynamic>> recordsJson() => [
+      {
+        'exercise': {'id': 1, 'slug': 'flat-barbell-bench-press', 'name': 'Flat Barbell Bench Press'},
+        'records': {
+          'best_set_volume': {'value': 400, 'weight_kg': 50, 'previous': null, 'achieved_at': '2026-10-12T18:51:46+00:00'},
+          'est_1rm': {'value': 63.33, 'weight_kg': 50, 'previous': null, 'achieved_at': '2026-10-12T18:51:46+00:00'},
+          'max_weight': {'value': 50, 'weight_kg': 50, 'previous': null, 'achieved_at': '2026-10-12T18:51:46+00:00'},
+        },
+        'latest': '2026-10-12T18:51:46+00:00',
+      },
+    ];

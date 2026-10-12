@@ -47,6 +47,7 @@ dependencies:
   flutter_timezone: ^5.1.1
   intl: ^0.20.3
   wakelock_plus: ^1.8.1
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
