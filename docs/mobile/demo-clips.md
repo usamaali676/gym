@@ -46,13 +46,21 @@ php artisan exercises:import-demos storage/app/demo-render                      
 You can also upload a clip of your own for an exercise in the admin (Exercises → media): real footage replaces a rendered
 loop for that exercise and view with no other change, and the app plays it the same way.
 
-## Size and time
+## Size and time (measured)
 
-Measured on this repository's 85 exercises, one 640 × 640 clip per exercise at 30 fps: see the table at the end of this file
-(filled in from a real run). Rendering with software WebGL takes roughly a minute per exercise; use `--only` for a subset.
-Phones stream the clip from the signed URL. It is **not saved on the phone**, so with no connection the clip does not play:
-the member sees the poster if the platform still has it in its image cache, otherwise a plain dark panel, and the
-"could not be loaded" message with *Try again* once playback is attempted.
+A full local run over this repository's 85 exercises, one 640 × 640 clip per exercise (45° view) at 30 fps, **85 clips, none
+skipped**: 5.7 MB of video in total (average 68 KB, largest 166 KB, 3.4 to 4.4 seconds each) plus 3.0 MB of poster images, and
+**about 18 minutes** with software WebGL on a shared 1-CPU container (use `--only` for a subset). Three views per exercise
+would be about three times that. Phones stream a clip when the exercise page opens (tens of kilobytes), so the cost to the
+member is small; the cost to the server is one small file per exercise and view.
+
+The clips are **not saved on the phone**, so with no connection a clip does not play: the member sees the poster if the
+platform still has it in its image cache, otherwise a plain dark panel, and a "could not be loaded" message with *Try again*
+once playback is attempted.
+
+Framing is the website's own (it is chosen so the equipment stays in view), so the figure fills about two thirds of the
+square with the floor ring cropped at the edges. A contact sheet of twelve of the posters was looked at: figures and
+equipment are drawn as on the website, the muscle highlights are visible, nothing was cut off. All 85 were not viewed.
 
 ## How it is verified
 
