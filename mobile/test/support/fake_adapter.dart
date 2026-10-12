@@ -324,7 +324,7 @@ Map<String, dynamic> programmeDetailJson({int id = 1, bool selected = true}) => 
       ],
     };
 
-Map<String, dynamic> exerciseJson(int id, {String? name, String muscle = 'chest', String difficulty = 'beginner', bool locked = false, bool full = false, bool posture = false}) {
+Map<String, dynamic> exerciseJson(int id, {String? name, String muscle = 'chest', String difficulty = 'beginner', bool locked = false, bool full = false, bool posture = false, List<Map<String, dynamic>> media = const []}) {
   final base = {
     'id': id,
     'slug': 'exercise-$id',
@@ -354,7 +354,7 @@ Map<String, dynamic> exerciseJson(int id, {String? name, String muscle = 'chest'
     'common_mistakes': ['Bouncing the bar', 'Flaring elbows'],
     'breathing': 'Inhale down, exhale up.',
     'demo_key': 'bench-press',
-    'media': [],
+    'media': media,
     'posture': posture ? {'supported': true, 'tier': 'tier1', 'camera_view': 'side', 'rule_version': 1} : {'supported': false},
   };
 }

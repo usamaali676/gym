@@ -13,6 +13,7 @@ import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../membership/presentation/locked_view.dart';
 import '../domain/exercise.dart';
+import 'demo_clip.dart';
 import 'library_controller.dart';
 
 final exerciseDetailProvider = FutureProvider.family<Loaded<Exercise>, String>((ref, slug) => ref.watch(exerciseRepositoryProvider).exercise(slug));
@@ -50,6 +51,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
               ];
             }
             return [
+              DemoClips(media: e.media, exerciseName: e.name),
+              if (DemoClips.playable(e.media).isNotEmpty) const SizedBox(height: 16),
               Text(e.name, style: IpText.display(22, color: IpColors.ink)),
               const SizedBox(height: 10),
               Wrap(spacing: 6, runSpacing: 6, children: [

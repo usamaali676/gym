@@ -246,6 +246,8 @@ jobs:
           php artisan key:generate
           touch database/database.sqlite
           php artisan migrate:fresh --seed --force
+          # a tiny test-pattern clip for the bench press, so the app's video path meets a real signed media URL
+          php artisan exercises:import-demos tests/fixtures/demo-clips
           nohup php artisan serve --host=127.0.0.1 --port=8123 > /tmp/serve.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8123/api/v1/app/config > /dev/null && break; sleep 1; done
 
@@ -286,3 +288,45 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  demo-clips:
+    # Proves the clip pipeline end to end on a clean machine: the website's own 3D viewer, driven one frame at a time in
+    # headless Chromium (software GL), encoded to H.264 by ffmpeg, then inspected. Two exercises only; the full set takes
+    # about a minute per exercise with software rendering.
+    name: Demo clip rendering
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm i --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Render two clips
+        run: node scripts/render-exercise-demos.mjs --only=bodyweight-squat,push-up --views=angle,side --out=build-demo-clips
+
+      - name: Inspect the clips
+        run: |
+          set -e
+          test "$(jq '.clips | length' build-demo-clips/index.json)" = "4"
+          for f in build-demo-clips/*.mp4; do
+            read -r codec w h pix < <(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt -of csv=p=0:s=' ' "$f")
+            echo "$f: $codec ${w}x${h} $pix, $(du -k "$f" | cut -f1) KB"
+            test "$codec" = h264 && test "$w" = 640 && test "$h" = 640 && test "$pix" = yuv420p
+          done
+          # a figure was drawn: the poster is not a flat background (a flat JPEG compresses to a few KB)
+          for f in build-demo-clips/*.jpg; do test "$(stat -c %s "$f")" -gt 12000; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-clips-sample
+          path: build-demo-clips
+          retention-days: 7

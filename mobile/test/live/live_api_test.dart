@@ -27,6 +27,7 @@ import 'package:ironpulse/features/authentication/domain/auth_user.dart';
 import 'package:ironpulse/features/dashboard/data/dashboard_repository.dart';
 import 'package:ironpulse/features/exercise_library/data/exercise_repository.dart';
 import 'package:ironpulse/features/exercise_library/domain/exercise.dart';
+import 'package:ironpulse/features/exercise_library/presentation/demo_clip.dart';
 import 'package:ironpulse/features/membership/data/membership_repository.dart';
 import 'package:ironpulse/features/nutrition/data/nutrition_repository.dart';
 import 'package:ironpulse/features/posture/data/posture_repository.dart';
@@ -169,6 +170,23 @@ void main() {
     expect(filtered.items.every((e) => e.muscleGroup == 'chest'), isTrue);
     final one = (await library.exercise(page.items.first.slug)).data;
     expect(one.name, page.items.first.name);
+
+    // ---- a demonstration clip: needs `php artisan exercises:import-demos tests/fixtures/demo-clips` on the server
+    final withClip = (await library.exercise('flat-barbell-bench-press')).data;
+    final clips = DemoClips.playable(withClip.media);
+    expect(clips, hasLength(1), reason: 'the fixture clip was imported on the server');
+    expect((clips.single.view, clips.single.mime, clips.single.durationMs), ('angle', 'video/mp4', 1000));
+    final http = HttpClient();
+    try {
+      final reply = await (await http.getUrl(Uri.parse(clips.single.url))).close();
+      expect(reply.statusCode, 200, reason: 'the signed address works without a token');
+      final bytes = [for (final chunk in await reply.toList()) ...chunk];
+      expect(bytes.length, greaterThan(100));
+      expect(utf8.decode(bytes.sublist(4, 8), allowMalformed: true), 'ftyp', reason: 'it is an MP4 container');
+    } finally {
+      http.close(force: true);
+    }
+    expect(withClip.media.where((m) => m.kind == 'thumbnail'), hasLength(1));
 
     // ---- nutrition: targets on first view, search, the server's calculation, logging, editing, removing
     final nutrition = NutritionRepository(api: api, cache: cache);

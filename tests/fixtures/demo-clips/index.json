@@ -1,0 +1,19 @@
+{
+  "note": "Tiny test pattern (not an exercise demonstration) used to test the import and the apps' video path.",
+  "clips": [
+    {
+      "slug": "flat-barbell-bench-press",
+      "view": "angle",
+      "video": "flat-barbell-bench-press-angle.mp4",
+      "poster": "flat-barbell-bench-press-angle.jpg",
+      "width": 64,
+      "height": 64,
+      "duration_ms": 1000,
+      "bytes": 2321,
+      "sha256": "2401304fee92e6d7c6b8b2d23ef47230e6a8bca545a758924710462516fe1448",
+      "poster_bytes": 1368,
+      "poster_sha256": "c5229507f3a66aeeed5abcddcf781d1381983aa980f9ca81c0618768124b9b71"
+    }
+  ],
+  "skipped": []
+}
