@@ -1,3 +1,5 @@
+import '../../../core/policy/app_config.dart';
+
 /// Client-side checks that only save a round trip. The server validates everything again and its messages win.
 abstract final class AuthValidators {
   static final _email = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
@@ -16,10 +18,6 @@ abstract final class AuthValidators {
     return null;
   }
 
-  /// Laravel's default password rule is at least 8 characters.
-  static String? newPassword(String? v) {
-    final value = v ?? '';
-    if (value.length < 8) return 'Use at least 8 characters.';
-    return null;
-  }
+  /// The password rule comes from the server (`/app/config` -> `auth.password`); the server checks it again.
+  static String? newPassword(String? v, [PasswordPolicy policy = PasswordPolicy.fallback]) => policy.check(v ?? '');
 }

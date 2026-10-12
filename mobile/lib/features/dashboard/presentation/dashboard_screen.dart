@@ -14,6 +14,7 @@ import '../../../core/widgets/status_chip.dart';
 import '../../authentication/presentation/auth_controller.dart';
 import '../../membership/presentation/locked_view.dart';
 import '../../membership/presentation/membership_providers.dart';
+import '../../workout_sessions/presentation/workout_actions.dart';
 import '../domain/dashboard.dart';
 import 'dashboard_providers.dart';
 
@@ -76,12 +77,12 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _TodayCard extends StatelessWidget {
+class _TodayCard extends ConsumerWidget {
   const _TodayCard({required this.d});
   final Dashboard d;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final w = d.workout;
 
     if (!d.entitlements.allows('workouts')) return const LockedView(entitlementKey: 'workouts', compact: true);
@@ -118,6 +119,16 @@ class _TodayCard extends StatelessWidget {
               const SizedBox(width: 6),
               Text('About ${w.estimatedMinutes} min', style: IpText.body(13.5, color: IpColors.muted)),
             ]),
+          if (!w.isRest && !w.isCompleted && w.status != 'skipped') ...[
+            const SizedBox(height: 14),
+            NeonButton(
+              label: w.openSessionId != null ? 'Resume workout' : 'Start workout',
+              size: NeonButtonSize.large,
+              expand: true,
+              icon: Icons.play_arrow,
+              onPressed: () => startOrResumeWorkout(context, ref, openSessionId: w.openSessionId), // no weekday: the server decides what "today" is
+            ),
+          ],
         ],
       ]),
     );

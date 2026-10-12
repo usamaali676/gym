@@ -85,6 +85,25 @@ void main() {
       expect(w.server.adapter.requests, isEmpty);
     });
 
+    testWidgets("explains the server's password rule up front and checks it before sending", (tester) async {
+      final w = await TestWorld.create();
+      w.server.reply('GET', '/app/config', 200, {'data': configJson()});
+      await pumpApp(tester, w);
+      await pumpUntil(tester, find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await pumpUntil(tester, find.text('Create your account'));
+
+      expect(find.text('At least 8 characters, with letters and numbers.'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextFormField).at(0), 'Sam');
+      await tester.enterText(find.byType(TextFormField).at(1), 'sam@example.com');
+      await tester.enterText(find.byType(TextFormField).at(2), 'onlyletters');
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pump();
+      expect(find.text('Add at least one number.'), findsOneWidget);
+      expect(w.server.log, isNot(contains('POST /auth/register')));
+    });
+
     testWidgets('the server reports an email that is already registered', (tester) async {
       final w = await TestWorld.create();
       w.server.reply('POST', '/auth/register', 422, errorJson('validation_failed', 'The given data was invalid.', details: {'email': ['The email has already been taken.']}));

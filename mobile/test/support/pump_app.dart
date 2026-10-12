@@ -41,4 +41,7 @@ Future<void> pumpScreen(WidgetTester tester, TestWorld world, Widget screen) asy
 }
 
 /// The signed-in home is ready once the dashboard has loaded (its header shows while loading).
-Future<void> pumpUntilHome(WidgetTester tester) => pumpUntil(tester, find.text('DAY STREAK'));
+Future<void> pumpUntilHome(WidgetTester tester) async {
+  await pumpUntil(tester, find.text('DAY STREAK'));
+  await tester.pump(const Duration(milliseconds: 300)); // let any refresh that started with the screen finish
+}

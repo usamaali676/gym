@@ -157,3 +157,17 @@ it('publishes the library filter choices', function () {
         ->and(collect($options['difficulty'])->pluck('value')->all())->toBe(Difficulty::values())
         ->and($options['muscle'][0])->toHaveKeys(['value', 'label']);
 });
+
+it('publishes the password policy and enforces the same one on registration', function () {
+    $policy = $this->getJson('/api/v1/app/config')->json('data.auth.password');
+
+    expect($policy)->toBe(['min' => 8, 'letters' => true, 'numbers' => true]);
+
+    $device = ['installation_id' => 'policy-test-installation-01', 'platform' => 'android', 'app_version' => '1.0.0'];
+    $this->postJson('/api/v1/auth/register', ['name' => 'A', 'email' => 'policy@example.com', 'password' => 'lettersonly', 'device' => $device])
+        ->assertStatus(422)->assertJsonPath('error.details.password.0', fn ($m) => str_contains($m, 'number'));
+
+    config(['ironpulse.password.numbers' => false]);
+    $this->postJson('/api/v1/auth/register', ['name' => 'A', 'email' => 'policy@example.com', 'password' => 'lettersonly', 'device' => $device])
+        ->assertCreated();
+});

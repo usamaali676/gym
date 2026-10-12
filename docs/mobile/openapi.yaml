@@ -5711,6 +5711,15 @@ components:
               type: integer
             refresh_window_days:
               type: integer
+            password:
+              type: object
+              properties:
+                min:
+                  type: integer
+                letters:
+                  type: boolean
+                numbers:
+                  type: boolean
         features:
           type: object
           properties:

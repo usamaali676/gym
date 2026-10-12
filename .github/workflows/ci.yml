@@ -165,6 +165,43 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  app-api-contract:
+    name: App against the real API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pdo, pdo_sqlite, sqlite3, gd, exif, fileinfo
+          coverage: none
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Start the backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate:fresh --seed --force
+          nohup php artisan serve --host=127.0.0.1 --port=8123 > /tmp/serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8123/api/v1/app/config > /dev/null && break; sleep 1; done
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+          cache: true
+
+      # Signs up, onboards, browses, runs a whole workout and signs out through the app's own repositories, so a
+      # change to the API that the app does not understand fails here and not on a member's phone.
+      - name: Live contract test
+        working-directory: mobile
+        run: |
+          flutter pub get
+          flutter test test/live --dart-define=LIVE_API_URL=http://127.0.0.1:8123
+
   javascript:
     name: JavaScript
     runs-on: ubuntu-latest

@@ -9,6 +9,7 @@ import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
+import '../../workout_sessions/presentation/workout_actions.dart';
 import '../domain/plan.dart';
 import 'exercise_tile.dart';
 import 'plan_providers.dart';
@@ -99,6 +100,17 @@ class _DayDetailScreenState extends ConsumerState<DayDetailScreen> {
         ]),
       ),
       const SizedBox(height: 14),
+      if (d.canAct && !d.header.isRest && d.status != 'completed' && d.status != 'skipped')
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: NeonButton(
+            label: d.status == 'in_progress' || d.session?.status == 'in_progress' || d.session?.status == 'paused' ? 'Resume workout' : 'Start workout',
+            size: NeonButtonSize.large,
+            expand: true,
+            icon: Icons.play_arrow,
+            onPressed: () => startOrResumeWorkout(context, ref, weekday: d.weekday, date: d.date, openSessionId: (d.session?.status == 'in_progress' || d.session?.status == 'paused') ? d.session!.id : null),
+          ),
+        ),
       if (d.status == 'skipped' && d.canAct)
         NeonButton(label: 'Undo skip', variant: NeonButtonVariant.ghost, expand: true, loading: _busy, onPressed: () => _run(() => repo.unskipDay(d.weekday, d.date)))
       else if (d.canAct && d.status != 'completed' && !d.header.isRest)

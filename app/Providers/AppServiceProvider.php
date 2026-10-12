@@ -46,7 +46,17 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::defaultView('vendor.pagination.neon');
 
-        Password::defaults(fn () => Password::min(8)->letters()->numbers());
+        Password::defaults(function () {
+            $policy = config('ironpulse.password');
+            $rule = Password::min((int) $policy['min']);
+
+            return match (true) {
+                $policy['letters'] && $policy['numbers'] => $rule->letters()->numbers(),
+                (bool) $policy['letters'] => $rule->letters(),
+                (bool) $policy['numbers'] => $rule->numbers(),
+                default => $rule,
+            };
+        });
 
         $key = fn (Request $request) => $request->user()?->id ?: $request->ip();
 

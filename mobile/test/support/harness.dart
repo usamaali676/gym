@@ -11,6 +11,8 @@ import 'package:ironpulse/core/authentication/token_store.dart';
 import 'package:ironpulse/core/device/device_identity.dart';
 import 'package:ironpulse/core/providers.dart';
 import 'package:ironpulse/core/storage/secure_store.dart';
+import 'package:ironpulse/core/utilities/clock.dart';
+import 'package:ironpulse/core/utilities/device_feedback.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_adapter.dart';
@@ -62,6 +64,10 @@ class TestWorld {
   final MemorySecureStore store;
   final SharedPreferences prefs;
 
+  /// Time the workout engine sees. Advance it to simulate the phone sitting in a pocket.
+  final TestClock clock = TestClock();
+  final SilentDeviceFeedback feedback = SilentDeviceFeedback();
+
   static Future<TestWorld> create({Map<String, Object> prefs = const {}}) async {
     SharedPreferences.setMockInitialValues(prefs);
     return TestWorld._(FakeServer(), MemorySecureStore(), await SharedPreferences.getInstance());
@@ -72,6 +78,8 @@ class TestWorld {
     sharedPreferencesProvider.overrideWithValue(prefs),
     secureStoreProvider.overrideWithValue(store),
     deviceIdentityProvider.overrideWithValue(FakeDeviceIdentity()),
+    clockProvider.overrideWithValue(clock.call),
+    deviceFeedbackProvider.overrideWithValue(feedback),
     sessionManagerProvider.overrideWith((ref) {
       final m = SessionManager(store: ref.watch(tokenStoreProvider), refreshDio: buildDio(testEnv, adapter: server.adapter));
       ref.onDispose(m.dispose);
@@ -122,4 +130,70 @@ Future<void> settle() async {
   for (var i = 0; i < 60; i++) {
     await Future<void>.delayed(Duration.zero);
   }
+}
+
+/// A controllable wall clock for workout timers.
+class TestClock {
+  TestClock([DateTime? start]) : now = start ?? DateTime.utc(2026, 10, 12, 18);
+  DateTime now;
+
+  void advance(Duration d) => now = now.add(d);
+  DateTime call() => now;
+}
+
+/// A tiny in-memory workout backend: logs sets, remembers the saved state, finishes and abandons.
+class FakeWorkoutBackend {
+  FakeWorkoutBackend(this.server, {Map<String, dynamic>? session}) : session = session ?? sessionJson() {
+    server.on('POST', '/workout-sessions', (o) => FakeReply.json(201, {'data': this.session}));
+    server.on('GET', '/workout-sessions/1', (o) => FakeReply.json(200, {'data': this.session}));
+    server.on('GET', '/workout-sessions/active', (o) => FakeReply.json(200, {'data': this.session}));
+    server.on('POST', '/workout-sessions/1/sets', (o) {
+      final body = Map<String, dynamic>.from(o.data as Map);
+      setPosts.add(body);
+      if (failSets > 0) {
+        failSets--;
+        return FakeReply.json(500, errorJson('server_error', 'The set could not be saved.'));
+      }
+      final exercises = List<Map<String, dynamic>>.from((this.session['exercises'] as List).map((e) => Map<String, dynamic>.from(e as Map)));
+      final i = exercises.indexWhere((e) => e['id'] == body['session_exercise_id']);
+      final sets = List<Map<String, dynamic>>.from(exercises[i]['sets'] as List);
+      final set = {'id': 500 + setPosts.length, 'number': body['set_number'], 'weight_kg': body['weight_kg'], 'reps': body['reps'], 'duration_seconds': body['duration_seconds'], 'rpe': null, 'is_warmup': false, 'is_pr': setPosts.length == 2, 'completed_at': '2026-10-12T18:05:00+00:00'};
+      sets.removeWhere((s) => s['number'] == body['set_number']);
+      sets.add(set);
+      exercises[i] = {...exercises[i], 'sets': sets, 'status': sets.length >= (exercises[i]['target_sets'] as int) ? 'done' : 'pending'};
+      this.session = {...this.session, 'exercises': exercises};
+      return FakeReply.json(201, {'data': {'set': set, 'exercise_status': exercises[i]['status'], 'is_pr': set['is_pr'], 'personal_records': [], 'xp': 10, 'totals': {}}});
+    });
+    server.on('PUT', '/workout-sessions/1/state', (o) {
+      statePuts.add(Map<String, dynamic>.from((o.data as Map)['state'] as Map));
+      return FakeReply.json(200, {'data': {'applied': true}});
+    });
+    server.on('POST', '/workout-sessions/1/exercises/1/skip', (o) {
+      skips.add(1);
+      final exercises = List<Map<String, dynamic>>.from((this.session['exercises'] as List).map((e) => Map<String, dynamic>.from(e as Map)));
+      exercises[0]['status'] = 'skipped';
+      this.session = {...this.session, 'exercises': exercises};
+      return FakeReply.json(200, {'data': {'ok': true}});
+    });
+    server.on('POST', '/workout-sessions/1/finish', (o) {
+      finishPosts.add(Map<String, dynamic>.from(o.data as Map));
+      return FakeReply.json(200, {'data': {'ok': true, 'session_id': 1, 'status': 'completed'}});
+    });
+    server.on('POST', '/workout-sessions/1/abandon', (o) {
+      abandons++;
+      return FakeReply.json(200, {'data': {'ok': true, 'status': 'abandoned'}});
+    });
+    server.reply('GET', '/workout-sessions/1/summary', 200, {'data': summaryJson()});
+  }
+
+  final FakeServer server;
+  Map<String, dynamic> session;
+  final List<Map<String, dynamic>> setPosts = [];
+  final List<Map<String, dynamic>> statePuts = [];
+  final List<int> skips = [];
+  final List<Map<String, dynamic>> finishPosts = [];
+  int abandons = 0;
+
+  /// The next N set requests fail with a server error.
+  int failSets = 0;
 }

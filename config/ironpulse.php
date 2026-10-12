@@ -9,6 +9,19 @@ return [
     | Lets a visitor try the app without registering. A guest is a real user
     | row (is_guest = true) that can later be "claimed" with an email/password.
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Password policy
+    |--------------------------------------------------------------------------
+    | One definition for the website, the API and the apps (published in /api/v1/app/config so the apps can explain it
+    | before sending anything). The server always re-checks.
+    */
+    'password' => [
+        'min' => 8,
+        'letters' => true,
+        'numbers' => true,
+    ],
+
     'guest_mode' => (bool) env('IRONPULSE_GUEST_MODE', true),
     // Guests nobody has come back to for this many days are deleted by `ironpulse:prune-guests`.
     'guest_ttl_days' => (int) env('IRONPULSE_GUEST_TTL_DAYS', 30),

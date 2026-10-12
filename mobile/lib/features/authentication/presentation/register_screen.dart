@@ -7,10 +7,12 @@ import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
+import '../../../core/policy/policy_controller.dart';
 import '../../../core/widgets/brand.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/neon_text_field.dart';
+import '../../../core/policy/app_config.dart';
 import 'auth_controller.dart';
 import 'auth_validators.dart';
 
@@ -62,6 +64,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final policy = ref.watch(policyControllerProvider).config?.password ?? PasswordPolicy.fallback;
     return Scaffold(
       appBar: AppBar(leading: BackButton(onPressed: () => context.go(Routes.welcome))),
       body: SafeArea(
@@ -102,8 +105,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.newPassword],
                   onSubmitted: (_) => _submit(),
-                  validator: AuthValidators.newPassword,
-                  helper: 'At least 8 characters.',
+                  validator: (v) => AuthValidators.newPassword(v, policy),
+                  helper: policy.hint,
                   errorText: _server['password'],
                   suffix: IconButton(
                     tooltip: _show ? 'Hide password' : 'Show password',

@@ -17,6 +17,8 @@ import '../features/home/presentation/app_shell.dart';
 import '../features/membership/presentation/membership_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/workout_programs/presentation/day_detail_screen.dart';
+import '../features/workout_sessions/presentation/workout_screen.dart';
+import '../features/workout_sessions/presentation/workout_summary_screen.dart';
 import '../features/workout_programs/presentation/programme_detail_screen.dart';
 import '../features/workout_programs/presentation/train_screen.dart';
 
@@ -36,13 +38,14 @@ abstract final class Routes {
   static const trainDay = '/train/day';
   static const programme = '/train/programme';
   static const library = '/library';
+  static const workout = '/workout';
   static const exercise = '/library/exercise';
 
   /// Pages a signed-out visitor may see.
   static const signedOutPages = {welcome, login, register, forgotPassword};
 
   /// The signed-in app. Feature routes added later live under one of these prefixes.
-  static const signedInAreas = [home, train, library, account, membership];
+  static const signedInAreas = [home, train, library, account, membership, workout];
 
   static bool inSignedInArea(String location) => signedInAreas.any(location.startsWith);
 }
@@ -95,6 +98,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '${Routes.trainDay}/:weekday',
         builder: (_, state) => DayDetailScreen(weekday: int.tryParse(state.pathParameters['weekday'] ?? '') ?? 1, date: state.uri.queryParameters['date']),
       ),
+      GoRoute(path: '${Routes.workout}/:id', builder: (_, state) => WorkoutScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
+      GoRoute(path: '${Routes.workout}/:id/summary', builder: (_, state) => WorkoutSummaryScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.exercise}/:slug', builder: (_, state) => ExerciseDetailScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.programme}/:id', builder: (_, state) => ProgrammeDetailScreen(programmeId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       StatefulShellRoute.indexedStack(

@@ -8,6 +8,7 @@ class AppConfig {
     required this.releaseNotes,
     required this.maintenance,
     required this.guestMode,
+    required this.password,
     required this.paymentProviders,
     required this.pushEnabled,
     required this.coachEnabled,
@@ -25,6 +26,9 @@ class AppConfig {
   final String? releaseNotes;
   final Maintenance? maintenance;
   final bool guestMode;
+
+  /// What a new password must contain (the server re-checks).
+  final PasswordPolicy password;
   final List<String> paymentProviders;
   final bool pushEnabled;
   final bool coachEnabled;
@@ -83,6 +87,7 @@ class AppConfig {
             )
           : null,
       guestMode: auth['guest_mode'] == true,
+      password: PasswordPolicy.fromJson(auth['password']),
       paymentProviders: [for (final p in (features['payments'] as List? ?? const [])) p.toString()],
       pushEnabled: features['push'] == true,
       coachEnabled: features['coach'] == true,
@@ -135,4 +140,33 @@ class EntitlementInfo {
   final String key;
   final String label;
   final String description;
+}
+
+class PasswordPolicy {
+  const PasswordPolicy({this.min = 8, this.letters = false, this.numbers = false});
+
+  /// Used before the server's policy has been downloaded: only the length is checked client-side then.
+  static const fallback = PasswordPolicy();
+
+  final int min;
+  final bool letters;
+  final bool numbers;
+
+  factory PasswordPolicy.fromJson(Object? json) {
+    if (json is! Map) return fallback;
+    return PasswordPolicy(min: (json['min'] as num?)?.toInt() ?? 8, letters: json['letters'] == true, numbers: json['numbers'] == true);
+  }
+
+  /// "At least 8 characters, with letters and numbers."
+  String get hint {
+    final parts = [if (letters) 'letters', if (numbers) 'numbers'];
+    return 'At least $min characters${parts.isEmpty ? '' : ', with ${parts.join(' and ')}'}.';
+  }
+
+  String? check(String value) {
+    if (value.length < min) return 'Use at least $min characters.';
+    if (letters && !RegExp(r'\p{L}', unicode: true).hasMatch(value)) return 'Add at least one letter.';
+    if (numbers && !RegExp(r'\p{N}', unicode: true).hasMatch(value)) return 'Add at least one number.';
+    return null;
+  }
 }

@@ -76,7 +76,7 @@ Map<String, dynamic> configJson({String status = 'ok', bool guest = true, bool m
       'policies': {},
       'maintenance': {'enabled': maintenance, 'message': maintenance ? 'Upgrading the servers.' : null, 'ends_at': null},
       'releases': [],
-      'auth': {'guest_mode': guest, 'token_ttl_days': 60, 'refresh_window_days': 30},
+      'auth': {'guest_mode': guest, 'token_ttl_days': 60, 'refresh_window_days': 30, 'password': {'min': 8, 'letters': true, 'numbers': true}},
       'features': {'coach': false, 'payments': [], 'push': false},
       'settings': {},
       'library_options': {
@@ -374,3 +374,97 @@ FakeReply exercisePageReply(RequestOptions o, {int total = 45, int perPage = 20,
     'meta': {'current_page': page, 'last_page': last, 'per_page': perPage, 'total': ids.length},
   });
 }
+
+// ------------------------------------------------------------------------------------------------ workouts
+
+Map<String, dynamic> sessionExerciseJson(int id, String name, {int sets = 3, int rest = 90, bool timed = false, int? hold, List<Map<String, dynamic>> logged = const [], String status = 'pending', double? weight = 60, int reps = 8}) => {
+      'id': id,
+      'exercise_id': id + 100,
+      'slug': name.toLowerCase().replaceAll(' ', '-'),
+      'name': name,
+      'swapped_from': null,
+      'can_swap': true,
+      'position': id,
+      'status': status,
+      'muscle_group': 'chest',
+      'muscle_group_label': 'Chest',
+      'mechanic': 'compound',
+      'equipment': ['barbell'],
+      'description': 'A press.',
+      'form_cues': ['Shoulder blades together', 'Drive through the floor'],
+      'common_mistakes': ['Bouncing the bar'],
+      'breathing': 'Inhale down.',
+      'target_regions': {'primary': ['chest'], 'secondary': []},
+      'focus': 'Chest',
+      'is_timed': timed,
+      'hold_seconds': hold,
+      'target_sets': sets,
+      'reps_min': 6,
+      'reps_max': 8,
+      'rest_seconds': rest,
+      'rest_label': '1-2 min',
+      'suggested': {'weight_kg': timed ? null : weight, 'reps': timed ? null : reps, 'reason': 'Add a little weight.'},
+      'has_history': true,
+      'last': timed
+          ? null
+          : {
+              'date': '2026-10-05',
+              'sets': [
+                {'weight': 57.5, 'reps': 8, 'duration': null},
+                {'weight': 57.5, 'reps': 8, 'duration': null},
+                {'weight': 57.5, 'reps': 7, 'duration': null},
+              ],
+            },
+      'posture_supported': false,
+      'sets': logged,
+    };
+
+Map<String, dynamic> sessionJson({
+  int id = 1,
+  String status = 'in_progress',
+  DateTime? startedAt,
+  DateTime? serverTime,
+  List<Map<String, dynamic>>? exercises,
+  Map<String, dynamic>? clientState,
+  bool sound = false,
+}) {
+  final started = startedAt ?? DateTime.utc(2026, 10, 12, 18);
+  return {
+    'id': id,
+    'client_uuid': '11111111-1111-4111-8111-111111111111',
+    'status': status,
+    'source': 'plan',
+    'title': 'Push day',
+    'plan_day': {'id': 3, 'weekday': 1, 'name': 'Monday'},
+    'scheduled_for': '2026-10-12',
+    'week_number': 3,
+    'started_at': started.toIso8601String(),
+    'ended_at': null,
+    'active_seconds': 0,
+    'volume_kg': null,
+    'sets_completed': 0,
+    'xp_earned': 0,
+    'client_state': clientState,
+    'server_time': (serverTime ?? started).toIso8601String(),
+    'preferences': {'sound': sound, 'voice': false},
+    'exercises': exercises ?? [sessionExerciseJson(1, 'Bench press'), sessionExerciseJson(2, 'Plank', sets: 1, rest: 0, timed: true, hold: 30)],
+  };
+}
+
+Map<String, dynamic> summaryJson() => {
+      'session': {'id': 1, 'title': 'Push day', 'scheduled_for': '2026-10-12', 'active_seconds': 1800, 'volume_kg': 2160.0, 'sets_completed': 4, 'xp_earned': 190},
+      'exercises_done': 2,
+      'exercises_total': 2,
+      'xp_breakdown': {'set_complete': 40, 'personal_record': 25, 'workout_complete': 125},
+      'personal_records': [
+        {'exercise': 'Bench press', 'weight_kg': 62.5, 'reps': 8, 'type': 'est_1rm', 'value': 79.2, 'previous': 76.0},
+      ],
+      'level_up': true,
+      'level': 4,
+      'streak': 6,
+      'xp': {'level': 4, 'into': 10, 'needed': 300, 'pct': 0.03, 'next_at': 1000},
+      'badges': [
+        {'slug': 'first-workout', 'name': 'First workout', 'icon': 'trophy', 'tier': 'bronze', 'xp_reward': 25},
+      ],
+      'exercises': [],
+    };

@@ -48,6 +48,7 @@ class AppConfigController extends Controller
                 'guest_mode' => (bool) config('ironpulse.guest_mode'),
                 'token_ttl_days' => (int) config('ironpulse.mobile.token_ttl_days'),
                 'refresh_window_days' => (int) config('ironpulse.mobile.refresh_window_days'),
+                'password' => ['min' => (int) config('ironpulse.password.min'), 'letters' => (bool) config('ironpulse.password.letters'), 'numbers' => (bool) config('ironpulse.password.numbers')],
             ],
             'features' => [
                 'coach' => (bool) config('ironpulse.coach.enabled'),
