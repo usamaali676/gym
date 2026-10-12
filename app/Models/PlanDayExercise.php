@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecordsContentChanges;
+use App\Support\Content\ContentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlanDayExercise extends Model
 {
+    use RecordsContentChanges;
+
     protected $guarded = ['id'];
+
+    public function contentChangeTargets(string $event): array
+    {
+        $planId = PlanDay::query()->whereKey($this->plan_day_id)->value('plan_id');
+
+        return $planId ? [[ContentCollection::Programs, (int) $planId, 'upsert']] : [];
+    }
 
     public function day(): BelongsTo
     {

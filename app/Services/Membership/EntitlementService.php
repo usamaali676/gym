@@ -8,6 +8,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Support\Entitlement;
 use App\Support\Entitlements;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 /**
@@ -16,7 +17,32 @@ use Illuminate\Support\Collection;
  */
 class EntitlementService
 {
+    /** Always computed from the current rows. */
     public function for(User $user): Entitlements
+    {
+        return $this->compute($user);
+    }
+
+    /**
+     * The same answer, computed once per HTTP request and remembered on the request object. Lists use this so
+     * rendering 85 exercises does not run 85 membership lookups; nothing outlives the request.
+     */
+    public function forRequest(Request $request): Entitlements
+    {
+        $user = $request->user();
+        if (! $user) {
+            return new Entitlements([], null, null);
+        }
+
+        $key = 'entitlements.'.$user->id;
+        if (! $request->attributes->has($key)) {
+            $request->attributes->set($key, $this->compute($user));
+        }
+
+        return $request->attributes->get($key);
+    }
+
+    private function compute(User $user): Entitlements
     {
         $subscriptions = $this->effectiveSubscriptions($user);
         $floor = MembershipPlan::default();

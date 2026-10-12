@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecordsContentChanges;
+use App\Support\Content\ContentCollection;
 use App\Support\Entitlement;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MembershipPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, RecordsContentChanges;
 
     public const INTERVALS = ['none', 'week', 'month', 'year', 'lifetime'];
 
@@ -44,6 +46,11 @@ class MembershipPlan extends Model
                 $plan->published_at = now();
             }
         });
+    }
+
+    public function contentChangeTargets(string $event): array
+    {
+        return [[ContentCollection::MembershipPlans, $this->id, $event === 'deleted' ? 'delete' : 'upsert']];
     }
 
     public function subscriptions(): HasMany

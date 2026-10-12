@@ -23,7 +23,7 @@ class EnsureEntitled
             return $next($request);
         }
 
-        $entitlements = $this->entitlements->for($user);
+        $entitlements = $this->entitlements->forRequest($request);
         if ($entitlements->allows($key)) {
             return $next($request);
         }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RecordsContentChanges;
+use App\Support\Content\ContentCollection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Food extends Model
 {
+    use RecordsContentChanges;
+
     protected $table = 'foods';
 
     protected $guarded = ['id'];
@@ -24,6 +28,16 @@ class Food extends Model
             'is_public' => 'boolean',
             'is_verified' => 'boolean',
         ];
+    }
+
+    /** Only the shared database is synced; foods people add for themselves are private to them. */
+    public function contentChangeTargets(string $event): array
+    {
+        if ($this->user_id !== null) {
+            return [];
+        }
+
+        return [[ContentCollection::Foods, $this->id, $event === 'deleted' ? 'delete' : 'upsert']];
     }
 
     public function servings(): HasMany

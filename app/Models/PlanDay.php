@@ -3,17 +3,26 @@
 namespace App\Models;
 
 use App\Enums\SessionType;
+use App\Models\Concerns\RecordsContentChanges;
+use App\Support\Content\ContentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PlanDay extends Model
 {
+    use RecordsContentChanges;
+
     protected $guarded = ['id'];
 
     protected function casts(): array
     {
         return ['session_type' => SessionType::class, 'is_rest' => 'boolean'];
+    }
+
+    public function contentChangeTargets(string $event): array
+    {
+        return [[ContentCollection::Programs, $this->plan_id, 'upsert']];
     }
 
     public function plan(): BelongsTo
