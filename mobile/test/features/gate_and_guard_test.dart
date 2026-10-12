@@ -112,7 +112,7 @@ void main() {
 
       await tester.tap(find.text('ACCOUNT'));
       await pumpUntil(tester, find.text('Member'));
-      await tester.tap(find.text('SIGN OUT'));
+      await tapVisible(tester, find.text('SIGN OUT'));
       await pumpUntil(tester, find.text('Sign out?'));
       expect(find.textContaining('email and password'), findsOneWidget);
 
@@ -130,7 +130,7 @@ void main() {
 
       await tester.tap(find.text('ACCOUNT'));
       await pumpUntil(tester, find.text('Guest account'));
-      await tester.tap(find.text('SIGN OUT'));
+      await tapVisible(tester, find.text('SIGN OUT'));
       await pumpUntil(tester, find.text('Sign out?'));
       expect(find.textContaining('guest account'), findsOneWidget);
     });

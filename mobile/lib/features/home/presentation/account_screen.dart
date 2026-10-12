@@ -8,6 +8,8 @@ import '../../membership/presentation/membership_providers.dart';
 import '../../../app/config/environment.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
+import '../../../core/notifications/local_alerts.dart';
+import '../../../core/notifications/rest_alerts.dart';
 import '../../../core/sync/offline_queue.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/neon_button.dart';
@@ -110,6 +112,8 @@ class AccountScreen extends ConsumerWidget {
               const Icon(Icons.chevron_right, color: IpColors.muted),
             ]),
           ),
+          const SizedBox(height: 12),
+          const _RestAlertTile(),
           const SizedBox(height: 16),
           GlassCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -174,6 +178,88 @@ class _SyncTile extends ConsumerWidget {
           ]),
         ),
         const Icon(Icons.chevron_right, color: IpColors.muted),
+      ]),
+    );
+  }
+}
+
+
+/// Turns the "rest is over" notification on or off. Off until the member chooses; turning it on asks the system for
+/// permission and stays off if that is refused.
+class _RestAlertTile extends ConsumerStatefulWidget {
+  const _RestAlertTile();
+
+  @override
+  ConsumerState<_RestAlertTile> createState() => _RestAlertTileState();
+}
+
+class _RestAlertTileState extends ConsumerState<_RestAlertTile> {
+  bool _refused = false;
+  bool _busy = false;
+  // Only asked once the alert is on, so a member who never uses it never wakes the notification system.
+  Future<bool>? _exact;
+
+  Future<void> _change(bool on) async {
+    setState(() {
+      _busy = true;
+      _refused = false;
+    });
+    final result = await ref.read(restAlertsEnabledProvider.notifier).setEnabled(on);
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _refused = on && !result;
+      _exact = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final on = ref.watch(restAlertsEnabledProvider);
+    return GlassCard(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        MergeSemantics(
+          child: Row(children: [
+            Icon(on ? Icons.notifications_active_outlined : Icons.notifications_off_outlined, color: on ? IpColors.neon : IpColors.muted),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Rest timer alert', style: IpText.display(15, color: IpColors.ink)),
+                const SizedBox(height: 2),
+                Text('A notification when your rest ends while the app is in the background', style: IpText.body(13, color: IpColors.muted)),
+              ]),
+            ),
+            const SizedBox(width: 8),
+            Switch(value: on, onChanged: _busy ? null : _change, activeThumbColor: IpColors.neon, activeTrackColor: IpColors.neonDim),
+          ]),
+        ),
+        if (_refused) ...[
+          const SizedBox(height: 10),
+          Text('Notifications are blocked for IronPulse. Allow them in your phone\'s settings, then switch this on again.', style: IpText.body(13, weight: FontWeight.w600, color: IpColors.warn)),
+        ],
+        if (on)
+          FutureBuilder<bool>(
+            future: _exact ??= ref.read(localAlertsProvider).hasExactTiming(),
+            builder: (context, snapshot) {
+              if (snapshot.data != false) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Your phone may deliver the alert a few minutes late until you allow alarms and reminders for IronPulse.', style: IpText.body(13, color: IpColors.muted)),
+                  const SizedBox(height: 8),
+                  NeonButton(
+                    label: 'Allow exact timing',
+                    variant: NeonButtonVariant.ghost,
+                    size: NeonButtonSize.small,
+                    onPressed: () async {
+                      await ref.read(localAlertsProvider).requestExactTiming();
+                      if (mounted) setState(() => _exact = null);
+                    },
+                  ),
+                ]),
+              );
+            },
+          ),
       ]),
     );
   }

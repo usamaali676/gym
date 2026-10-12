@@ -89,7 +89,10 @@ Built, and covered by tests (see the [progress log](../docs/mobile/PROGRESS.md) 
 * exercise demonstration clips: rendered loops of the website's 3D figure (not footage of a person), played on the exercise
   page when the server has one ([pipeline and limits](../docs/mobile/demo-clips.md))
 
-Not built yet: offline food/water/habit logging, progress photos, local and push notifications, in-app purchase.
+* an optional rest-timer alert: a local notification while the app is in the background during a rest, off until the member
+  turns it on ([details and limits](../docs/mobile/notifications.md))
+
+Not built yet: offline food/water/habit logging, progress photos, push notifications (FCM/APNs), in-app purchase.
 
 **Nothing in this folder has been run on a physical phone, an emulator or an iOS device by the author of these changes.**
 The tests run on a desktop Flutter test host; the Android debug APK is built by GitHub Actions and never installed; iOS needs

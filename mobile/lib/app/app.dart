@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/notifications/rest_alerts.dart';
 import '../core/policy/policy_controller.dart';
 import '../core/sync/offline_queue.dart';
 import '../core/sync/pending_op.dart';
@@ -49,7 +52,9 @@ class _IronPulseAppState extends ConsumerState<IronPulseApp> with WidgetsBinding
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) _leftAt ??= ref.read(clockProvider)();
+    if (state == AppLifecycleState.paused) unawaited(ref.read(restAlertsProvider).setBackground(true));
     if (state != AppLifecycleState.resumed) return;
+    unawaited(ref.read(restAlertsProvider).setBackground(false));
     final left = _leftAt;
     _leftAt = null;
     if (left != null && ref.read(clockProvider)().difference(left) >= _staleAfter) _refreshStaleScreens();
@@ -90,6 +95,10 @@ class _IronPulseAppState extends ConsumerState<IronPulseApp> with WidgetsBinding
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
+    // A different person must never get the previous one's alert.
+    ref.listen(authControllerProvider, (previous, next) {
+      if (previous is SignedIn && next is! SignedIn) unawaited(ref.read(restAlertsProvider).clear());
+    });
     ref.listen(offlineQueueProvider.select((q) => q.appliedRevision), (_, _) => _refreshAfterSync(ref.read(offlineQueueProvider).lastApplied));
     return MaterialApp.router(
       title: 'IronPulse',

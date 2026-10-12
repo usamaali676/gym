@@ -9,6 +9,7 @@ import 'package:ironpulse/core/authentication/session.dart';
 import 'package:ironpulse/core/authentication/session_manager.dart';
 import 'package:ironpulse/core/authentication/token_store.dart';
 import 'package:ironpulse/core/device/device_identity.dart';
+import 'package:ironpulse/core/notifications/local_alerts.dart';
 import 'package:ironpulse/core/providers.dart';
 import 'package:ironpulse/core/storage/secure_store.dart';
 import 'package:ironpulse/core/utilities/clock.dart';
@@ -16,6 +17,7 @@ import 'package:ironpulse/core/utilities/device_feedback.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_adapter.dart';
+import 'fake_alerts.dart';
 
 const testEnv = AppEnvironment(apiBaseUrl: 'https://gym.test', platform: 'android', appVersion: '1.0.0', appBuild: '1');
 
@@ -67,6 +69,7 @@ class TestWorld {
   /// Time the workout engine sees. Advance it to simulate the phone sitting in a pocket.
   final TestClock clock = TestClock();
   final SilentDeviceFeedback feedback = SilentDeviceFeedback();
+  final FakeLocalAlerts alerts = FakeLocalAlerts();
 
   static Future<TestWorld> create({Map<String, Object> prefs = const {}}) async {
     SharedPreferences.setMockInitialValues(prefs);
@@ -80,6 +83,7 @@ class TestWorld {
     deviceIdentityProvider.overrideWithValue(FakeDeviceIdentity()),
     clockProvider.overrideWithValue(clock.call),
     deviceFeedbackProvider.overrideWithValue(feedback),
+    localAlertsProvider.overrideWithValue(alerts),
     sessionManagerProvider.overrideWith((ref) {
       final m = SessionManager(store: ref.watch(tokenStoreProvider), refreshDio: buildDio(testEnv, adapter: server.adapter));
       ref.onDispose(m.dispose);

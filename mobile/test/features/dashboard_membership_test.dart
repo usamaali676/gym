@@ -129,8 +129,8 @@ void main() {
       expect(w.prefs.getKeys().where((k) => k.startsWith('ip.cache.7.')), isNotEmpty);
 
       await tester.tap(find.text('ACCOUNT'));
-      await pumpUntil(tester, find.text('SIGN OUT'));
-      await tester.tap(find.text('SIGN OUT'));
+      await pumpUntil(tester, find.text('Camera form coach'));
+      await tapVisible(tester, find.text('SIGN OUT'));
       await pumpUntil(tester, find.text('Sign out?'));
       await tester.tap(find.text('SIGN OUT').last);
       await pumpUntil(tester, find.text('CREATE ACCOUNT'));

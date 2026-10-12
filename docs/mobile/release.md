@@ -58,8 +58,11 @@ Changing the id means renaming the Kotlin package directory and updating the thr
 5. **App content:** *Data safety* form (section 5), *Content rating* questionnaire, *Target audience* (not for children),
    *App access*: give the reviewers a working account (the server has a demo seeder; do not use a real member), *Health apps*
    declaration, and the account-deletion URL (the app deletes accounts in-app; the website offers it too).
-6. **Permissions requested by the app:** `INTERNET`, `CAMERA` (camera form coach; the camera hardware is *not* required to
-   install). No location, contacts, storage, microphone or notification permission is requested today.
+6. **Permissions requested by the app:** `INTERNET`; `CAMERA` (camera form coach; the camera hardware is *not* required to
+   install); `POST_NOTIFICATIONS` and `SCHEDULE_EXACT_ALARM` (only for the optional rest-timer alert, which is off until the
+   member turns it on; the notification prompt appears at that moment). No location, contacts, storage or microphone.
+   **Exact alarms need a declaration in Play Console** (a rest timer is a timer, but Google decides); if it is refused, remove
+   `SCHEDULE_EXACT_ALARM` from the manifest ([notifications.md](notifications.md)).
 7. Before production: run the device checklists in [posture-coach.md](posture-coach.md) and the section 7 smoke test below.
 
 ## 3. iOS (App Store)
@@ -122,18 +125,23 @@ legal advice.
 
 ## 6. Push notifications and local notifications
 
+Details: [notifications.md](notifications.md).
+
 * **Push (FCM/APNs):** the server has an FCM provider that is off unless configured and is tested with a faked transport
-  only. The app does not register for push or request the notification permission. To enable it: a Firebase project,
+  only. The app does not register for push or request the push permission. To enable it: a Firebase project,
   `google-services.json` / `GoogleService-Info.plist`, an APNs key, the `firebase_messaging` plugin, and the permission prompt.
   None of that exists.
-* **Local notifications** (for example "rest over" while the app is in the background): not built. Timers are derived from
-  absolute time, so the next screen is right when the member returns, but nothing buzzes in the background.
+* **Local notification (built, never shown on a device):** an optional "rest is over" alert while the app is in the background
+  (Account → *Rest timer alert*), scheduled by the phone from the workout's own end time. Off until the member switches it
+  on; nothing about it goes to the server. Mention it in the store listing's notification disclosure; it carries the exercise
+  name and set number on the lock screen.
 
 ## 7. Smoke test on a real build (before any release)
 
 1. Fresh install from the store test track (not a debug build). Sign up, onboard, land on the dashboard.
 2. Start today's workout, log a set, **turn on airplane mode**, log two more sets, finish; see the "waiting to sync" strip and
    the honest summary; turn airplane mode off; see the strip clear and the real summary appear.
+2b. Turn on Account → *Rest timer alert* (accept the prompt), start a rest, press Home: the "Rest is over" notification should appear when the rest ends; reopen the app and check nothing is left in the notification shade.
 3. Camera coach: permission prompt → a squat set → summary → saved (see posture-coach.md checklist).
 4. Fuel: search a food, log 150 g, confirm the calories equal what the website shows for the same food.
 5. Progress: add a weigh-in; Account → Sync shows all saved; Delete account on a throwaway account.
@@ -145,7 +153,7 @@ legal advice.
 
 * The camera + ML Kit layer, the offline queue and everything else have only run on a desktop test host and in CI (and the debug
   APK/iOS builds were compiled, never run).
-* No in-app purchase, no push, no local notifications, demo clips exist only after you run the render pipeline ([demo-clips.md](demo-clips.md)), no progress photos, no offline food log.
+* No in-app purchase, no push (one optional local notification exists and has not been shown on a device), demo clips exist only after you run the render pipeline ([demo-clips.md](demo-clips.md)), no progress photos, no offline food log.
 * `applicationId` / bundle id are placeholders; signing is not set up; no store listing assets exist (icon, screenshots).
 * The launcher icon and splash are the Flutter defaults until you add your own.
 * Accessibility has had automated checks only (see the accessibility notes in the progress log), not a screen-reader session on a device.

@@ -7,6 +7,13 @@
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
 
+    <!-- The optional "rest is over" alert (Account → Rest timer alert; off until the member turns it on). POST_NOTIFICATIONS
+         is requested at that moment, not at start-up. SCHEDULE_EXACT_ALARM lets the alert arrive when the rest ends rather
+         than minutes later; the member grants it from a system screen and the app works without it. Google Play asks for a
+         declaration for exact alarms: see docs/mobile/release.md. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+
     <application
         android:label="IronPulse"
         android:allowBackup="false"
@@ -36,6 +43,7 @@
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

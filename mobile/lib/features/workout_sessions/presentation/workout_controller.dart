@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_error.dart';
 import '../../../core/api/loaded.dart';
 import '../../../core/providers.dart';
+import '../../../core/notifications/rest_alerts.dart';
 import '../../../core/storage/cache_provider.dart';
 import '../../../core/sync/offline_queue.dart';
 import '../../../core/sync/pending_op.dart';
@@ -67,6 +68,11 @@ class WorkoutController extends AsyncNotifier<WorkoutView> {
     // When the server accepts (or the member dismisses) queued changes, the "waiting to sync" marks must follow.
     ref.listen(offlineQueueProvider, (_, queue) => _refreshPendingMarks(queue.forSession(sessionId)));
 
+    // While the app is in the background the phone can tell the member when the rest is over (only if they turned that on).
+    final restAlerts = ref.read(restAlertsProvider);
+    listenSelf((_, next) => unawaited(restAlerts.plan(next.asData == null ? null : _restPlan(next.requireValue))));
+    ref.onDispose(() => unawaited(restAlerts.plan(null)));
+
     final loaded = await _load();
     // What was done on this phone while offline and is still waiting for the server counts as done.
     final session = withQueuedChanges(loaded.data, ref.read(offlineQueueProvider).forSession(sessionId));
@@ -83,6 +89,13 @@ class WorkoutController extends AsyncNotifier<WorkoutView> {
     engine = SessionEngine.normalize(engine, _now());
     final closing = ref.read(offlineQueueProvider).forSession(sessionId).any((o) => o.type == OpTypes.workoutFinish || o.type == OpTypes.workoutAbandon);
     return WorkoutView(session: session, engine: engine, fromCache: loaded.fromCache, finished: closing);
+  }
+
+  static RestPlan? _restPlan(WorkoutView view) {
+    final e = view.engine;
+    if (view.finished || e.phase != WorkPhase.rest || e.restEndsAt == null) return null;
+    final ex = view.exercise;
+    return RestPlan(endsAt: e.restEndsAt!, next: ex == null ? 'your next set' : '${ex.name}, set ${e.setIdx + 1} of ${ex.targetSets}');
   }
 
   void _refreshPendingMarks(List<PendingOp> mine) {
