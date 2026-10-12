@@ -32,7 +32,8 @@ class FoodController extends Controller
 
     public function recent(Request $request, FoodSearchService $search): AnonymousResourceCollection
     {
-        return FoodResource::collection($search->recent($request->user())->load('servings'));
+        // the service already eager loads the servings
+        return FoodResource::collection($search->recent($request->user()));
     }
 
     public function show(Request $request, int $food): FoodResource

@@ -83,6 +83,20 @@ describe('authentication coverage', function () {
     });
 });
 
+describe('robustness', function () {
+    it('never answers a read with a server error, for a fully onboarded member', function () {
+        $member = User::factory()->onboarded()->create();
+
+        foreach (apiRoutes() as $route) {
+            if (! in_array('GET', $route->methods(), true) || in_array($route->getName(), PUBLIC_ROUTES, true)) {
+                continue;
+            }
+            $status = call($this, $route, apiAs($member))->status();
+            expect($status)->toBeLessThan(500, "{$route->getName()} answered {$status}");
+        }
+    });
+});
+
 describe('entitlement coverage', function () {
     it('refuses every entitled route to a member whose plan lacks the feature', function () {
         $member = User::factory()->onboarded()->create();

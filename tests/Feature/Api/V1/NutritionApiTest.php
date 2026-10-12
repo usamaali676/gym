@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\DietPlan;
 use App\Models\Food;
 use App\Models\FoodLog;
 use App\Models\MembershipPlan;
@@ -280,4 +281,32 @@ describe('membership gate', function () {
         $this->putJson('/api/v1/habits/creatine', ['taken' => true], ($this->h)())->assertOk();
         $this->getJson('/api/v1/dashboard', ($this->h)())->assertOk()->assertJsonPath('data.nutrition', null);
     });
+});
+
+it('gives a member who has never opened nutrition targets on the very first day view', function () {
+    expect(DietPlan::where('user_id', $this->user->id)->count())->toBe(0);
+
+    $day = $this->getJson('/api/v1/nutrition/day', ($this->h)())->assertOk()->json('data');
+
+    expect($day['targets'])->not->toBeNull()
+        ->and($day['targets']['calories'])->toBeGreaterThan(1000)
+        ->and($day['remaining']['calories'])->toBe($day['targets']['calories'])
+        ->and(DietPlan::where('user_id', $this->user->id)->count())->toBe(1);
+});
+
+it('lists recently used foods (and an empty list for a new member)', function () {
+    $this->getJson('/api/v1/foods/recent', ($this->h)())->assertOk()->assertJsonPath('data', []);
+
+    $this->postJson('/api/v1/food-logs', ['food_id' => $this->chicken->id, 'quantity' => 100, 'unit' => 'grams', 'meal' => 'lunch', 'logged_on' => '2026-10-12'], ($this->h)())->assertCreated();
+
+    $this->getJson('/api/v1/foods/recent', ($this->h)())->assertOk()
+        ->assertJsonPath('data.0.id', $this->chicken->id)
+        ->assertJsonStructure(['data' => [['id', 'name', 'per_100g', 'servings']]]);
+});
+
+it('already has targets in the answer to the very first logged food', function () {
+    $r = $this->postJson('/api/v1/food-logs', ['food_id' => $this->chicken->id, 'quantity' => 100, 'unit' => 'grams', 'meal' => 'lunch', 'logged_on' => '2026-10-12'], ($this->h)())->assertCreated();
+
+    expect($r->json('data.day.targets.calories'))->toBeGreaterThan(1000)
+        ->and($r->json('data.day.remaining.calories'))->toBeLessThan($r->json('data.day.targets.calories'));
 });

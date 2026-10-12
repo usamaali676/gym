@@ -15,6 +15,7 @@ class NutritionDayService
         private readonly NutritionTotalsService $nutrition,
         private readonly ProteinGapService $gaps,
         private readonly PlanService $plans,
+        private readonly DietPlanService $diets,
     ) {}
 
     /**
@@ -22,7 +23,8 @@ class NutritionDayService
      */
     public function state(User $user, CarbonInterface $date, ?DietPlan $plan = null): array
     {
-        $plan ??= $this->nutrition->activePlan($user);
+        // Built on first use from the profile, so the first day view or the first logged food already has targets.
+        $plan ??= $this->diets->ensureActive($user);
         $totals = $this->nutrition->totalsFor($user, $date);
         $isTraining = $this->plans->isTrainingDay($user, $date);
         $targets = $plan?->targetsFor($isTraining);
