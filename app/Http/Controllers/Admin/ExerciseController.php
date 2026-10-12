@@ -53,7 +53,7 @@ class ExerciseController extends Controller
 
     public function edit(Exercise $exercise): View
     {
-        $exercise->loadCount('planItems');
+        $exercise->loadCount('planItems')->load('media');
 
         return view('admin.exercises.form', $this->formData($exercise));
     }

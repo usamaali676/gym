@@ -22,9 +22,4 @@ class HelpArticle extends Model
     {
         return [[ContentCollection::Help, $this->id, $event === 'deleted' ? 'delete' : 'upsert']];
     }
-
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
 }

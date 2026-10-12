@@ -28,7 +28,10 @@ class ProgramController extends Controller
 
     public function show(Request $request, int $plan): ProgramDetailResource
     {
-        $program = Plan::query()->published()->with(['days.items.exercise', 'phases'])->find($plan) ?? throw ApiException::notFound('Program not found.');
+        $current = $request->user()->profile?->plan_id;
+        $program = Plan::query()->with(['days.items.exercise', 'phases'])
+            ->where(fn ($q) => $q->where('status', 'published')->orWhere(fn ($w) => $w->where('id', $current)->where('status', 'archived')))
+            ->find($plan) ?? throw ApiException::notFound('Program not found.');
 
         $this->authorizeProgram($request, $program);
 

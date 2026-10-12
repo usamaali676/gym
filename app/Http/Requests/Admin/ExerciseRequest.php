@@ -6,6 +6,7 @@ use App\Enums\Difficulty;
 use App\Enums\ExerciseKind;
 use App\Enums\Mechanic;
 use App\Enums\MuscleGroup;
+use App\Support\Entitlement;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -24,6 +25,9 @@ class ExerciseRequest extends FormRequest
             'is_timed' => $this->boolean('is_timed'),
             'per_side' => $this->boolean('per_side'),
             'is_active' => $this->boolean('is_active'),
+            // Older callers send only the "visible" checkbox; map it onto the workflow status.
+            'status' => $this->input('status') ?: ($this->boolean('is_active') ? 'published' : ($this->route('exercise') ? 'archived' : 'draft')),
+            'required_entitlement' => $this->input('required_entitlement') ?: null,
         ]);
     }
 
@@ -56,6 +60,8 @@ class ExerciseRequest extends FormRequest
             'common_mistakes' => ['nullable', 'string', 'max:2000'],
             'breathing' => ['nullable', 'string', 'max:500'],
             'is_active' => ['boolean'],
+            'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
+            'required_entitlement' => ['nullable', Rule::in([Entitlement::LibraryPremium->value])],
         ];
     }
 
@@ -69,6 +75,7 @@ class ExerciseRequest extends FormRequest
         $data['common_mistakes'] = $lines($data['common_mistakes'] ?? null) ?: null;
         $data['secondary_groups'] = array_values(array_diff($data['secondary_groups'] ?? [], [$data['muscle_group']])) ?: null;
         $data['equipment'] = array_values($data['equipment'] ?? []) ?: null;
+        $data['is_active'] = $data['status'] === 'published';
         if ($data['kind'] !== 'mobility') {
             $data['mobility_type'] = null;
         }

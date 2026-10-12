@@ -1,5 +1,5 @@
 <x-admin.shell :title="'Edit '.$day->name" section="plan" :heading="$day->name.': '.$day->title()">
-    <p class="mb-4"><a href="{{ route('admin.plan.index') }}" class="text-sm font-semibold text-neon underline underline-offset-4">Back to the plan</a></p>
+    <p class="mb-4"><a href="{{ route('admin.plan.index', ['plan' => $day->plan_id]) }}" class="text-sm font-semibold text-neon underline underline-offset-4">Back to the plan</a></p>
 
     <section class="glass p-5" aria-labelledby="day-title">
         <h2 id="day-title" class="text-sm font-bold uppercase">Day details</h2>

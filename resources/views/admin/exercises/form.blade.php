@@ -48,13 +48,41 @@
         </section>
 
         <div class="flex flex-wrap items-center gap-4">
-            <input type="hidden" name="is_active" value="0">
-            <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="check" name="is_active" value="1" @checked(old('is_active', $exercise->is_active ?? true))> Visible in the library</label>
+            <label class="flex items-center gap-2 text-sm"><span class="label !mb-0">Status</span>
+                <select name="status" class="select !min-h-10 !w-auto">@foreach (['draft' => 'Draft (hidden everywhere)', 'published' => 'Published', 'archived' => 'Archived (hidden, history kept)'] as $k => $l)<option value="{{ $k }}" @selected(old('status', $exercise->status ?? 'published') === $k)>{{ $l }}</option>@endforeach</select></label>
+            <label class="flex items-center gap-2 text-sm"><span class="label !mb-0">Who can open it</span>
+                <select name="required_entitlement" class="select !min-h-10 !w-auto"><option value="">Everyone</option><option value="library.premium" @selected(old('required_entitlement', $exercise->required_entitlement) === 'library.premium')>Members with the premium library</option></select></label>
             <button class="btn btn-primary">{{ $isNew ? 'Create exercise' : 'Save exercise' }}</button>
         </div>
     </form>
 
     @unless ($isNew)
+        <section class="glass mt-8 p-5" aria-labelledby="media-title">
+            <h2 id="media-title" class="text-sm font-bold uppercase">Demonstration media</h2>
+            <p class="mt-1 max-w-3xl text-sm text-muted">Short looping clips and images the mobile apps show for this exercise. One file per type and camera view; uploading again replaces it. MP4 or WebM video, JPEG, PNG or WebP images, up to 60 MB.</p>
+            @if ($exercise->media->isNotEmpty())
+                <ul class="mt-3 divide-y divide-line text-sm">
+                    @foreach ($exercise->media as $m)
+                        <li class="flex flex-wrap items-center justify-between gap-2 py-2">
+                            <span><strong>{{ str_replace('_', ' ', $m->kind) }}</strong>{{ $m->view ? ' · '.$m->view.' view' : '' }} <span class="text-muted">· {{ $m->mime }} · {{ number_format($m->bytes / 1024) }} KB · {{ ucfirst($m->status) }}</span></span>
+                            <span class="flex gap-2">
+                                <form method="POST" action="{{ route('admin.exercise-media.update', $m) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="{{ $m->status === 'published' ? 'draft' : 'published' }}"><button class="btn btn-ghost btn-sm">{{ $m->status === 'published' ? 'Hide' : 'Publish' }}</button></form>
+                                <form method="POST" action="{{ route('admin.exercise-media.destroy', $m) }}" onsubmit="return confirm('Remove this file?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button></form>
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+            <form method="POST" enctype="multipart/form-data" action="{{ route('admin.exercises.media.store', $exercise) }}" class="mt-4 flex flex-wrap items-end gap-3">
+                @csrf
+                <label><span class="label !mb-1">Type</span><select name="kind" class="select !min-h-10">@foreach (['demo_video' => 'Demo video', 'instruction_video' => 'Instruction video', 'image' => 'Image', 'thumbnail' => 'Thumbnail'] as $k => $l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select></label>
+                <label><span class="label !mb-1">Camera view</span><select name="view" class="select !min-h-10"><option value="">Not applicable</option><option value="angle">Angle</option><option value="side">Side</option><option value="front">Front</option></select></label>
+                <label class="min-w-56 flex-1"><span class="label !mb-1">File</span><input type="file" name="file" class="input !min-h-10" accept="video/mp4,video/webm,image/jpeg,image/png,image/webp" required></label>
+                <button class="btn btn-primary btn-sm">Upload</button>
+            </form>
+            @error('file')<p class="mt-2 text-sm text-danger" role="alert">{{ $message }}</p>@enderror
+        </section>
+
         <form method="POST" action="{{ route('admin.exercises.destroy', $exercise) }}" class="mt-8" onsubmit="return confirm('Remove this exercise? If it is used in the plan or in anyone\'s history it is hidden instead of deleted.')">
             @csrf @method('DELETE')
             <button class="btn btn-danger btn-sm"><x-icon name="trash" class="size-4"/>Remove exercise</button>

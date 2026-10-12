@@ -4,10 +4,12 @@
         'index' => ['Overview', 'admin.index', 'admin.index'],
         'users' => ['Users', 'admin.users.index', 'admin.users.*'],
         'memberships' => ['Memberships', 'admin.memberships.index', 'admin.memberships.*|admin.subscriptions.*'],
-        'plan' => ['Plan', 'admin.plan.index', 'admin.plan.*'],
+        'programs' => ['Programs', 'admin.programs.index', 'admin.programs.*|admin.plan.*'],
         'exercises' => ['Exercises', 'admin.exercises.index', 'admin.exercises.*'],
         'posture' => ['Posture rules', 'admin.posture.index', 'admin.posture.*'],
         'foods' => ['Foods', 'admin.foods.index', 'admin.foods.*'],
+        'content' => ['App content', 'admin.announcements.index', 'admin.announcements.*|admin.banners.*|admin.help.*|admin.settings.*'],
+        'releases' => ['App releases', 'admin.releases.index', 'admin.releases.*'],
         'demos' => ['3D demos', 'admin.demos', 'admin.demos'],
     ];
 @endphp

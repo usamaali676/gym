@@ -1,4 +1,5 @@
-<x-admin.shell title="Plan" :lead="$plan->name.' (version '.$plan->version.'). Editing changes the plan for everyone who follows it. Existing workout history is never rewritten.'">
+<x-admin.shell title="Plan" section="programs" :lead="$plan->name.' (version '.$plan->version.'). Editing changes the plan for everyone who follows it. Existing workout history is never rewritten.'">
+    <p class="mb-4"><a href="{{ route('admin.programs.edit', $plan) }}" class="text-sm font-semibold text-neon underline underline-offset-4">Program settings, phases and publishing</a></p>
     <ul class="grid grid-cols-1 gap-3 md:grid-cols-2">
         @foreach ($plan->days as $day)
             <li class="glass p-4">

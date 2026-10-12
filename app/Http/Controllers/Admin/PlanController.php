@@ -17,14 +17,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
- * Edits the default plan in place. Rows keep their ids, so history, progression targets and swaps follow the
+ * Edits a program's days in place (the default program unless ?plan= says otherwise). Rows keep their ids, so history, progression targets and swaps follow the
  * exercise. Removing a row drops its progression targets (workout history keeps the exercise).
  */
 class PlanController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $plan = Plan::default()?->load(['days.items.exercise']);
+        $plan = ($request->integer('plan') ? Plan::find($request->integer('plan')) : Plan::default())?->load(['days.items.exercise']);
         abort_unless($plan, 404);
 
         return view('admin.plan.index', ['plan' => $plan]);

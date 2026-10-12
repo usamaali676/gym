@@ -1,12 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\AppReleaseController as AdminAppReleaseController;
+use App\Http\Controllers\Admin\AppSettingController as AdminAppSettingController;
+use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemoGalleryController;
 use App\Http\Controllers\Admin\ExerciseController as AdminExerciseController;
+use App\Http\Controllers\Admin\ExerciseMediaController as AdminExerciseMediaController;
 use App\Http\Controllers\Admin\FoodController as AdminFoodController;
+use App\Http\Controllers\Admin\HelpArticleController as AdminHelpArticleController;
 use App\Http\Controllers\Admin\MembershipPlanController as AdminMembershipPlanController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PostureRuleController as AdminPostureRuleController;
+use App\Http\Controllers\Admin\ProgramController as AdminProgramController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BadgeController;
@@ -106,6 +113,15 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/users/{user}/status', [AdminUserController::class, 'updateStatus'])->whereNumber('user')->name('users.status');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->whereNumber('user')->name('users.destroy');
 
+    // Programs: publishing, premium gate, sprints and phases
+    Route::get('/programs', [AdminProgramController::class, 'index'])->name('programs.index');
+    Route::post('/programs', [AdminProgramController::class, 'store'])->name('programs.store');
+    Route::get('/programs/{plan}/edit', [AdminProgramController::class, 'edit'])->whereNumber('plan')->name('programs.edit');
+    Route::patch('/programs/{plan}', [AdminProgramController::class, 'update'])->whereNumber('plan')->name('programs.update');
+    Route::post('/programs/{plan}/phases', [AdminProgramController::class, 'storePhase'])->whereNumber('plan')->name('programs.phases.store');
+    Route::patch('/phases/{phase}', [AdminProgramController::class, 'updatePhase'])->whereNumber('phase')->name('programs.phases.update');
+    Route::delete('/phases/{phase}', [AdminProgramController::class, 'destroyPhase'])->whereNumber('phase')->name('programs.phases.destroy');
+
     Route::get('/plan', [AdminPlanController::class, 'index'])->name('plan.index');
     Route::get('/plan/days/{day}', [AdminPlanController::class, 'edit'])->whereNumber('day')->name('plan.edit');
     Route::patch('/plan/days/{day}', [AdminPlanController::class, 'update'])->whereNumber('day')->name('plan.update');
@@ -120,6 +136,9 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/exercises/{exercise}/edit', [AdminExerciseController::class, 'edit'])->name('exercises.edit');
     Route::patch('/exercises/{exercise}', [AdminExerciseController::class, 'update'])->name('exercises.update');
     Route::delete('/exercises/{exercise}', [AdminExerciseController::class, 'destroy'])->name('exercises.destroy');
+    Route::post('/exercises/{exercise}/media', [AdminExerciseMediaController::class, 'store'])->name('exercises.media.store');
+    Route::patch('/exercise-media/{media}', [AdminExerciseMediaController::class, 'update'])->whereNumber('media')->name('exercise-media.update');
+    Route::delete('/exercise-media/{media}', [AdminExerciseMediaController::class, 'destroy'])->whereNumber('media')->name('exercise-media.destroy');
 
     Route::get('/posture', [AdminPostureRuleController::class, 'index'])->name('posture.index');
     Route::post('/posture/validate', [AdminPostureRuleController::class, 'validateConfig'])->name('posture.validate');
@@ -138,6 +157,33 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/users/{user}/subscriptions', [AdminSubscriptionController::class, 'grant'])->whereNumber('user')->name('subscriptions.grant');
     Route::patch('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'extend'])->whereNumber('subscription')->name('subscriptions.extend');
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'revoke'])->whereNumber('subscription')->name('subscriptions.revoke');
+
+    // App content: announcements, banners, help articles, settings, releases
+    Route::get('/announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/announcements/create', [AdminAnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+    Route::get('/announcements/{announcement}/edit', [AdminAnnouncementController::class, 'edit'])->whereNumber('announcement')->name('announcements.edit');
+    Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->whereNumber('announcement')->name('announcements.update');
+    Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->whereNumber('announcement')->name('announcements.destroy');
+    Route::get('/banners', [AdminBannerController::class, 'index'])->name('banners.index');
+    Route::get('/banners/create', [AdminBannerController::class, 'create'])->name('banners.create');
+    Route::post('/banners', [AdminBannerController::class, 'store'])->name('banners.store');
+    Route::get('/banners/{banner}/edit', [AdminBannerController::class, 'edit'])->whereNumber('banner')->name('banners.edit');
+    Route::patch('/banners/{banner}', [AdminBannerController::class, 'update'])->whereNumber('banner')->name('banners.update');
+    Route::delete('/banners/{banner}', [AdminBannerController::class, 'destroy'])->whereNumber('banner')->name('banners.destroy');
+    Route::get('/help-articles', [AdminHelpArticleController::class, 'index'])->name('help.index');
+    Route::get('/help-articles/create', [AdminHelpArticleController::class, 'create'])->name('help.create');
+    Route::post('/help-articles', [AdminHelpArticleController::class, 'store'])->name('help.store');
+    Route::get('/help-articles/{article}/edit', [AdminHelpArticleController::class, 'edit'])->whereNumber('article')->name('help.edit');
+    Route::patch('/help-articles/{article}', [AdminHelpArticleController::class, 'update'])->whereNumber('article')->name('help.update');
+    Route::delete('/help-articles/{article}', [AdminHelpArticleController::class, 'destroy'])->whereNumber('article')->name('help.destroy');
+    Route::get('/app-settings', [AdminAppSettingController::class, 'edit'])->name('settings.edit');
+    Route::put('/app-settings', [AdminAppSettingController::class, 'update'])->name('settings.update');
+    Route::get('/releases', [AdminAppReleaseController::class, 'index'])->name('releases.index');
+    Route::put('/releases/policy/{platform}', [AdminAppReleaseController::class, 'updatePolicy'])->where('platform', 'android|ios')->name('releases.policy');
+    Route::post('/releases', [AdminAppReleaseController::class, 'storeRelease'])->name('releases.store');
+    Route::patch('/releases/{release}', [AdminAppReleaseController::class, 'toggleRelease'])->whereNumber('release')->name('releases.toggle');
+    Route::delete('/releases/{release}', [AdminAppReleaseController::class, 'destroyRelease'])->whereNumber('release')->name('releases.destroy');
 
     Route::get('/foods', [AdminFoodController::class, 'index'])->name('foods.index');
     Route::get('/foods/create', [AdminFoodController::class, 'create'])->name('foods.create');

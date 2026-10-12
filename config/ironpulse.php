@@ -86,6 +86,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Push notifications (FCM)
+    |--------------------------------------------------------------------------
+    | Off until a Firebase project is configured. Without it the apps keep working and use on-device reminders only.
+    */
+    'push' => [
+        'enabled' => (bool) env('FCM_PROJECT_ID') && (bool) env('FCM_CREDENTIALS_PATH'),
+        'project_id' => env('FCM_PROJECT_ID'),
+        // Path to the Firebase service-account JSON on the server. Never commit it, never ship it in an app.
+        'credentials_path' => env('FCM_CREDENTIALS_PATH'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Progressive overload
     |--------------------------------------------------------------------------
     | The plan says: add 1-2 reps OR add 2.5-5 kg each week.

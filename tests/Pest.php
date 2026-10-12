@@ -125,7 +125,13 @@ function apiToken(User $user, ?DateTimeInterface $expiresAt = null): string
  */
 function bearer(string $token): array
 {
-    app('auth')->forgetGuards();
+    $auth = app('auth');
+    $web = $auth->guard('web')->user(); // an admin signed in with actingAs() in the same test must stay signed in
+
+    $auth->forgetGuards();
+    if ($web) {
+        $auth->guard('web')->setUser($web);
+    }
 
     return ['Authorization' => 'Bearer '.$token];
 }

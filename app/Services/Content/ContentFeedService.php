@@ -48,7 +48,10 @@ class ContentFeedService
         $planSlug = $this->entitlements->forRequest($request)->plan?->slug;
 
         return match ($collection) {
-            ContentCollection::Programs => Plan::query()->published()->with(['days.items.exercise', 'phases']),
+            // A member keeps the program they follow even after an admin archives it (never a draft).
+            ContentCollection::Programs => Plan::query()
+                ->where(fn (Builder $q) => $q->where('status', 'published')->when($request->user()?->profile?->plan_id, fn ($w, $id) => $w->orWhere(fn ($x) => $x->where('id', $id)->where('status', 'archived'))))
+                ->with(['days.items.exercise', 'phases']),
             ContentCollection::Exercises => Exercise::query()->published()->with(['media', 'postureRules']),
             ContentCollection::Foods => Food::query()->whereNull('user_id')->with('servings'),
             ContentCollection::Badges => Badge::query()->where('is_active', true),
