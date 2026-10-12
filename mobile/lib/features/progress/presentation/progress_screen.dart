@@ -13,6 +13,7 @@ import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/neon_button.dart';
+import '../../../core/widgets/neon_segments.dart';
 import '../../../core/widgets/neon_progress.dart';
 import '../../../core/widgets/neon_text_field.dart';
 import '../../../core/widgets/status_chip.dart';
@@ -43,33 +44,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('PROGRESS', style: IpText.eyebrow(color: IpColors.neon)),
             const SizedBox(height: 10),
-            Row(children: [
-              for (var i = 0; i < labels.length; i++)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Semantics(
-                    button: true,
-                    selected: i == _tab,
-                    label: labels[i],
-                    excludeSemantics: true,
-                    child: GestureDetector(
-                      onTap: () => setState(() => _tab = i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        constraints: const BoxConstraints(minHeight: 40),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(999),
-                          color: i == _tab ? const Color.fromRGBO(57, 255, 20, 0.12) : Colors.transparent,
-                          border: Border.all(color: i == _tab ? IpColors.neon : IpColors.line),
-                        ),
-                        child: Text(labels[i], style: IpText.body(13.5, weight: FontWeight.w600, color: i == _tab ? IpColors.neon : IpColors.muted)),
-                      ),
-                    ),
-                  ),
-                ),
-            ]),
+            NeonSegments(index: _tab, labels: labels, onChanged: (i) => setState(() => _tab = i)),
           ]),
         ),
         Expanded(child: switch (_tab) { 0 => const _Overview(), 1 => const _Body(), _ => const _Badges() }),

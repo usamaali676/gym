@@ -24,8 +24,6 @@ import '../utilities/clock.dart';
 import 'pending_op.dart';
 import 'pending_store.dart';
 
-final pendingStoreProvider = Provider<PendingStore>((ref) => PrefsPendingStore(ref.watch(sharedPreferencesProvider)));
-
 /// The account the queue belongs to; `null` while nobody is signed in.
 final queueScopeProvider = Provider<String?>((ref) => ref.watch(authControllerProvider.select((a) => a is SignedIn ? '${a.user.id}' : null)));
 

@@ -59,6 +59,15 @@ class AuthRepository {
     await _sessions.end(SessionEnd.signedOut);
   }
 
+  /// Permanently deletes the account and everything it owns on the server (`DELETE /me`). A registered member proves
+  /// who they are with their password; a guest types DELETE. Throws [ApiError]: nothing is deleted unless this returns.
+  Future<void> deleteAccount({String? password, required bool guest}) async {
+    await _api.delete('/me', body: guest ? {'confirm': 'DELETE'} : {'password': password});
+  }
+
+  /// Forget the session on this phone after the server has deleted the account (its token no longer exists).
+  Future<void> forgetDeletedAccount() => _sessions.end(SessionEnd.accountDeleted);
+
   Future<void> forgotPassword(String email) async {
     await _api.post('/auth/forgot-password', auth: false, body: {'email': email.trim()});
   }

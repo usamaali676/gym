@@ -1,8 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers.dart';
+
 import 'pending_op.dart';
+
+final pendingStoreProvider = Provider<PendingStore>((ref) => PrefsPendingStore(ref.watch(sharedPreferencesProvider)));
 
 /// Where queued changes live between app launches. One list per account.
 ///

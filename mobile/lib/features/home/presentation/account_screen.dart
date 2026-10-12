@@ -127,6 +127,9 @@ class AccountScreen extends ConsumerWidget {
             expand: true,
             onPressed: () => _confirmSignOut(context, ref, guest: user.isGuest),
           ),
+          const SizedBox(height: 10),
+          // Both app stores require that an account can be deleted from inside the app.
+          NeonButton(label: 'Delete account', icon: Icons.delete_outline, variant: NeonButtonVariant.ghost, expand: true, onPressed: () => context.push(Routes.deleteAccount)),
         ],
       ),
     );

@@ -9,6 +9,7 @@ import '../../../app/theme/typography.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/neon_progress.dart';
+import '../../../core/widgets/neon_segments.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../exercise_library/presentation/library_screen.dart';
 import '../domain/plan.dart';
@@ -36,55 +37,12 @@ class _TrainScreenState extends ConsumerState<TrainScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('TRAIN', style: IpText.eyebrow(color: IpColors.neon)),
             const SizedBox(height: 10),
-            _Segments(index: _tab, labels: const ['This week', 'Programmes', 'Exercises'], onChanged: (i) => setState(() => _tab = i)),
+            NeonSegments(index: _tab, labels: const ['This week', 'Programmes', 'Exercises'], onChanged: (i) => setState(() => _tab = i)),
           ]),
         ),
         Expanded(child: switch (_tab) { 0 => const _WeekTab(), 1 => const _ProgrammesTab(), _ => const LibraryScreen(embedded: true) }),
       ]),
     );
-  }
-}
-
-class _Segments extends StatelessWidget {
-  const _Segments({required this.index, required this.labels, required this.onChanged});
-  final int index;
-  final List<String> labels;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      for (var i = 0; i < labels.length; i++) ...[
-        if (i > 0) const SizedBox(width: 8),
-        Expanded(
-          child: Semantics(
-            button: true,
-            selected: i == index,
-            label: labels[i],
-            excludeSemantics: true,
-            child: GestureDetector(
-              onTap: () => onChanged(i),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                constraints: const BoxConstraints(minHeight: 40),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  color: i == index ? const Color.fromRGBO(57, 255, 20, 0.12) : Colors.transparent,
-                  border: Border.all(color: i == index ? IpColors.neon : IpColors.line),
-                ),
-                // Large text sizes shrink the label rather than overflow the pill.
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(labels[i], maxLines: 1, style: IpText.body(13.5, weight: FontWeight.w600, color: i == index ? IpColors.neon : IpColors.muted)),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    ]);
   }
 }
 

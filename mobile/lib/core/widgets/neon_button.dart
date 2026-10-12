@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../app/theme/typography.dart';
+import 'min_tap_target.dart';
 
 enum NeonButtonVariant { primary, ghost, danger }
 
@@ -58,7 +59,11 @@ class _NeonButtonState extends State<NeonButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.loading)
-          SizedBox(width: fontSize + 2, height: fontSize + 2, child: CircularProgressIndicator(strokeWidth: 2, color: fg))
+          SizedBox(
+            width: fontSize + 2,
+            height: fontSize + 2,
+            child: CircularProgressIndicator(strokeWidth: 2, color: fg),
+          )
         else if (widget.icon != null)
           Icon(widget.icon, size: fontSize + 4, color: fg),
         if (widget.loading || widget.icon != null) const SizedBox(width: 8),
@@ -77,33 +82,41 @@ class _NeonButtonState extends State<NeonButton> {
       button: true,
       enabled: _enabled,
       label: widget.label,
+      // The visible button's own tap handler is excluded with its children; without this a screen reader can read the
+      // button but not press it.
+      onTap: _enabled ? widget.onPressed : null,
       excludeSemantics: true,
-      child: Opacity(
-        opacity: widget.onPressed == null ? 0.45 : 1,
-        child: AnimatedScale(
-          scale: _down && _enabled ? 0.97 : 1,
-          duration: const Duration(milliseconds: 120),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(radius),
-              border: Border.all(color: border),
-              boxShadow: _enabled ? glow : const [],
-            ),
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
+      child: MinTapTarget(
+        child: Opacity(
+          opacity: widget.onPressed == null ? 0.45 : 1,
+          child: AnimatedScale(
+            scale: _down && _enabled ? 0.97 : 1,
+            duration: const Duration(milliseconds: 120),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: bg,
                 borderRadius: BorderRadius.circular(radius),
-                onHighlightChanged: (v) => setState(() => _down = v),
-                onTap: _enabled
-                    ? () {
-                        HapticFeedback.selectionClick();
-                        widget.onPressed!();
-                      }
-                    : null,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: height, minWidth: height),
-                  child: Padding(padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 8), child: Center(widthFactor: widget.expand ? null : 1, child: content)),
+                border: Border.all(color: border),
+                boxShadow: _enabled ? glow : const [],
+              ),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(radius),
+                  onHighlightChanged: (v) => setState(() => _down = v),
+                  onTap: _enabled
+                      ? () {
+                          HapticFeedback.selectionClick();
+                          widget.onPressed!();
+                        }
+                      : null,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: height, minWidth: height),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 8),
+                      child: Center(widthFactor: widget.expand ? null : 1, child: content),
+                    ),
+                  ),
                 ),
               ),
             ),

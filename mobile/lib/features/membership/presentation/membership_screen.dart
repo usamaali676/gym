@@ -8,6 +8,7 @@ import '../../../core/api/loaded.dart';
 import '../../../core/policy/app_config.dart';
 import '../../../core/policy/policy_controller.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/spread_row.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../domain/membership.dart';
@@ -79,11 +80,7 @@ class _CurrentPlan extends StatelessWidget {
     return GlassCard(
       neon: true,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text('YOUR PLAN', style: IpText.eyebrow(color: IpColors.neon)),
-          const Spacer(),
-          StatusChip(statusText, tone: tone),
-        ]),
+        SpreadRow(start: Text('YOUR PLAN', style: IpText.eyebrow(color: IpColors.neon)), end: StatusChip(statusText, tone: tone)),
         const SizedBox(height: 10),
         Text(m.plan?.name ?? 'Free', style: IpText.display(22, color: IpColors.ink)),
         if (m.plan?.description != null && m.plan!.description!.isNotEmpty) ...[

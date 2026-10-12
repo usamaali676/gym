@@ -142,9 +142,8 @@ class _OpCard extends StatelessWidget {
             style: IpText.body(13, color: IpColors.muted, height: 1.4),
           ),
           const SizedBox(height: 10),
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          Wrap(alignment: WrapAlignment.end, spacing: 8, runSpacing: 8, children: [
             NeonButton(label: 'Keep server\'s', variant: NeonButtonVariant.ghost, size: NeonButtonSize.small, onPressed: () => queue.discard(op.opId)),
-            const SizedBox(width: 8),
             NeonButton(label: 'Use mine', size: NeonButtonSize.small, onPressed: () => queue.keepMine(op.opId)),
           ]),
         ],

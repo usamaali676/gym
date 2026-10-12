@@ -12,6 +12,9 @@ enum SessionEnd {
 
   /// The member signed out on purpose.
   signedOut,
+
+  /// The member deleted their account (in the app, which both app stores require).
+  accountDeleted,
 }
 
 /// Owns the current [Session]: restores it at launch, hands the token to [ApiClient], rotates it before it runs out

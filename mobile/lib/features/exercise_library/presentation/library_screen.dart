@@ -206,6 +206,7 @@ class _FilterChip extends StatelessWidget {
           button: true,
           selected: active,
           label: label,
+          onTap: onTap,
           excludeSemantics: true,
           child: GestureDetector(
             onTap: onTap,

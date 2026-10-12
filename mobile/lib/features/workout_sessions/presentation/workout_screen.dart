@@ -172,7 +172,7 @@ class _TopBar extends ConsumerWidget {
           child: Column(children: [
             Text(view.session.title.toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis, style: IpText.eyebrow(color: IpColors.neon)),
             const SizedBox(height: 2),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center, children: [
               if (e.phase != WorkPhase.finish) Text('Exercise ${(e.idx + 1).clamp(1, total)} of $total  ·  ', style: IpText.body(12.5, color: IpColors.muted)),
               _Live(builder: (now) => Text(_clock(SessionEngine.activeElapsed(e, startedAt: view.session.startedAt, now: now)), style: IpText.number(16, color: IpColors.ink))),
             ]),

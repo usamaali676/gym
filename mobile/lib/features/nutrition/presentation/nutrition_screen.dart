@@ -8,6 +8,7 @@ import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/spread_row.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/neon_progress.dart';
@@ -109,13 +110,9 @@ class _Summary extends StatelessWidget {
     return GlassCard(
       neon: true,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text('CALORIES', style: IpText.eyebrow(color: IpColors.neon)),
-          const Spacer(),
-          if (day.isTrainingDay) const StatusChip('Training day') else const StatusChip('Rest day'),
-        ]),
+        SpreadRow(start: Text('CALORIES', style: IpText.eyebrow(color: IpColors.neon)), end: day.isTrainingDay ? const StatusChip('Training day') : const StatusChip('Rest day')),
         const SizedBox(height: 10),
-        Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
+        Wrap(crossAxisAlignment: WrapCrossAlignment.end, children: [
           Text('${eaten.calories.round()}', style: IpText.number(44, color: IpColors.ink)),
           Text(' / ${t.calories.round()} kcal', style: IpText.body(14, color: IpColors.muted)),
         ]),

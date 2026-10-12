@@ -68,6 +68,7 @@ class _Tile extends StatelessWidget {
       selected: selected,
       button: true,
       label: label,
+      onTap: onTap,
       excludeSemantics: true,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),

@@ -8,6 +8,7 @@ import '../core/sync/offline_queue.dart';
 import '../features/workout_sessions/data/local_workout.dart';
 import '../features/app_gate/presentation/gate_screens.dart';
 import '../features/authentication/presentation/auth_controller.dart';
+import '../features/authentication/presentation/delete_account_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/authentication/presentation/forgot_password_screen.dart';
 import '../features/authentication/presentation/login_screen.dart';
@@ -43,6 +44,7 @@ abstract final class Routes {
   static const updateRequired = '/update-required';
   static const home = '/home';
   static const account = '/account';
+  static const deleteAccount = '/account/delete';
   static const membership = '/membership';
   static const train = '/train';
   static const trainDay = '/train/day';
@@ -145,6 +147,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '${Routes.strength}/:slug', builder: (_, state) => StrengthScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.workout}/:id', builder: (_, state) => WorkoutScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.workout}/:id/summary', builder: (_, state) => WorkoutSummaryScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
+      GoRoute(path: Routes.deleteAccount, builder: (_, _) => const DeleteAccountScreen()),
       GoRoute(path: Routes.sync, builder: (_, _) => const SyncScreen()),
       GoRoute(path: Routes.posture, builder: (_, _) => const PostureListScreen()),
       GoRoute(

@@ -125,7 +125,7 @@ jobs:
           python -m openapi_spec_validator docs/mobile/openapi.yaml
 
   flutter:
-    name: Flutter app (analyze, test, debug APK)
+    name: Flutter app (analyze, test, APK, release bundle)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -165,6 +165,61 @@ jobs:
           path: mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      # A release build runs R8 (code shrinking), which the debug build does not: plugins such as the camera and ML Kit are
+      # where a release-only failure would show up. Without android/key.properties it is signed with the debug key, so it
+      # proves the build and measures its size; it cannot be uploaded to Google Play (see docs/mobile/release.md).
+      - name: Release bundle and per-ABI APKs (debug-signed)
+        run: |
+          flutter build appbundle --release --dart-define=API_BASE_URL=https://api.example.invalid
+          flutter build apk --release --split-per-abi --dart-define=API_BASE_URL=https://api.example.invalid
+          {
+            echo '### Release build sizes (debug-signed, API address is a placeholder)'
+            echo
+            echo '| file | size |'
+            echo '| --- | --- |'
+            for f in build/app/outputs/bundle/release/app-release.aab build/app/outputs/flutter-apk/app-*-release.apk; do
+              echo "| $(basename "$f") | $(du -h "$f" | cut -f1) |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ironpulse-release-aab-debug-signed
+          path: mobile/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 7
+
+  ios:
+    # The iOS app has never been built anywhere else: no macOS and no Xcode in the environment this was written in. This
+    # job compiles it (no code signing, so it cannot be installed or uploaded) and so checks the Podfile, the iOS 15.5
+    # minimum the camera coach's ML Kit needs, and that every plugin builds for iOS. It does NOT run the app.
+    name: iOS build (no code signing)
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Build iOS (release, no code signing)
+        run: flutter build ios --release --no-codesign --dart-define=API_BASE_URL=https://api.example.invalid
+
+      - name: Size of the app bundle
+        run: |
+          {
+            echo '### iOS build (no code signing)'
+            echo
+            echo "Runner.app: $(du -sh build/ios/iphoneos/Runner.app | cut -f1) (not thinned or compressed; an App Store download is smaller)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   app-api-contract:
     name: App against the real API

@@ -7,6 +7,7 @@ import '../../../app/theme/typography.dart';
 import '../../../core/policy/app_config.dart';
 import '../../../core/policy/policy_controller.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/spread_row.dart';
 import '../../../core/widgets/loaded_view.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/neon_progress.dart';
@@ -99,11 +100,7 @@ class _TodayCard extends ConsumerWidget {
     return GlassCard(
       neon: true,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text("TODAY'S WORKOUT", style: IpText.eyebrow(color: IpColors.neon)),
-          const Spacer(),
-          StatusChip(chipText, tone: tone),
-        ]),
+        SpreadRow(start: Text("TODAY'S WORKOUT", style: IpText.eyebrow(color: IpColors.neon)), end: StatusChip(chipText, tone: tone)),
         const SizedBox(height: 12),
         if (!w.hasDay)
           Text('No programme selected yet.', style: IpText.body(15, color: IpColors.muted))
@@ -145,11 +142,10 @@ class _WeekCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text('THIS WEEK', style: IpText.eyebrow(color: IpColors.neon)),
-          const Spacer(),
-          Text('${d.weekDone} of ${d.weekTarget} sessions', style: IpText.body(13, weight: FontWeight.w600, color: IpColors.muted)),
-        ]),
+        SpreadRow(
+          start: Text('THIS WEEK', style: IpText.eyebrow(color: IpColors.neon)),
+          end: Text('${d.weekDone} of ${d.weekTarget} sessions', style: IpText.body(13, weight: FontWeight.w600, color: IpColors.muted)),
+        ),
         const SizedBox(height: 14),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final day in d.weekDays) _DayDot(day: day, letter: _letters[(day.weekday - 1) % 7])]),
       ]),

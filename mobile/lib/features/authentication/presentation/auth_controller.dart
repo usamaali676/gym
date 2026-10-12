@@ -6,6 +6,7 @@ import '../../../core/api/api_error.dart';
 import '../../../core/authentication/session_manager.dart';
 import '../../../core/providers.dart';
 import '../../../core/storage/json_cache.dart';
+import '../../../core/sync/pending_store.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_user.dart';
 
@@ -53,6 +54,8 @@ class AuthController extends Notifier<AuthState> {
       JsonCache.clearAll(ref.read(sharedPreferencesProvider));
       if (reason == SessionEnd.revoked) {
         state = const SignedOut(notice: 'Your session ended. Please sign in again.');
+      } else if (reason == SessionEnd.accountDeleted) {
+        state = const SignedOut(notice: 'Your account has been deleted.');
       } else {
         state = const SignedOut();
       }
@@ -98,6 +101,16 @@ class AuthController extends Notifier<AuthState> {
   Future<void> continueAsGuest() async => state = SignedIn(await _repo.guest());
 
   Future<void> signOut() => _repo.logout();
+
+  /// Deletes the account on the server, then everything about it on this phone: the cached answers, the changes that
+  /// were still waiting to be sent (they belong to an account that no longer exists) and the session.
+  Future<void> deleteAccount({String? password}) async {
+    final current = state;
+    if (current is! SignedIn) return;
+    await _repo.deleteAccount(password: password, guest: current.user.isGuest);
+    await ref.read(pendingStoreProvider).write('${current.user.id}', const []);
+    await _repo.forgetDeletedAccount();
+  }
 
   /// Re-reads the account (after onboarding, profile edits, or coming back online).
   Future<void> refreshUser() async {

@@ -385,6 +385,12 @@ void main() {
 
     await queue.discard(state.rejected.single.opId);
     expect(container.read(offlineQueueProvider).isEmpty, isTrue);
+
+    // deleting the account from the app (a store requirement): a wrong password is refused, the right one deletes it
+    await expectLater(live.auth.deleteAccount(password: 'not-the-password', guest: false), throwsA(isA<ApiError>().having((e) => e.fieldErrors.containsKey('password'), 'password error', true)));
+    expect((await live.auth.me()).id, live.user.id, reason: 'still there after a wrong password');
+    await live.auth.deleteAccount(password: 'correct-horse-battery-9', guest: false);
+    await expectLater(live.api.get('/me'), throwsA(isA<ApiError>()), reason: 'the account and its token are gone');
   }, skip: liveUrl.isEmpty ? 'set --dart-define=LIVE_API_URL to run against a live server' : false, timeout: const Timeout(Duration(minutes: 2)));
 }
 
