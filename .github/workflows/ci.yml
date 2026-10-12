@@ -181,7 +181,7 @@ jobs:
             for f in build/app/outputs/bundle/release/app-release.aab build/app/outputs/flutter-apk/app-*-release.apk; do
               echo "| $(basename "$f") | $(du -h "$f" | cut -f1) |"
             done
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -225,7 +225,7 @@ jobs:
             echo '### iOS build (no code signing)'
             echo
             echo "Runner.app: $(du -sh build/ios/iphoneos/Runner.app | cut -f1) (not thinned or compressed; an App Store download is smaller)"
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
   app-api-contract:
     name: App against the real API
@@ -321,7 +321,7 @@ jobs:
           set -e
           test "$(jq '.clips | length' build-demo-clips/index.json)" = "4"
           for f in build-demo-clips/*.mp4; do
-            read -r codec w h pix < <(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt -of csv=p=0:s=' ' "$f")
+            IFS=, read -r codec w h pix <<< "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt -of csv=p=0 "$f")"
             echo "$f: $codec ${w}x${h} $pix, $(du -k "$f" | cut -f1) KB"
             test "$codec" = h264 && test "$w" = 640 && test "$h" = 640 && test "$pix" = yuv420p
           done

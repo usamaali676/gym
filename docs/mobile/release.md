@@ -12,7 +12,7 @@ first: each has "never run on a device" or "not built" caveats that matter for a
 | `flutter analyze`, all tests, goldens | CI job "Flutter app" | the code and the screens' look |
 | debug APK builds | same | the Android project compiles with every plugin |
 | release AAB + per-ABI APKs build (R8, debug-signed) | same | the release configuration works; sizes are in the job summary |
-| iOS release build, **no code signing** | CI job "iOS build" (macOS 15 runner) | the iOS project, Podfile and plugins compile for iOS 15.5+ |
+| iOS release build, **no code signing** | CI job "iOS build" (macOS 26 runner; passed once, run 33) | the iOS project, Podfile and plugins compile with the current Xcode for iOS 15.5+ (it needs Xcode 26: older runners fail on two plugins) |
 | live contract test against a real server | CI job "App against the real API" | the app's data layer and the API agree |
 
 It does **not** prove: that the app runs on any phone, that the camera coach works with a real camera, that signing works,
