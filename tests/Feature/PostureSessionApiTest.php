@@ -101,7 +101,7 @@ test('xp from clean reps is capped per set and per day', function () {
     $this->actingAs($user)->postJson('/api/posture-sessions', postureSetPayload('barbell-squat', ['client_uuid' => (string) Str::uuid(), 'total_reps' => 40, 'good_reps' => 40, 'bad_reps' => 0, 'rep_log' => [], 'error_counts' => [], 'form_score_min' => 80]))->assertCreated();
     $fourth = $this->actingAs($user)->postJson('/api/posture-sessions', postureSetPayload('barbell-squat', ['client_uuid' => (string) Str::uuid(), 'total_reps' => 40, 'good_reps' => 40, 'bad_reps' => 0, 'rep_log' => [], 'error_counts' => [], 'form_score_min' => 80]))->assertCreated();
 
-    expect(XpEvent::where('user_id', $user->id)->where('type', 'posture_good_rep')->sum('amount'))->toBe(100)
+    expect((int) XpEvent::where('user_id', $user->id)->where('type', 'posture_good_rep')->sum('amount'))->toBe(100)
         ->and($fourth->json('xp.reps'))->toBe(10);
 });
 

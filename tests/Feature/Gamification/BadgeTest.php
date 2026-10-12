@@ -62,7 +62,7 @@ test('finishing a workout awards the first-workout badge once, with xp', functio
     expect(earned($user))->toContain('first-workout');
     $row = UserBadge::where('user_id', $user->id)->firstOrFail();
     expect($row->context)->toMatchArray(['source' => 'workout'])->and($row->awarded_at)->not->toBeNull();
-    $badgeXp = XpEvent::where(['user_id' => $user->id, 'type' => 'badge'])->sum('amount');
+    $badgeXp = (int) XpEvent::where(['user_id' => $user->id, 'type' => 'badge'])->sum('amount'); // MySQL returns SUM() as a string
     expect($badgeXp)->toBe(25);
 
     // a second evaluation changes nothing

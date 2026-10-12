@@ -92,8 +92,10 @@ test('users cannot swap rows of a plan they do not follow', function () {
     $day = PlanDay::create(['plan_id' => $otherPlan->id, 'day_of_week' => 1, 'slug' => 'x', 'name' => 'Monday', 'session_type' => 'push', 'label' => 'PUSH', 'focus' => 'X']);
     $foreign = PlanDayExercise::create(['plan_day_id' => $day->id, 'exercise_id' => Exercise::where('slug', 'barbell-squat')->value('id'), 'position' => 1, 'sets' => 3, 'reps_min' => 5, 'reps_max' => 8, 'focus' => 'x']);
 
+    $exerciseId = Exercise::where('slug', 'barbell-squat')->value('id'); // not "1": ids are not reset between tests on MySQL
+
     $this->actingAs($user)->getJson("/api/plan-items/{$foreign->id}/alternatives")->assertForbidden();
-    $this->actingAs($user)->postJson("/api/plan-items/{$foreign->id}/swap", ['exercise_id' => 1])->assertForbidden();
+    $this->actingAs($user)->postJson("/api/plan-items/{$foreign->id}/swap", ['exercise_id' => $exerciseId])->assertForbidden();
     $this->actingAs($user)->deleteJson("/api/plan-items/{$foreign->id}/swap")->assertForbidden();
 });
 

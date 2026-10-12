@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\ApiException;
+use App\Http\Middleware\Api\ApiResponseHeaders;
 use App\Http\Middleware\Api\AssignRequestId;
 use App\Http\Middleware\Api\EnforceAppVersion;
 use App\Http\Middleware\Api\EnsureAccountActive;
@@ -51,7 +52,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.idempotent' => Idempotent::class,
             'entitled' => EnsureEntitled::class,
         ]);
-        $middleware->group('api.v1', [AssignRequestId::class, ForceJson::class, EnforceAppVersion::class]);
+        $middleware->group('api.v1', [AssignRequestId::class, ApiResponseHeaders::class, ForceJson::class, EnforceAppVersion::class]);
         // Mail apps POST one-click unsubscribes with no session or CSRF token; the signed URL authenticates it.
         $middleware->validateCsrfTokens(except: ['digest/unsubscribe/*']);
         $middleware->web(append: [RejectSuspendedUsers::class, SecurityHeaders::class, TouchLastSeen::class]);
