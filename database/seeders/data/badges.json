@@ -1,0 +1,421 @@
+{
+  "_comment": "Badge catalogue. criteria.metric is computed by App\\Services\\BadgeMetrics; the badge is earned when the metric is >= gte. Edit freely: seeding updates by slug.",
+  "badges": [
+    {
+      "slug": "first-workout",
+      "name": "First Workout",
+      "description": "Finish your first workout.",
+      "icon": "dumbbell",
+      "category": "training",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "workouts_completed",
+        "gte": 1
+      }
+    },
+    {
+      "slug": "workouts-10",
+      "name": "Getting Serious",
+      "description": "Finish 10 workouts.",
+      "icon": "dumbbell",
+      "category": "training",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "workouts_completed",
+        "gte": 10
+      }
+    },
+    {
+      "slug": "workouts-25",
+      "name": "Regular",
+      "description": "Finish 25 workouts.",
+      "icon": "dumbbell",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "workouts_completed",
+        "gte": 25
+      }
+    },
+    {
+      "slug": "workouts-50",
+      "name": "Iron Habit",
+      "description": "Finish 50 workouts.",
+      "icon": "dumbbell",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "workouts_completed",
+        "gte": 50
+      }
+    },
+    {
+      "slug": "workouts-100",
+      "name": "Centurion",
+      "description": "Finish 100 workouts.",
+      "icon": "trophy",
+      "category": "training",
+      "tier": "gold",
+      "xp_reward": 150,
+      "criteria": {
+        "metric": "workouts_completed",
+        "gte": 100
+      }
+    },
+    {
+      "slug": "streak-3",
+      "name": "On a Roll",
+      "description": "Train on 3 scheduled days in a row (rest days never break it).",
+      "icon": "flame",
+      "category": "training",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "longest_streak",
+        "gte": 3
+      }
+    },
+    {
+      "slug": "streak-7",
+      "name": "7-Day Streak",
+      "description": "Keep a 7-day training streak.",
+      "icon": "flame",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "longest_streak",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "streak-14",
+      "name": "Two Weeks Strong",
+      "description": "Keep a 14-day training streak.",
+      "icon": "flame",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 100,
+      "criteria": {
+        "metric": "longest_streak",
+        "gte": 14
+      }
+    },
+    {
+      "slug": "streak-30",
+      "name": "30-Day Streak",
+      "description": "Keep a 30-day training streak.",
+      "icon": "flame",
+      "category": "training",
+      "tier": "gold",
+      "xp_reward": 200,
+      "criteria": {
+        "metric": "longest_streak",
+        "gte": 30
+      }
+    },
+    {
+      "slug": "perfect-week",
+      "name": "Perfect Week",
+      "description": "Finish every scheduled workout in one week.",
+      "icon": "check",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "perfect_weeks",
+        "gte": 1
+      }
+    },
+    {
+      "slug": "perfect-month",
+      "name": "Perfect Month",
+      "description": "Have four perfect weeks.",
+      "icon": "sparkles",
+      "category": "training",
+      "tier": "gold",
+      "xp_reward": 150,
+      "criteria": {
+        "metric": "perfect_weeks",
+        "gte": 4
+      }
+    },
+    {
+      "slug": "volume-10k",
+      "name": "10 Tonnes",
+      "description": "Lift 10,000 kg of total volume.",
+      "icon": "bolt",
+      "category": "training",
+      "tier": "bronze",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "total_volume_kg",
+        "gte": 10000
+      }
+    },
+    {
+      "slug": "volume-100k",
+      "name": "100 Tonnes",
+      "description": "Lift 100,000 kg of total volume.",
+      "icon": "bolt",
+      "category": "training",
+      "tier": "gold",
+      "xp_reward": 150,
+      "criteria": {
+        "metric": "total_volume_kg",
+        "gte": 100000
+      }
+    },
+    {
+      "slug": "reps-1000",
+      "name": "1,000 Reps",
+      "description": "Log 1,000 reps in workouts.",
+      "icon": "repeat",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "total_reps",
+        "gte": 1000
+      }
+    },
+    {
+      "slug": "first-pr",
+      "name": "First PR",
+      "description": "Set your first personal record.",
+      "icon": "star",
+      "category": "training",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "prs",
+        "gte": 1
+      }
+    },
+    {
+      "slug": "prs-10",
+      "name": "PR Hunter",
+      "description": "Collect 10 personal records.",
+      "icon": "star",
+      "category": "training",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "prs",
+        "gte": 10
+      }
+    },
+    {
+      "slug": "posture-first",
+      "name": "Form Check",
+      "description": "Finish your first Posture Lab set.",
+      "icon": "scan",
+      "category": "posture",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "posture_sets",
+        "gte": 1
+      }
+    },
+    {
+      "slug": "perfect-reps-100",
+      "name": "100 Perfect Reps",
+      "description": "Complete 100 clean reps in the Posture Lab.",
+      "icon": "scan",
+      "category": "posture",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "posture_good_reps",
+        "gte": 100
+      }
+    },
+    {
+      "slug": "perfect-reps-500",
+      "name": "500 Perfect Reps",
+      "description": "Complete 500 clean reps in the Posture Lab.",
+      "icon": "scan",
+      "category": "posture",
+      "tier": "gold",
+      "xp_reward": 150,
+      "criteria": {
+        "metric": "posture_good_reps",
+        "gte": 500
+      }
+    },
+    {
+      "slug": "posture-master",
+      "name": "Posture Master",
+      "description": "Score 90+ form on 10 Posture Lab sets.",
+      "icon": "scan",
+      "category": "posture",
+      "tier": "gold",
+      "xp_reward": 150,
+      "criteria": {
+        "metric": "posture_sets_over_90",
+        "gte": 10
+      }
+    },
+    {
+      "slug": "food-week",
+      "name": "Food Diarist",
+      "description": "Log your food on 7 different days.",
+      "icon": "apple",
+      "category": "nutrition",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "food_days",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "food-month",
+      "name": "Tracking Habit",
+      "description": "Log your food on 30 different days.",
+      "icon": "apple",
+      "category": "nutrition",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "food_days",
+        "gte": 30
+      }
+    },
+    {
+      "slug": "protein-pro",
+      "name": "Protein Pro",
+      "description": "Hit your protein target on 7 days.",
+      "icon": "utensils",
+      "category": "nutrition",
+      "tier": "silver",
+      "xp_reward": 75,
+      "criteria": {
+        "metric": "protein_days",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "hydration-hero",
+      "name": "Hydration Hero",
+      "description": "Reach your water goal on 7 days.",
+      "icon": "droplet",
+      "category": "habits",
+      "tier": "silver",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "water_goal_days",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "creatine-7",
+      "name": "Creatine Streak",
+      "description": "Take creatine 7 days in a row.",
+      "icon": "pill",
+      "category": "habits",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "creatine_longest",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "creatine-30",
+      "name": "Creatine Loyalist",
+      "description": "Take creatine 30 days in a row.",
+      "icon": "pill",
+      "category": "habits",
+      "tier": "gold",
+      "xp_reward": 100,
+      "criteria": {
+        "metric": "creatine_longest",
+        "gte": 30
+      }
+    },
+    {
+      "slug": "sleep-week",
+      "name": "Well Rested",
+      "description": "Meet your sleep goal on 7 nights.",
+      "icon": "moon",
+      "category": "habits",
+      "tier": "silver",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "sleep_goal_days",
+        "gte": 7
+      }
+    },
+    {
+      "slug": "body-check",
+      "name": "Body Check",
+      "description": "Log body measurements on 2 different days.",
+      "icon": "scale",
+      "category": "body",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "measurement_days",
+        "gte": 2
+      }
+    },
+    {
+      "slug": "progress-photo",
+      "name": "Picture of Progress",
+      "description": "Upload your first progress photo.",
+      "icon": "image",
+      "category": "body",
+      "tier": "bronze",
+      "xp_reward": 25,
+      "criteria": {
+        "metric": "photos",
+        "gte": 1
+      }
+    },
+    {
+      "slug": "level-5",
+      "name": "Level 5",
+      "description": "Reach level 5.",
+      "icon": "bolt",
+      "category": "level",
+      "tier": "bronze",
+      "xp_reward": 50,
+      "criteria": {
+        "metric": "level",
+        "gte": 5
+      }
+    },
+    {
+      "slug": "level-10",
+      "name": "Level 10",
+      "description": "Reach level 10.",
+      "icon": "bolt",
+      "category": "level",
+      "tier": "silver",
+      "xp_reward": 100,
+      "criteria": {
+        "metric": "level",
+        "gte": 10
+      }
+    },
+    {
+      "slug": "level-20",
+      "name": "Level 20",
+      "description": "Reach level 20.",
+      "icon": "trophy",
+      "category": "level",
+      "tier": "gold",
+      "xp_reward": 200,
+      "criteria": {
+        "metric": "level",
+        "gte": 20
+      }
+    }
+  ]
+}

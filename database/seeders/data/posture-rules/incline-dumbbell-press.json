@@ -1,0 +1,94 @@
+{
+  "exercise": "incline-dumbbell-press",
+  "tier": "full",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "forearm_vertical": {
+        "type": "inclination",
+        "from": "elbow",
+        "to": "wrist",
+        "ref": "vertical"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 165,
+      "peak": 82,
+      "tolerance": 14,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Lower the weight until your elbows reach about 90 degrees."
+    },
+    "checks": [
+      {
+        "id": "forearm_angle",
+        "label": "Forearms not vertical",
+        "message": "Keep your forearms vertical over your elbows at the bottom.",
+        "measure": "forearm_vertical",
+        "op": ">",
+        "value": 28,
+        "severity": "minor",
+        "phases": [
+          "peak"
+        ],
+        "frames": 4,
+        "segments": [
+          "forearm"
+        ]
+      },
+      {
+        "id": "lockout",
+        "label": "Not locking out",
+        "message": "Finish each rep with your arms fully extended.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 155,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at chest height. Dumbbells can travel wider than a bar, so keep the arm nearest the camera in view."
+    },
+    "tracks": [
+      "reps from elbow",
+      "forearms not vertical",
+      "not locking out"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}

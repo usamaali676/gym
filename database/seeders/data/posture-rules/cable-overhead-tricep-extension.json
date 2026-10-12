@@ -1,0 +1,115 @@
+{
+  "exercise": "cable-overhead-tricep-extension",
+  "tier": "simplified",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "elbow",
+      "wrist",
+      "hip"
+    ],
+    "measures": {
+      "elbow": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "upper_arm_drift": {
+        "type": "inclination",
+        "from": "shoulder",
+        "to": "elbow",
+        "ref": "vertical",
+        "relative": "delta"
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "elbow",
+      "start": 62,
+      "peak": 165,
+      "tolerance": 14,
+      "min_ms": 800,
+      "max_ms": 14000,
+      "partial_message": "Extend until your arms are straight overhead."
+    },
+    "checks": [
+      {
+        "id": "elbow_drift",
+        "label": "Elbows drifting",
+        "message": "Keep your elbows close to your head. Only your forearms should move.",
+        "measure": "upper_arm_drift",
+        "op": ">",
+        "value": 24,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "upper_arm"
+        ]
+      },
+      {
+        "id": "arching",
+        "label": "Arching your back",
+        "message": "Brace your core and keep your ribs down. Do not arch to push the weight.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 13,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "lockout",
+        "label": "Not locking out",
+        "message": "Extend until your arms are straight overhead.",
+        "measure": "elbow",
+        "op": "<",
+        "value": 155,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "forearm",
+          "upper_arm"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at shoulder height, with the cable behind you."
+    },
+    "tracks": [
+      "reps from elbow",
+      "elbows drifting",
+      "arching your back",
+      "not locking out"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

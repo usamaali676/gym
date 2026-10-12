@@ -1,0 +1,115 @@
+{
+  "exercise": "plank",
+  "tier": "generic",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "hip",
+      "ankle"
+    ],
+    "measures": {
+      "body_incline": {
+        "type": "inclination",
+        "from": "ankle",
+        "to": "shoulder",
+        "ref": "horizontal"
+      },
+      "hip_line": {
+        "type": "line_offset",
+        "from": "shoulder",
+        "to": "ankle",
+        "point": "hip",
+        "norm": "torso"
+      },
+      "neck_neutral": {
+        "type": "angle",
+        "points": [
+          "ear",
+          "shoulder",
+          "hip"
+        ]
+      }
+    },
+    "rep": {
+      "hold": true,
+      "in_position": [
+        {
+          "measure": "body_incline",
+          "op": "<",
+          "value": 28
+        }
+      ],
+      "settle_ms": 900,
+      "grace_ms": 1000,
+      "min_hold_ms": 5000
+    },
+    "checks": [
+      {
+        "id": "hips_sagging",
+        "label": "Hips sagging",
+        "message": "Squeeze your glutes and abs. Lift your hips into one straight line.",
+        "measure": "hip_line",
+        "op": "<",
+        "value": -0.14,
+        "severity": "major",
+        "frames": 6,
+        "segments": [
+          "torso",
+          "thigh"
+        ]
+      },
+      {
+        "id": "hips_piking",
+        "label": "Hips too high",
+        "message": "Lower your hips so your body is one straight line.",
+        "measure": "hip_line",
+        "op": ">",
+        "value": 0.16,
+        "severity": "minor",
+        "frames": 6,
+        "segments": [
+          "torso",
+          "thigh"
+        ]
+      },
+      {
+        "id": "head_dropping",
+        "label": "Head dropping",
+        "message": "Look at the floor just ahead of your hands and keep your neck long.",
+        "measure": "neck_neutral",
+        "op": "<",
+        "value": 140,
+        "severity": "minor",
+        "frames": 8,
+        "segments": [
+          "neck"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at floor level, about 2 m away, with your whole body in frame. The rule starts timing after the camera has seen you in a plank for a moment."
+    },
+    "tracks": [
+      "hold time (body incline)",
+      "hips sagging",
+      "hips too high",
+      "head dropping"
+    ],
+    "accuracy": "This is a warm-up helper with simple rules. It counts reps and flags the most common mistakes, nothing more."
+  }
+}

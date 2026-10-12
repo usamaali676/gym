@@ -1,0 +1,222 @@
+{
+  "_comment": "Form content for the 31 plan exercises (keyed by slug). regions use the 3D model's muscle vocabulary: chest_upper chest_lower delt_front delt_side delt_rear biceps triceps forearms lats mid_back traps lower_back abs glutes quads hamstrings calves.",
+  "plan": {
+    "flat-barbell-bench-press": {
+      "description": "The classic horizontal press for overall chest mass, with the front delts and triceps assisting.",
+      "cues": ["Lie with your eyes under the bar, feet flat, shoulder blades pinched together and down", "Grip just wider than shoulder width with wrists stacked over elbows", "Lower the bar under control to the lower chest with elbows about 45-60 degrees from your torso", "Press up and slightly back toward the rack, keeping your glutes on the bench"],
+      "mistakes": ["Bouncing the bar off the chest", "Flaring the elbows to 90 degrees, which stresses the shoulders", "Lifting the hips or letting the shoulder blades slide forward", "An uneven bar path, with one side rising faster"],
+      "breathing": "Breathe in and brace on the way down, then breathe out as you press past the sticking point.",
+      "regions": { "primary": ["chest_upper", "chest_lower"], "secondary": ["delt_front", "triceps"] }
+    },
+    "incline-dumbbell-press": {
+      "description": "A press on a 30 to 45 degree bench that shifts the load to the upper chest and allows a deeper stretch than a bar.",
+      "cues": ["Set the bench to 30-45 degrees and kick the dumbbells up to the start position", "Set your shoulder blades back and down before the first rep", "Lower until your elbows are just below the bench line with forearms vertical", "Press up and slightly in without clanging the dumbbells together"],
+      "mistakes": ["Setting the bench so steep it becomes a shoulder press", "Letting the dumbbells drift forward over your face", "Cutting the range of motion short"],
+      "breathing": "Breathe in on the way down, out as you press up.",
+      "regions": { "primary": ["chest_upper"], "secondary": ["delt_front", "triceps"] }
+    },
+    "cable-lower-chest-fly": {
+      "description": "A high-to-low cable fly that sweeps the arms down and across to isolate the lower chest fibres.",
+      "cues": ["Set the pulleys high and step forward into a staggered stance", "Keep a slight, fixed bend in the elbows", "Sweep your hands down and together toward your belly button, squeezing the lower chest", "Return slowly until you feel a stretch across the chest, no further"],
+      "mistakes": ["Bending and straightening the elbows so it becomes a press", "Using momentum from the torso", "Letting the hands travel far behind the body line"],
+      "breathing": "Breathe out as your hands meet, in as the arms open.",
+      "regions": { "primary": ["chest_lower"], "secondary": ["delt_front"] }
+    },
+    "seated-db-overhead-press": {
+      "description": "A seated dumbbell press that builds the front and side delts with a free path for each arm.",
+      "cues": ["Sit with your back supported, core braced and dumbbells at shoulder height", "Press straight up until your arms are nearly locked, wrists stacked over elbows", "Lower to about ear level with control", "Keep your ribs down and avoid arching the lower back"],
+      "mistakes": ["Excessive lower-back arch", "Pressing forward instead of straight up", "Letting the elbows flare far behind the torso"],
+      "breathing": "Brace your core, then breathe out as you press.",
+      "regions": { "primary": ["delt_front", "delt_side"], "secondary": ["triceps", "traps"] }
+    },
+    "side-lateral-raise": {
+      "description": "The main exercise for shoulder width: raise the arms out to the sides to load the side delts.",
+      "cues": ["Stand tall with soft knees and the dumbbells at your sides", "Lead with the elbows and raise your arms out to shoulder height, not higher", "Keep a slight bend in the elbows throughout", "Lower slowly over 2-3 seconds"],
+      "mistakes": ["Swinging the torso to heave the weights up", "Shrugging the traps toward the ears", "Raising the arms above shoulder height", "Using a weight that is too heavy"],
+      "breathing": "Breathe out as you raise, in as you lower.",
+      "regions": { "primary": ["delt_side"], "secondary": ["delt_front", "traps"] }
+    },
+    "skull-crushers": {
+      "description": "A lying triceps extension that loads the long head of the triceps through a deep stretch.",
+      "cues": ["Lie on a bench with the bar over your chest and arms vertical", "Keep your upper arms fixed, pointing slightly back over your head", "Lower the bar toward your forehead by bending only at the elbows", "Extend back up without letting the elbows flare wide"],
+      "mistakes": ["Elbows drifting forward and out so it turns into a press", "Going too heavy and cutting the range", "Bending the wrists back under load"],
+      "breathing": "Breathe in as you lower, out as you extend.",
+      "regions": { "primary": ["triceps"], "secondary": ["forearms"] }
+    },
+    "rope-tricep-pushdown": {
+      "description": "A cable pushdown for triceps isolation with a rope that lets the hands spread at the bottom.",
+      "cues": ["Stand close to the cable with a slight forward lean and elbows pinned to your sides", "Push the rope down and spread the ends apart at the bottom", "Squeeze the triceps, then return until your forearms are just past 90 degrees", "Keep your shoulders down and still"],
+      "mistakes": ["Elbows drifting forward or flaring out", "Leaning over the weight and using body weight", "Letting the weight stack slam at the top"],
+      "breathing": "Breathe out as you push down, in as you return.",
+      "regions": { "primary": ["triceps"], "secondary": ["forearms"] }
+    },
+    "barbell-row": {
+      "description": "A bent-over row that builds back thickness; the torso stays braced at a fixed hip hinge while the bar is pulled to the lower ribs.",
+      "cues": ["Hinge at the hips until your torso is about 30-45 degrees to the floor, back flat and knees soft", "Grip just outside the knees with the bar starting over mid-foot", "Pull the bar toward your lower ribs, driving the elbows back", "Lower under control without changing your torso angle"],
+      "mistakes": ["Rounding the lower back", "Standing up as you pull and jerking the weight with the hips", "Shrugging the bar up toward the chest", "Craning the neck upward"],
+      "breathing": "Brace before each pull, breathe out as you pull, in as you lower.",
+      "regions": { "primary": ["lats", "mid_back"], "secondary": ["biceps", "delt_rear", "lower_back"] }
+    },
+    "lat-pulldown": {
+      "description": "A vertical pull on the cable that builds lat width. The wide-grip version on Friday spreads the grip beyond shoulder width.",
+      "cues": ["Sit with your thighs locked under the pads and grab the bar just wider than your shoulders", "Lean back slightly and keep your chest up", "Drive your elbows down toward your back pockets and bring the bar to the upper chest", "Control the bar back up until your lats are fully stretched"],
+      "mistakes": ["Pulling the bar behind the neck", "Swinging the torso to move the weight", "Pulling with the hands instead of the elbows", "Letting the weight yank the shoulders up at the top"],
+      "breathing": "Breathe out as you pull down, in as the bar rises.",
+      "regions": { "primary": ["lats"], "secondary": ["biceps", "mid_back", "delt_rear"] }
+    },
+    "seated-cable-row": {
+      "description": "A horizontal cable row for mid-back thickness with constant tension through the full range.",
+      "cues": ["Sit tall with a slight knee bend, chest up and feet braced", "Pull the handle to your lower ribs, squeezing the shoulder blades together", "Pause briefly, then let the arms extend without rounding your back", "Keep the torso still; a small lean is fine"],
+      "mistakes": ["Rocking back and forth with momentum", "Shrugging the shoulders", "Rounding the lower back at the stretch"],
+      "breathing": "Breathe out as you pull, in as you extend.",
+      "regions": { "primary": ["mid_back", "lats"], "secondary": ["biceps", "delt_rear", "traps"] }
+    },
+    "straight-arm-pulldown": {
+      "description": "A straight-arm cable sweep that isolates the lats without the biceps taking over.",
+      "cues": ["Face the high cable with a slight hip hinge", "Keep your arms nearly straight with a soft elbow bend", "Sweep the bar down to your thighs by squeezing the lats", "Control the bar back up to head height"],
+      "mistakes": ["Bending the elbows so it becomes a pushdown", "Leaning back and using momentum", "Letting the bar travel behind the hips"],
+      "breathing": "Breathe out as you sweep down, in as you return.",
+      "regions": { "primary": ["lats"], "secondary": ["triceps", "delt_rear"] }
+    },
+    "face-pull": {
+      "description": "A cable pull to the face for the rear delts and the small rotator-cuff muscles that keep the shoulders healthy.",
+      "cues": ["Set the rope at about face height", "Pull toward your face, splitting the rope so your hands finish beside your ears", "Keep your elbows high and rotate your thumbs back at the end", "Control the return with your torso upright"],
+      "mistakes": ["Pulling too low toward the chest", "Leaning back and using body weight", "Using so much weight the shoulders roll forward"],
+      "breathing": "Breathe out as you pull, in as you return.",
+      "regions": { "primary": ["delt_rear", "traps"], "secondary": ["mid_back"] }
+    },
+    "barbell-curl": {
+      "description": "The standard biceps mass builder: a strict standing curl with an underhand grip.",
+      "cues": ["Stand tall with a shoulder-width underhand grip and elbows tucked at your sides", "Curl the bar up by bending only at the elbows", "Squeeze at the top without letting the elbows drift forward", "Lower for about 2-3 seconds"],
+      "mistakes": ["Swinging the hips to cheat the weight up", "Elbows travelling forward", "Half reps at the bottom", "Leaning back as you curl"],
+      "breathing": "Breathe out as you curl, in as you lower.",
+      "regions": { "primary": ["biceps"], "secondary": ["forearms"] }
+    },
+    "dumbbell-hammer-curl": {
+      "description": "A neutral-grip curl that targets the brachialis and forearm muscles as well as the biceps.",
+      "cues": ["Keep your palms facing each other throughout", "Pin your elbows to your ribs", "Curl to shoulder height without twisting the wrists", "Lower slowly under control"],
+      "mistakes": ["Swinging the dumbbells", "Letting the elbows move forward", "Rushing the lowering phase"],
+      "breathing": "Breathe out as you curl, in as you lower.",
+      "regions": { "primary": ["biceps", "forearms"], "secondary": [] }
+    },
+    "barbell-squat": {
+      "description": "The king of leg exercises: a full squat that builds overall leg mass and trains the whole trunk to brace.",
+      "cues": ["Set the bar on your upper back (not your neck), grip tight and brace your core", "Stand with feet shoulder-width and toes slightly out, then sit down and back", "Keep your knees tracking over your toes with the whole foot planted", "Descend to at least parallel with a neutral spine, then drive up through the mid-foot"],
+      "mistakes": ["Knees caving inward", "Heels lifting or weight shifting onto the toes", "Rounding the lower back at the bottom", "Folding forward over the bar", "Cutting depth"],
+      "breathing": "Take a big breath and brace before you descend, then breathe out after passing the sticking point.",
+      "regions": { "primary": ["quads", "glutes"], "secondary": ["hamstrings", "lower_back", "abs"] }
+    },
+    "leg-press": {
+      "description": "A machine press for quad volume with the back supported, so you can train hard without taxing your spine.",
+      "cues": ["Place your feet shoulder-width at mid-height on the platform", "Lower until your knees are about 90 degrees, or as deep as your lower back stays flat on the pad", "Press through the whole foot without locking out the knees hard", "Keep your hips and lower back pressed into the seat"],
+      "mistakes": ["Lower back peeling off the pad at the bottom", "Locking out the knees forcefully", "Knees caving in", "Bouncing at the bottom"],
+      "breathing": "Breathe in as you lower, out as you press.",
+      "regions": { "primary": ["quads", "glutes"], "secondary": ["hamstrings", "calves"] }
+    },
+    "romanian-deadlift": {
+      "description": "A hip hinge that loads the hamstrings and glutes through a long stretch with the bar close to the legs.",
+      "cues": ["Stand tall holding the bar at your hips with soft knees", "Push your hips back as the bar slides down your thighs", "Keep your back flat and shoulder blades set, stopping when you feel a deep hamstring stretch", "Drive your hips forward to stand tall, squeezing the glutes"],
+      "mistakes": ["Rounding the back", "Squatting instead of hinging (too much knee bend)", "Letting the bar drift away from the legs", "Leaning back at the top"],
+      "breathing": "Brace on the way down, breathe out as you stand.",
+      "regions": { "primary": ["hamstrings", "glutes"], "secondary": ["lower_back", "forearms"] }
+    },
+    "hamstring-curl": {
+      "description": "A machine curl that isolates the hamstrings through a full range.",
+      "cues": ["Line your knee up with the machine pivot with the pad just above your heels", "Curl smoothly toward your glutes", "Squeeze the hamstrings at the top without lifting your hips", "Return slowly over 2-3 seconds"],
+      "mistakes": ["Hips lifting off the pad", "Using momentum", "Stopping short at the bottom"],
+      "breathing": "Breathe out as you curl, in as you lower.",
+      "regions": { "primary": ["hamstrings"], "secondary": ["calves"] }
+    },
+    "leg-extension": {
+      "description": "A machine extension that isolates the quadriceps.",
+      "cues": ["Sit with your back against the pad and your knee in line with the pivot", "Extend until your legs are almost straight, squeezing the quads", "Pause for a second, then lower slowly", "Keep your hips down in the seat"],
+      "mistakes": ["Swinging the weight up with momentum", "Hips rising off the seat", "Slamming into a hard lockout"],
+      "breathing": "Breathe out as you extend, in as you lower.",
+      "regions": { "primary": ["quads"], "secondary": [] }
+    },
+    "standing-calf-raise": {
+      "description": "A loaded heel raise that trains the calves through a full stretch and contraction.",
+      "cues": ["Put the balls of your feet on the platform with your heels hanging off", "Rise as high as you can onto your toes", "Pause at the top, then lower into a deep stretch", "Keep your knees nearly straight and move slowly"],
+      "mistakes": ["Bouncing out of the bottom", "A short range of motion", "Rolling the ankles outward"],
+      "breathing": "Breathe out as you rise, in as you lower.",
+      "regions": { "primary": ["calves"], "secondary": [] }
+    },
+    "arnold-press": {
+      "description": "A rotating dumbbell press that hits the front, side and rear delts in one movement.",
+      "cues": ["Start with the dumbbells in front of your chest, palms facing you", "As you press up, rotate your palms to face forward", "Finish with your arms nearly straight overhead", "Reverse the rotation as you lower"],
+      "mistakes": ["Arching the lower back", "Rushing the rotation", "Flaring the elbows too early"],
+      "breathing": "Breathe out as you press, in as you lower.",
+      "regions": { "primary": ["delt_front", "delt_side"], "secondary": ["triceps", "delt_rear"] }
+    },
+    "reverse-pec-deck-rear-delts": {
+      "description": "A reverse fly on the pec-deck machine that isolates the rear delts.",
+      "cues": ["Rest your chest on the pad with the handles at shoulder height and a slight bend in the elbows", "Sweep your arms back and out in a wide arc", "Squeeze the rear delts without shrugging", "Return under control without letting the weights rest"],
+      "mistakes": ["Pulling with the arms and shrugging", "Rocking the torso", "Setting the handles too low or too high"],
+      "breathing": "Breathe out as you sweep back, in as you return.",
+      "regions": { "primary": ["delt_rear"], "secondary": ["mid_back", "traps"] }
+    },
+    "incline-bench-press": {
+      "description": "A barbell press on a 30 degree bench for upper-chest development.",
+      "cues": ["Set the bench to about 30 degrees with your eyes under the bar and shoulder blades set", "Lower to the upper chest with your elbows about 45-60 degrees from the torso", "Press up and slightly back", "Keep your glutes on the bench and feet planted"],
+      "mistakes": ["Setting the bench too steep", "Bouncing the bar off the chest", "Bending the wrists back", "An uneven lockout"],
+      "breathing": "Breathe in and brace on the way down, out as you press.",
+      "regions": { "primary": ["chest_upper"], "secondary": ["delt_front", "triceps"] }
+    },
+    "butterfly-machine": {
+      "description": "A machine fly that squeezes the chest with constant tension.",
+      "cues": ["Set the seat so the handles are at chest height with your back flat against the pad", "Keep a slight bend in the elbows and bring the handles together in front of your chest", "Squeeze for a second", "Return until you feel a gentle stretch, not past the shoulder line"],
+      "mistakes": ["Letting the shoulders roll forward", "Using momentum", "Using too much weight and cutting the range"],
+      "breathing": "Breathe out as the handles meet, in as they open.",
+      "regions": { "primary": ["chest_upper", "chest_lower"], "secondary": ["delt_front"] }
+    },
+    "cable-overhead-tricep-extension": {
+      "description": "An overhead cable extension that stretches and loads the long head of the triceps.",
+      "cues": ["Face away from the cable with the rope behind your head and elbows pointing forward", "Take a small lunge stance for stability with your upper arms close to your ears", "Extend your arms overhead by straightening only the elbows", "Return to a deep stretch behind your head"],
+      "mistakes": ["Flaring the elbows wide", "Arching the lower back", "Moving the upper arms instead of keeping them fixed"],
+      "breathing": "Breathe out as you extend, in as you return.",
+      "regions": { "primary": ["triceps"], "secondary": [] }
+    },
+    "reverse-grip-tricep-pushdown": {
+      "description": "An underhand-grip pushdown that biases the outer head of the triceps.",
+      "cues": ["Use an underhand grip on a straight or EZ bar", "Pin your elbows to your sides", "Push down until your arms are straight, squeezing the outer triceps", "Return slowly until your forearms are just past 90 degrees"],
+      "mistakes": ["Elbows drifting forward", "Bending the wrists back", "Using body weight to move the stack"],
+      "breathing": "Breathe out as you push down, in as you return.",
+      "regions": { "primary": ["triceps"], "secondary": ["forearms"] }
+    },
+    "pull-ups-assisted-pull-ups": {
+      "description": "A bodyweight vertical pull for lat width and strength. Use a band or assist machine until you can do full reps unassisted.",
+      "cues": ["Hang from the bar with a grip slightly wider than your shoulders and shoulders pulled down", "Drive your elbows down and back, leading with the chest", "Pull until your chin clears the bar", "Lower to a full hang under control"],
+      "mistakes": ["Kipping or swinging", "Half reps that never reach a full hang", "Jutting the chin forward without the chest rising", "Shrugging the shoulders at the bottom"],
+      "breathing": "Breathe out as you pull up, in as you lower.",
+      "regions": { "primary": ["lats"], "secondary": ["biceps", "mid_back", "forearms"] }
+    },
+    "single-arm-dumbbell-row": {
+      "description": "A one-arm row braced on a bench that builds back thickness and corrects left/right imbalances.",
+      "cues": ["Place one hand and knee on the bench with your back flat and parallel to the floor", "Pull the dumbbell toward your hip with the elbow close to your body", "Squeeze the shoulder blade back at the top", "Lower fully with control and no twisting of the torso"],
+      "mistakes": ["Rotating the torso to heave the weight", "Pulling toward the chest with the elbow flared", "Rounding the back"],
+      "breathing": "Breathe out as you pull, in as you lower.",
+      "regions": { "primary": ["lats", "mid_back"], "secondary": ["biceps", "delt_rear", "forearms"] }
+    },
+    "shrugs-db-or-barbell": {
+      "description": "A simple lift that builds the upper traps, using dumbbells or a barbell.",
+      "cues": ["Stand tall with the weight at your sides or in front of your thighs", "Lift your shoulders straight up toward your ears", "Pause and squeeze the traps at the top", "Lower slowly to a full stretch"],
+      "mistakes": ["Rolling the shoulders, which adds joint stress and no benefit", "Bending the elbows to help the lift", "Jutting the head forward"],
+      "breathing": "Breathe out as you shrug, in as you lower.",
+      "regions": { "primary": ["traps"], "secondary": ["forearms"] }
+    },
+    "spider-curl": {
+      "description": "A curl done chest-down on an incline bench so the arms hang straight, which removes swing and strongly contracts the biceps peak.",
+      "cues": ["Lie chest-down on an incline bench with your arms hanging straight down", "Curl the weight up, keeping your upper arms vertical", "Squeeze the biceps hard at the top", "Lower until your arms are fully extended"],
+      "mistakes": ["Lifting the chest off the bench", "Swinging the upper arms backward", "Using momentum"],
+      "breathing": "Breathe out as you curl, in as you lower.",
+      "regions": { "primary": ["biceps"], "secondary": ["forearms"] }
+    },
+    "preacher-curl": {
+      "description": "A curl over a preacher pad that isolates the lower biceps by removing any help from the shoulders.",
+      "cues": ["Rest your armpits snug against the top of the pad with your upper arms flat on it", "Curl up without lifting your elbows", "Lower slowly to just short of full lockout to protect the elbow", "Keep your wrists straight"],
+      "mistakes": ["Dropping fast into full extension, which strains the elbow", "Lifting the elbows or hips off the pad", "Using too much weight and a partial range"],
+      "breathing": "Breathe out as you curl, in as you lower.",
+      "regions": { "primary": ["biceps"], "secondary": ["forearms"] }
+    }
+  }
+}

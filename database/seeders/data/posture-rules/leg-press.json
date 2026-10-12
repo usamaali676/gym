@@ -1,0 +1,93 @@
+{
+  "exercise": "leg-press",
+  "tier": "simplified",
+  "camera_view": "side",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "auto",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "shoulder",
+      "hip",
+      "knee",
+      "ankle"
+    ],
+    "measures": {
+      "knee": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "knee",
+          "ankle"
+        ]
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "hip",
+        "to": "shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "knee",
+      "start": 163,
+      "peak": 80,
+      "tolerance": 15,
+      "min_ms": 1000,
+      "max_ms": 16000,
+      "partial_message": "Lower until your knees are well bent, only as far as your lower back stays flat."
+    },
+    "checks": [
+      {
+        "id": "hips_lifting",
+        "label": "Hips leaving the pad",
+        "message": "Keep your hips and lower back flat on the pad. Stop before they curl up.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 14,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      },
+      {
+        "id": "hard_lockout",
+        "label": "Locking knees hard",
+        "message": "Stop just short of locking your knees out.",
+        "measure": "knee",
+        "op": ">",
+        "value": 178,
+        "severity": "minor",
+        "scope": "rep",
+        "stat": "max",
+        "segments": [
+          "thigh",
+          "shin"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Film from the side",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away, at about hip height, so the camera sees you side-on (90 degrees).",
+        "Keep your whole body in frame, from your head to your feet, and leave some space above and below.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your joints are visible. Keep the weights or machine from covering the side facing the camera."
+      ],
+      "note": "Camera side-on at knee height, with the sled not hiding your legs."
+    },
+    "tracks": [
+      "reps from knee",
+      "hips leaving the pad",
+      "locking knees hard"
+    ],
+    "accuracy": "Machines and cables hide parts of your body and move the load on a fixed path, so this rule tracks only the main joint angles and whether your torso stays still. Expect fewer and simpler cues than on free-weight lifts, and some missed reps if the machine covers your arms or legs."
+  }
+}

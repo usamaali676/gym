@@ -1,0 +1,180 @@
+{
+  "exercise": "side-lateral-raise",
+  "tier": "full",
+  "camera_view": "front",
+  "version": 1,
+  "config": {
+    "schema": 1,
+    "side": "both",
+    "min_visibility": 0.5,
+    "good_score": 75,
+    "required": [
+      "l_shoulder",
+      "r_shoulder",
+      "l_elbow",
+      "r_elbow",
+      "l_wrist",
+      "r_wrist",
+      "l_hip",
+      "r_hip"
+    ],
+    "measures": {
+      "abduction": {
+        "type": "angle",
+        "points": [
+          "hip",
+          "shoulder",
+          "elbow"
+        ]
+      },
+      "abd_l": {
+        "type": "angle",
+        "points": [
+          "l_hip",
+          "l_shoulder",
+          "l_elbow"
+        ]
+      },
+      "abd_r": {
+        "type": "angle",
+        "points": [
+          "r_hip",
+          "r_shoulder",
+          "r_elbow"
+        ]
+      },
+      "arm_unevenness": {
+        "type": "diff",
+        "a": "abd_l",
+        "b": "abd_r"
+      },
+      "elbow_bend": {
+        "type": "angle",
+        "points": [
+          "shoulder",
+          "elbow",
+          "wrist"
+        ]
+      },
+      "neck_gap": {
+        "type": "ratio",
+        "num": [
+          "ear",
+          "shoulder"
+        ],
+        "den": [
+          "l_shoulder",
+          "r_shoulder"
+        ],
+        "relative": "ratio"
+      },
+      "torso_sway": {
+        "type": "inclination",
+        "from": "mid_hip",
+        "to": "mid_shoulder",
+        "ref": "vertical",
+        "relative": "delta"
+      }
+    },
+    "rep": {
+      "signal": "abduction",
+      "start": 15,
+      "peak": 85,
+      "tolerance": 12,
+      "min_ms": 700,
+      "max_ms": 12000,
+      "partial_message": "Raise your arms out to shoulder height."
+    },
+    "checks": [
+      {
+        "id": "too_high",
+        "label": "Raising too high",
+        "message": "Stop at shoulder height.",
+        "measure": "abduction",
+        "op": ">",
+        "value": 108,
+        "severity": "minor",
+        "frames": 4,
+        "segments": [
+          "upper_arm",
+          "forearm"
+        ]
+      },
+      {
+        "id": "uneven",
+        "label": "Arms uneven",
+        "message": "Raise both arms together to the same height.",
+        "measure": "arm_unevenness",
+        "op": ">",
+        "value": 22,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "arm"
+        ]
+      },
+      {
+        "id": "straight_arms",
+        "label": "Elbows too bent",
+        "message": "Keep a soft, fixed bend in your elbows. Lead with your elbows, not your hands.",
+        "measure": "elbow_bend",
+        "op": "<",
+        "value": 120,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "forearm"
+        ]
+      },
+      {
+        "id": "shrugging",
+        "label": "Shrugging",
+        "message": "Keep your shoulders down. Think of reaching your hands out, not up.",
+        "measure": "neck_gap",
+        "op": "<",
+        "value": 0.78,
+        "severity": "minor",
+        "frames": 5,
+        "segments": [
+          "shoulders",
+          "neck"
+        ]
+      },
+      {
+        "id": "body_swing",
+        "label": "Body swinging",
+        "message": "Don't swing. Stand tall and let the delts do the work.",
+        "measure": "torso_sway",
+        "op": ">",
+        "value": 10,
+        "severity": "major",
+        "abs": true,
+        "frames": 5,
+        "segments": [
+          "torso"
+        ]
+      }
+    ]
+  },
+  "guidance": {
+    "camera": {
+      "title": "Face the camera",
+      "steps": [
+        "Prop your phone or laptop 2.5 to 3 m away at chest height, with you facing it.",
+        "Stand far enough back that both hands stay in frame at the top of every rep.",
+        "Light the room from the front or above. A bright window behind you makes the camera lose your outline.",
+        "Wear fitted clothing so your shoulders and elbows are visible."
+      ],
+      "note": "Stand facing the camera with both hands in frame. A dumbbell in each hand can hide your wrists, which is fine."
+    },
+    "tracks": [
+      "reps from abduction",
+      "raising too high",
+      "arms uneven",
+      "elbows too bent",
+      "shrugging",
+      "body swinging"
+    ],
+    "accuracy": "Free-weight lifts are the best case for a single camera: the joints that matter are visible and move in a plane the camera can see. Treat the feedback as a second pair of eyes, not a coach: a camera in 2D cannot see rotation or depth, and a lifter in the wrong clothes or light will confuse it."
+  }
+}
