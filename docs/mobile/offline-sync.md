@@ -14,7 +14,7 @@ basement gym.** This page says what works without a connection, what does not, a
 
 ## What needs a connection
 
-* **Swapping an exercise** (the server knows the member's equipment and the plan).
+* **Adding your own food** and **swapping an exercise** (the server knows the member's equipment and the plan).
 * **Starting a workout.** The server builds the session from the member's plan and history (suggestions, last results).
 * Signing in, registering, onboarding, password reset, membership changes.
 * **Food logging and the food calculator.** The app does no food maths; the server does (150 g × 20 g/100 g = 30 g), so an

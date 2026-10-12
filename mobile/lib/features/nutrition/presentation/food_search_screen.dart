@@ -9,6 +9,7 @@ import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../domain/nutrition.dart';
 import 'nutrition_providers.dart';
@@ -163,6 +164,21 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
                               );
                             },
                           ),
+          ),
+          // Always reachable, including when nothing was found: the food may simply not be in the catalogue.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+            child: NeonButton(
+              label: 'Add your own food',
+              icon: Icons.add,
+              variant: NeonButtonVariant.ghost,
+              expand: true,
+              onPressed: () {
+                final name = _controller.text.trim();
+                final q = [if (widget.meal != null) 'meal=${widget.meal}', if (widget.date != null) 'date=${widget.date}', if (name.isNotEmpty) 'name=${Uri.encodeQueryComponent(name)}'].join('&');
+                context.push('${Routes.foodNew}${q.isEmpty ? '' : '?$q'}');
+              },
+            ),
           ),
         ]),
       ),

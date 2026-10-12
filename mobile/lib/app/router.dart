@@ -18,6 +18,7 @@ import '../features/exercise_library/presentation/exercise_detail_screen.dart';
 import '../features/home/presentation/account_screen.dart';
 import '../features/home/presentation/app_shell.dart';
 import '../features/membership/presentation/membership_screen.dart';
+import '../features/nutrition/presentation/custom_food_screen.dart';
 import '../features/nutrition/presentation/food_amount_screen.dart';
 import '../features/nutrition/presentation/food_search_screen.dart';
 import '../features/nutrition/presentation/nutrition_screen.dart';
@@ -58,6 +59,7 @@ abstract final class Routes {
   static const fuel = '/fuel';
   static const foodSearch = '/fuel/search';
   static const foodAmount = '/fuel/food';
+  static const foodNew = '/fuel/new-food';
   static const exercise = '/library/exercise';
 
   /// Pages a signed-out visitor may see.
@@ -129,6 +131,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.foodSearch,
         builder: (_, state) => FoodSearchScreen(meal: state.uri.queryParameters['meal'], date: state.uri.queryParameters['date']),
+      ),
+      GoRoute(
+        path: Routes.foodNew,
+        builder: (_, state) => CustomFoodScreen(meal: state.uri.queryParameters['meal'], date: state.uri.queryParameters['date'], name: state.uri.queryParameters['name']),
       ),
       GoRoute(
         path: '${Routes.foodAmount}/:id',

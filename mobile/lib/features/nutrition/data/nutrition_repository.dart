@@ -30,6 +30,38 @@ class NutritionRepository {
 
   Future<Food> food(int id) => readServer(() async => Food.fromJson((await _api.get('/foods/$id')).map));
 
+  /// Adds a food to the member's own list (`POST /foods`): numbers per 100 g, as printed on a label. The server checks that the
+  /// energy matches the macros and answers with field messages when it does not.
+  Future<Food> createFood({
+    required String name,
+    String? brand,
+    required String dietType,
+    required double kcal,
+    required double protein,
+    required double carbs,
+    required double fat,
+    double? fibre,
+    String? servingLabel,
+    double? servingGrams,
+  }) => readServer(() async {
+    final res = await _api.post(
+      '/foods',
+      idempotent: true,
+      body: {
+        'name': name.trim(),
+        'brand': ?(brand == null || brand.trim().isEmpty ? null : brand.trim()),
+        'diet_type': dietType,
+        'kcal_100g': kcal,
+        'protein_100g': protein,
+        'carbs_100g': carbs,
+        'fat_100g': fat,
+        'fibre_100g': ?fibre,
+        if (servingLabel != null && servingGrams != null) 'servings': [{'label': servingLabel.trim(), 'grams': servingGrams}],
+      },
+    );
+    return Food.fromJson(res.map.containsKey('food') ? Map<String, dynamic>.from(res.map['food'] as Map) : res.map);
+  });
+
   Future<void> setFavorite(int foodId, bool favorite) async {
     if (favorite) {
       await _api.put('/foods/$foodId/favorite');

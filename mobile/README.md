@@ -93,8 +93,9 @@ Built, and covered by tests (see the [progress log](../docs/mobile/PROGRESS.md) 
   turns it on ([details and limits](../docs/mobile/notifications.md))
 
 * swapping a planned exercise for one of the server's alternatives during a workout
+* adding your own food from a label (the server checks the numbers)
 
-Not built yet: offline food/water/habit logging, progress photos, custom foods, imperial units (the app shows kilograms),
+Not built yet: offline food/water/habit logging, progress photos, saved meals, imperial units (the app shows kilograms),
 push notifications (FCM/APNs), in-app purchase.
 
 **Nothing in this folder has been run on a physical phone, an emulator or an iOS device by the author of these changes.**

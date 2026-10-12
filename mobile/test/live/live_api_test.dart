@@ -197,6 +197,19 @@ void main() {
     final foods = await nutrition.search('chicken');
     expect(foods, isNotEmpty);
     final food = foods.first;
+
+    // the member's own food: the server checks the label numbers (energy must match the macros) and keeps the food private
+    final mine = await nutrition.createFood(name: 'Live test granola', dietType: config.options('diet_preference').first.value.toString(), kcal: 126, protein: 6, carbs: 18, fat: 3, fibre: 2, servingLabel: '1 cup', servingGrams: 90);
+    expect(mine.custom, isTrue);
+    expect(mine.per100g.proteinG, 6);
+    expect(mine.servings.single.grams, 90);
+    expect((await nutrition.search('Live test granola')).map((f) => f.id), contains(mine.id));
+    await expectLater(
+      nutrition.createFood(name: 'Impossible granola', dietType: config.options('diet_preference').first.value.toString(), kcal: 800, protein: 6, carbs: 18, fat: 3),
+      throwsA(isA<ApiError>().having((e) => e.fieldErrors.keys, 'fields', contains('kcal_100g'))),
+      reason: 'calories that do not match the macros are refused with the field named',
+    );
+
     final calc = await nutrition.calculate(foodId: food.id, quantity: 150, unit: 'grams');
     expect(calc.grams, 150);
     // the server's own arithmetic: 150 g x (protein per 100 g) / 100
