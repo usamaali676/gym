@@ -53,7 +53,7 @@ Changing the id means renaming the Kotlin package directory and updating the thr
 3. **Build:** `cd mobile && flutter build appbundle --release --dart-define=API_BASE_URL=https://your.server`
    → `build/app/outputs/bundle/release/app-release.aab`. Upload it to **Internal testing** first and install it from the Play
    link on a real phone.
-4. **Store listing:** short and full description, icon (512 px), feature graphic, at least two phone screenshots, the
+4. **Store listing** (draft text and a no-overclaiming checklist: [store-listing.md](store-listing.md)): short and full description, icon (512 px: `public/icons/icon-512.png`), feature graphic, at least two phone screenshots, the
    privacy-policy URL (required), a contact email.
 5. **App content:** *Data safety* form (section 5), *Content rating* questionnaire, *Target audience* (not for children),
    *App access*: give the reviewers a working account (the server has a demo seeder; do not use a real member), *Health apps*
@@ -154,6 +154,6 @@ Details: [notifications.md](notifications.md).
 * The camera + ML Kit layer, the offline queue and everything else have only run on a desktop test host and in CI (and the debug
   APK/iOS builds were compiled, never run).
 * No in-app purchase, no push (one optional local notification exists and has not been shown on a device), demo clips exist only after you run the render pipeline ([demo-clips.md](demo-clips.md)), no progress photos, no offline food log.
-* `applicationId` / bundle id are placeholders; signing is not set up; no store listing assets exist (icon, screenshots).
-* The launcher icon and splash are the Flutter defaults until you add your own.
+* `applicationId` / bundle id are placeholders; signing is not set up; the store screenshots and the Play feature graphic do not exist yet (a draft of the listing text is in [store-listing.md](store-listing.md)).
+* The launcher icon, the adaptive icon and the launch screen come from the website's bolt icon (`node scripts/export-mobile-icons.mjs`, checked by `test/app/platform_assets_test.dart`); they have not been seen on a real home screen. Replace them with the gym's own artwork when it exists (run the script after editing `public/icons/icon.svg`, or drop in your own files).
 * Accessibility has had automated checks only (see the accessibility notes in the progress log), not a screen-reader session on a device.
