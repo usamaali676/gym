@@ -219,5 +219,10 @@ jobs:
       - name: Unit tests (rule engine, rep counter, geometry, service worker, reminders)
         run: npm run test:js
 
+      # The app's Dart posture engine is checked against what this engine does with the same poses.
+      # If the engine or a rule changes, regenerate the fixture (node scripts/export-posture-parity.mjs) and commit it.
+      - name: Mobile parity fixtures are up to date
+        run: node scripts/export-posture-parity.mjs --check
+
       - name: Production build
         run: npm run build

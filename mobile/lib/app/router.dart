@@ -18,6 +18,8 @@ import '../features/nutrition/presentation/food_amount_screen.dart';
 import '../features/nutrition/presentation/food_search_screen.dart';
 import '../features/nutrition/presentation/nutrition_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/posture/presentation/posture_list_screen.dart';
+import '../features/posture/presentation/posture_session_screen.dart';
 import '../features/progress/presentation/progress_screen.dart';
 import '../features/progress/presentation/strength_screen.dart';
 import '../features/workout_programs/presentation/day_detail_screen.dart';
@@ -45,6 +47,7 @@ abstract final class Routes {
   static const strength = '/progress/strength';
   static const library = '/library';
   static const workout = '/workout';
+  static const posture = '/posture';
   static const fuel = '/fuel';
   static const foodSearch = '/fuel/search';
   static const foodAmount = '/fuel/food';
@@ -54,7 +57,7 @@ abstract final class Routes {
   static const signedOutPages = {welcome, login, register, forgotPassword};
 
   /// The signed-in app. Feature routes added later live under one of these prefixes.
-  static const signedInAreas = [home, train, fuel, progress, library, account, membership, workout];
+  static const signedInAreas = [home, train, fuel, progress, library, account, membership, workout, posture];
 
   static bool inSignedInArea(String location) => signedInAreas.any(location.startsWith);
 }
@@ -128,6 +131,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '${Routes.strength}/:slug', builder: (_, state) => StrengthScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.workout}/:id', builder: (_, state) => WorkoutScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.workout}/:id/summary', builder: (_, state) => WorkoutSummaryScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
+      GoRoute(path: Routes.posture, builder: (_, _) => const PostureListScreen()),
+      GoRoute(
+        path: '${Routes.posture}/:slug',
+        builder: (_, state) => PostureSessionScreen(slug: state.pathParameters['slug'] ?? '', workoutSessionId: int.tryParse(state.uri.queryParameters['workout'] ?? '')),
+      ),
       GoRoute(path: '${Routes.exercise}/:slug', builder: (_, state) => ExerciseDetailScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.programme}/:id', builder: (_, state) => ProgrammeDetailScreen(programmeId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       StatefulShellRoute.indexedStack(

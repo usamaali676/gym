@@ -35,6 +35,13 @@ No secret ever goes into the app: only the public API address. Store and push cr
 flutter analyze
 flutter test                                  # unit + widget + golden tests
 flutter test --update-goldens test/goldens    # after an intentional visual change; review the PNGs first
+
+# against a real Laravel server (the app's own repositories, real payloads; also a CI job)
+php artisan migrate:fresh --seed && php artisan serve --port=8123
+flutter test test/live --dart-define=LIVE_API_URL=http://127.0.0.1:8123
+
+# the camera coach's Dart engine is checked against the website's engine; regenerate after changing either one
+node scripts/export-posture-parity.mjs        # writes test/fixtures/posture_parity.json.gz (CI runs it with --check)
 ```
 
 Widget tests load the real brand fonts and the Material icon font (`test/flutter_test_config.dart`), so golden images
@@ -49,7 +56,8 @@ lib/
   core/authentication/       Session, TokenStore (secure storage), SessionManager (rotation, single-flight refresh)
   core/policy/               /app/config: version policy, maintenance, feature switches, profile choices
   core/widgets/              NeonButton, GlassCard, NeonTextField, StatusChip, state views, ...
-  features/<name>/           authentication, onboarding, home, app_gate (splash / maintenance / update required)
+  features/<name>/           authentication, onboarding, home, app_gate, dashboard, membership, workout_programs,
+                             exercise_library, workout_sessions, nutrition, progress, posture
 test/                        mirrors lib/; test/support has a fake server and an in-memory world
 assets/fonts/                Orbitron, Rajdhani, Inter (SIL OFL), converted from the website's @fontsource files
 ```
@@ -63,10 +71,21 @@ files from `node_modules/@fontsource`.
 
 ## What works today, and what does not
 
-Works (and is covered by tests): sign-in, registration, guest mode (when the server allows it), forgot-password request,
-onboarding with server-provided choices, session restore, token rotation and revocation handling, offline start with a
-cached account, version/maintenance gates, sign-out. The rest of the product (workouts, nutrition, posture coach,
-progress, membership screens, offline queue, notifications) is built in later phases; see the progress log.
+Built, and covered by tests (see the [progress log](../docs/mobile/PROGRESS.md) for the counts and CI runs):
 
-Nothing in this folder has been run on a physical phone or an iOS device by the author of these changes; the Android
-debug APK is built by GitHub Actions, and iOS needs macOS with Xcode.
+* sign-in, registration, guest mode (when the server allows it), forgot-password request, onboarding with server-provided
+  choices, session restore, token rotation and revocation handling, offline start with a cached account, version and
+  maintenance gates, sign-out
+* dashboard, membership screen (shows plan and entitlements; no purchase button, see [payments](../docs/mobile/payments.md)),
+  Train (week, day, programmes), exercise library, the Start Workout engine with persisted-timestamp timers and
+  server-computed results, Fuel (server-side food maths, logging), Progress (trend, measurements, records, badges)
+* the camera form coach: the website's engine ported to Dart and verified against it frame by frame
+  ([details and limits](../docs/mobile/posture-coach.md))
+* every screen has a loading, error, offline (cached) and locked-by-plan state
+
+Not built yet: offline queue for logging while disconnected (workout sets and posture sets need a connection), exercise
+demo clips, progress photos, local and push notifications, in-app purchase.
+
+**Nothing in this folder has been run on a physical phone, an emulator or an iOS device by the author of these changes.**
+The tests run on a desktop Flutter test host; the Android debug APK is built by GitHub Actions and never installed; iOS needs
+macOS with Xcode and has never been built. The camera coach's camera and pose-model layer in particular has never executed.

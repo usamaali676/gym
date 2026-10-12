@@ -8,6 +8,12 @@ abstract interface class DeviceFeedback {
   void setLogged();
   void restOver({required bool sound});
   Future<void> keepScreenOn(bool on);
+
+  /// The camera coach counted a rep: a tap when the form was fine, a firmer buzz when it was not.
+  void repCounted({required bool good});
+
+  /// The camera coach just noticed a form fault.
+  void formAlert();
 }
 
 class PlatformDeviceFeedback implements DeviceFeedback {
@@ -19,6 +25,12 @@ class PlatformDeviceFeedback implements DeviceFeedback {
     HapticFeedback.heavyImpact();
     if (sound) SystemSound.play(SystemSoundType.alert);
   }
+
+  @override
+  void repCounted({required bool good}) => good ? HapticFeedback.mediumImpact() : HapticFeedback.heavyImpact();
+
+  @override
+  void formAlert() => HapticFeedback.heavyImpact();
 
   @override
   Future<void> keepScreenOn(bool on) async {
@@ -41,6 +53,12 @@ class SilentDeviceFeedback implements DeviceFeedback {
 
   @override
   Future<void> keepScreenOn(bool on) async => events.add(on ? 'awake' : 'sleep');
+
+  @override
+  void repCounted({required bool good}) => events.add(good ? 'rep:good' : 'rep:bad');
+
+  @override
+  void formAlert() => events.add('formAlert');
 }
 
 final deviceFeedbackProvider = Provider<DeviceFeedback>((ref) => PlatformDeviceFeedback());

@@ -80,6 +80,23 @@ class AccountScreen extends ConsumerWidget {
               const Icon(Icons.chevron_right, color: IpColors.muted),
             ]),
           ),
+          const SizedBox(height: 12),
+          GlassCard(
+            onTap: () => context.push(Routes.posture),
+            semanticLabel: 'Camera form coach',
+            child: Row(children: [
+              const Icon(Icons.videocam_outlined, color: IpColors.neon),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Camera form coach', style: IpText.display(15, color: IpColors.ink)),
+                  const SizedBox(height: 2),
+                  Text('Count reps and catch form mistakes with your phone', style: IpText.body(13, color: IpColors.muted)),
+                ]),
+              ),
+              const Icon(Icons.chevron_right, color: IpColors.muted),
+            ]),
+          ),
           const SizedBox(height: 16),
           GlassCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

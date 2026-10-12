@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ironpulse/app/app.dart';
 import 'package:ironpulse/app/theme/app_theme.dart';
@@ -24,9 +25,9 @@ Future<void> pumpUntil(WidgetTester tester, Finder finder, {int maxFrames = 80})
   throw TestFailure('Never found ${finder.describeMatch(Plurality.one)} after $maxFrames frames');
 }
 
-Future<void> pumpApp(WidgetTester tester, TestWorld world) async {
+Future<void> pumpApp(WidgetTester tester, TestWorld world, {List<Override> extraOverrides = const []}) async {
   usePhoneScreen(tester);
-  await tester.pumpWidget(ProviderScope(retry: noAutoRetry, overrides: world.overrides, child: const IronPulseApp()));
+  await tester.pumpWidget(ProviderScope(retry: noAutoRetry, overrides: [...world.overrides, ...extraOverrides], child: const IronPulseApp()));
 }
 
 /// A single screen inside the real theme, without the router.

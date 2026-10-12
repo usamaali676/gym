@@ -48,6 +48,8 @@ dependencies:
   intl: ^0.20.3
   wakelock_plus: ^1.8.1
   fl_chart: ^1.2.0
+  camera: ^0.12.1
+  google_mlkit_pose_detection: ^0.16.1
 
 dev_dependencies:
   flutter_test:

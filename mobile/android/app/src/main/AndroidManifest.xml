@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- The debug/profile manifests add this for tooling; a release build needs it to reach the API at all. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The camera form coach. Pictures are analysed on the phone and never stored or sent. The rest of the app does not
+         need a camera, so phones without one can still install it. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
 
     <application
         android:label="IronPulse"

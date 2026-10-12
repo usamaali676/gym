@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/loaded.dart';
 import '../../../core/policy/policy_controller.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/loaded_view.dart';
+import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../membership/presentation/locked_view.dart';
 import '../domain/exercise.dart';
@@ -70,7 +73,12 @@ class ExerciseDetailScreen extends ConsumerWidget {
                   style: IpText.body(13, color: IpColors.muted),
                 ),
               ],
-              if (e.postureSupported) ...[const SizedBox(height: 14), const Align(alignment: Alignment.centerLeft, child: StatusChip('Camera form coach supported', tone: Tone.good, icon: Icons.videocam_outlined))],
+              if (e.postureSupported) ...[
+                const SizedBox(height: 14),
+                const Align(alignment: Alignment.centerLeft, child: StatusChip('Camera form coach supported', tone: Tone.good, icon: Icons.videocam_outlined)),
+                const SizedBox(height: 10),
+                NeonButton(label: 'Check my form', icon: Icons.videocam_outlined, variant: NeonButtonVariant.ghost, expand: true, onPressed: () => context.push('${Routes.posture}/${e.slug}')),
+              ],
             ];
           },
         ),

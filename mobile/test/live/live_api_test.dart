@@ -1,6 +1,7 @@
 @Tags(['live'])
 library;
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -22,12 +23,17 @@ import 'package:ironpulse/features/exercise_library/data/exercise_repository.dar
 import 'package:ironpulse/features/exercise_library/domain/exercise.dart';
 import 'package:ironpulse/features/membership/data/membership_repository.dart';
 import 'package:ironpulse/features/nutrition/data/nutrition_repository.dart';
+import 'package:ironpulse/features/posture/data/posture_repository.dart';
+import 'package:ironpulse/features/posture/domain/geometry.dart';
+import 'package:ironpulse/features/posture/domain/posture_analyzer.dart';
+import 'package:ironpulse/features/posture/domain/posture_models.dart';
 import 'package:ironpulse/features/progress/data/progress_repository.dart';
 import 'package:ironpulse/features/workout_programs/data/plan_repository.dart';
 import 'package:ironpulse/features/workout_sessions/data/session_repository.dart';
 import 'package:ironpulse/features/workout_sessions/domain/session_engine.dart';
 import 'package:ironpulse/features/workout_sessions/domain/workout_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 
 /// Drives the app's repositories against a REAL running Laravel server and checks that every payload parses and every
@@ -246,6 +252,40 @@ void main() {
     expect(badges.xpTotal, greaterThan(0), reason: 'finishing a workout earned XP');
     await progress.deleteMeasurement(measurements.single.id);
     expect((await progress.measurements()).data, isEmpty);
+
+    // ---- camera coach: the server's own rule, run by the Dart engine over recorded landmarks, saved with the real validator
+    final posture = PostureRepository(api: api, cache: cache);
+    final coached = (await posture.exercises()).data;
+    expect(coached, isNotEmpty);
+    expect(coached.map((e) => e.slug), contains('barbell-squat'));
+    for (final e in coached) {
+      // every rule the server serves must be one this app can run
+      final rule = (await posture.rule(e.slug)).data;
+      expect(rule.compiled.measures, isNotEmpty, reason: e.slug);
+    }
+    final squat = (await posture.rule('barbell-squat')).data;
+    expect(squat.guidance.steps, isNotEmpty);
+    final fixture = jsonDecode(utf8.decode(gzip.decode(File('test/fixtures/posture_parity.json.gz').readAsBytesSync()))) as Map<String, dynamic>;
+    final scenario = (fixture['scenarios'] as List).cast<Map<String, dynamic>>().firstWhere((s) => (s['head'] as Map)['id'] == 'squat_clean');
+    final head = scenario['head'] as Map<String, dynamic>;
+    final analyzer = PostureAnalyzer(squat.compiled, aspect: (head['aspect'] as num).toDouble());
+    final times = (head['times'] as List).cast<num>();
+    final frames = scenario['frames'] as List;
+    for (var i = 0; i < frames.length; i++) {
+      final row = frames[i] as List?;
+      analyzer.update(
+        row == null ? null : [for (var k = 0; k < landmarkCount; k++) Landmark((row[k * 3] as int) / 1e4, (row[k * 3 + 1] as int) / 1e4, visibility: (row[k * 3 + 2] as int) / 100)],
+        times[i].toDouble(),
+      );
+    }
+    analyzer.flush(times.last.toDouble());
+    final coachSummary = analyzer.summary(times.last / 1000);
+    expect(coachSummary.totalReps, 3);
+    final postureSet = FinishedSet(summary: coachSummary, startedAt: DateTime.now().toUtc(), clientUuid: const Uuid().v4(), avgFps: 15);
+    final postureSaved = await posture.save(squat, postureSet);
+    expect(postureSaved.created, isTrue, reason: 'the real validator accepts what the Dart engine produces');
+    final postureAgain = await posture.save(squat, postureSet);
+    expect(postureAgain.created, isFalse, reason: 'sending the same set again is recognised, not duplicated');
 
     // ---- the server refuses what it should
     await expectLater(api.get('/me', auth: false), throwsA(isA<ApiError>().having((e) => e.kind, 'kind', ApiErrorKind.unauthenticated)));

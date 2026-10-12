@@ -66,6 +66,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>IronPulse uses the camera to count your reps and check your form. Pictures are analysed on your phone and are never recorded, stored or sent.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<!-- Development: allow http://localhost / LAN servers. Everything else stays HTTPS-only. -->
