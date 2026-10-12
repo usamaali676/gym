@@ -5725,6 +5725,121 @@ components:
         settings:
           type: object
           additionalProperties: true
+        profile_options:
+          type: object
+          properties:
+            sex:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            activity_level:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            fitness_level:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            goal:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            diet_preference:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            unit_system:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            equipment:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            training_days:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  label:
+                    type: string
+                required:
+                - value
+                - label
     ContentManifest:
       type: object
       properties:

@@ -127,3 +127,13 @@ describe('config content', function () {
         expect($features)->toBe(['coach' => false, 'payments' => [], 'push' => false]);
     });
 });
+
+it('publishes the profile form choices so the apps do not hard-code them', function () {
+    $options = $this->getJson('/api/v1/app/config')->json('data.profile_options');
+
+    expect(array_keys($options))->toBe(['sex', 'activity_level', 'fitness_level', 'goal', 'diet_preference', 'unit_system', 'equipment', 'training_days'])
+        ->and(collect($options['goal'])->pluck('value')->all())->toBe(\App\Enums\Goal::values())
+        ->and(collect($options['equipment'])->pluck('value')->all())->toBe(array_keys(config('ironpulse.equipment')))
+        ->and($options['training_days'][0])->toBe(['value' => 1, 'label' => 'Monday'])
+        ->and($options['training_days'])->toHaveCount(7);
+});

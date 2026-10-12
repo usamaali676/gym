@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\ActivityLevel;
+use App\Enums\DietPreference;
+use App\Enums\FitnessLevel;
+use App\Enums\Goal;
+use App\Enums\Sex;
+use App\Enums\UnitSystem;
 use App\Http\Controllers\Controller;
 use App\Models\AppRelease;
 use App\Models\AppVersionPolicy;
@@ -46,6 +52,30 @@ class AppConfigController extends Controller
                 'push' => (bool) config('ironpulse.push.enabled'),
             ],
             'settings' => AppSettingKeys::publicValues(),
+            'profile_options' => $this->profileOptions(),
         ]]);
+    }
+
+    /**
+     * The choices the onboarding / profile forms offer, so the apps never hard-code them (and a new value added on the
+     * server shows up without an app release). Values are what BodyProfileRequest accepts.
+     *
+     * @return array<string, list<array{value: string|int, label: string}>>
+     */
+    private function profileOptions(): array
+    {
+        $enum = fn (array $cases) => array_map(fn ($c) => ['value' => $c->value, 'label' => $c->label()], $cases);
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        return [
+            'sex' => $enum(Sex::cases()),
+            'activity_level' => $enum(ActivityLevel::cases()),
+            'fitness_level' => $enum(FitnessLevel::cases()),
+            'goal' => $enum(Goal::cases()),
+            'diet_preference' => $enum(DietPreference::cases()),
+            'unit_system' => $enum(UnitSystem::cases()),
+            'equipment' => collect(config('ironpulse.equipment'))->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->all(),
+            'training_days' => collect($days)->map(fn ($label, $i) => ['value' => $i + 1, 'label' => $label])->all(),
+        ];
     }
 }

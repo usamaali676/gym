@@ -1,0 +1,107 @@
+/// What `GET /app/config` says: version policy for this build, maintenance, feature switches and the choices the
+/// profile forms offer. Parsed leniently: unknown fields are ignored, missing ones fall back to safe defaults.
+class AppConfig {
+  const AppConfig({
+    required this.versionStatus,
+    required this.storeUrl,
+    required this.latestVersion,
+    required this.releaseNotes,
+    required this.maintenance,
+    required this.guestMode,
+    required this.paymentProviders,
+    required this.pushEnabled,
+    required this.coachEnabled,
+    required this.profileOptions,
+    required this.settings,
+    required this.serverTime,
+  });
+
+  final VersionStatus versionStatus;
+  final String? storeUrl;
+  final String? latestVersion;
+  final String? releaseNotes;
+  final Maintenance? maintenance;
+  final bool guestMode;
+  final List<String> paymentProviders;
+  final bool pushEnabled;
+  final bool coachEnabled;
+  final Map<String, List<ProfileOption>> profileOptions;
+
+  /// Dashboard-managed switches and copy (`features.help_center`, `support.email`, ...).
+  final Map<String, dynamic> settings;
+  final DateTime? serverTime;
+
+  bool setting(String key, {bool fallback = true}) {
+    final v = settings[key];
+    return v is bool ? v : fallback;
+  }
+
+  String? settingText(String key) {
+    final v = settings[key];
+    return v is String && v.isNotEmpty ? v : null;
+  }
+
+  List<ProfileOption> options(String name) => profileOptions[name] ?? const [];
+
+  factory AppConfig.fromJson(Map<String, dynamic> json) {
+    final policy = json['version_policy'] is Map ? Map<String, dynamic>.from(json['version_policy'] as Map) : const <String, dynamic>{};
+    final maintenance = json['maintenance'] is Map ? Map<String, dynamic>.from(json['maintenance'] as Map) : const <String, dynamic>{};
+    final auth = json['auth'] is Map ? Map<String, dynamic>.from(json['auth'] as Map) : const <String, dynamic>{};
+    final features = json['features'] is Map ? Map<String, dynamic>.from(json['features'] as Map) : const <String, dynamic>{};
+    final rawOptions = json['profile_options'] is Map ? Map<String, dynamic>.from(json['profile_options'] as Map) : const <String, dynamic>{};
+
+    return AppConfig(
+      versionStatus: VersionStatus.parse(policy['status'] as String?),
+      storeUrl: _text(policy['store_url']),
+      latestVersion: _text(policy['latest']),
+      releaseNotes: _text(policy['release_notes']),
+      maintenance: maintenance['enabled'] == true
+          ? Maintenance(
+              message: _text(maintenance['message']) ?? 'IronPulse is down for maintenance. Please try again shortly.',
+              endsAt: DateTime.tryParse((maintenance['ends_at'] ?? '').toString())?.toUtc(),
+            )
+          : null,
+      guestMode: auth['guest_mode'] == true,
+      paymentProviders: [for (final p in (features['payments'] as List? ?? const [])) p.toString()],
+      pushEnabled: features['push'] == true,
+      coachEnabled: features['coach'] == true,
+      profileOptions: {
+        for (final e in rawOptions.entries)
+          e.key: [
+            for (final o in (e.value as List? ?? const []))
+              if (o is Map) ProfileOption(o['value'], (o['label'] ?? o['value']).toString()),
+          ],
+      },
+      settings: json['settings'] is Map ? Map<String, dynamic>.from(json['settings'] as Map) : const {},
+      serverTime: DateTime.tryParse((json['server_time'] ?? '').toString())?.toUtc(),
+    );
+  }
+
+  static String? _text(Object? v) => v is String && v.isNotEmpty ? v : null;
+}
+
+enum VersionStatus {
+  ok,
+  updateRecommended,
+  updateRequired;
+
+  static VersionStatus parse(String? raw) => switch (raw) {
+        'update_required' => VersionStatus.updateRequired,
+        'update_recommended' => VersionStatus.updateRecommended,
+        _ => VersionStatus.ok,
+      };
+}
+
+class Maintenance {
+  const Maintenance({required this.message, this.endsAt});
+  final String message;
+  final DateTime? endsAt;
+}
+
+class ProfileOption {
+  const ProfileOption(this.value, this.label);
+
+  /// String for enums (`cutting`), int for weekdays (1 = Monday).
+  final Object? value;
+  final String label;
+}

@@ -123,6 +123,48 @@ jobs:
           git diff --exit-code docs/mobile/openapi.yaml
           python -m openapi_spec_validator docs/mobile/openapi.yaml
 
+  flutter:
+    name: Flutter app (analyze, test, debug APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+          cache: true
+
+      - run: flutter --version
+
+      - run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      # Includes the golden image tests, so the build also fails when the app's look changes unreviewed.
+      - name: Unit, widget and golden tests
+        run: flutter test
+
+      # No server is baked in on purpose: the API address is a build-time choice (see mobile/README.md).
+      - name: Debug APK
+        run: flutter build apk --debug --dart-define=API_BASE_URL=https://api.example.invalid
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ironpulse-debug-apk
+          path: mobile/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
   javascript:
     name: JavaScript
     runs-on: ubuntu-latest
