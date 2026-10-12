@@ -45,3 +45,14 @@ Future<void> pumpUntilHome(WidgetTester tester) async {
   await pumpUntil(tester, find.text('DAY STREAK'));
   await tester.pump(const Duration(milliseconds: 300)); // let any refresh that started with the screen finish
 }
+
+/// Scrolls [finder] into view (building it first if the list is lazy), then taps it. A plain tap on something below
+/// the fold lands on whatever is on top of that spot (often the bottom navigation).
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) {
+    await tester.dragUntilVisible(finder, find.byType(Scrollable).last, const Offset(0, -200));
+  }
+  await tester.ensureVisible(finder);
+  await tester.pump(const Duration(milliseconds: 100));
+  await tester.tap(finder);
+}

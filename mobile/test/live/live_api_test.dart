@@ -21,6 +21,7 @@ import 'package:ironpulse/features/dashboard/data/dashboard_repository.dart';
 import 'package:ironpulse/features/exercise_library/data/exercise_repository.dart';
 import 'package:ironpulse/features/exercise_library/domain/exercise.dart';
 import 'package:ironpulse/features/membership/data/membership_repository.dart';
+import 'package:ironpulse/features/nutrition/data/nutrition_repository.dart';
 import 'package:ironpulse/features/workout_programs/data/plan_repository.dart';
 import 'package:ironpulse/features/workout_sessions/data/session_repository.dart';
 import 'package:ironpulse/features/workout_sessions/domain/session_engine.dart';
@@ -136,6 +137,42 @@ void main() {
     expect(filtered.items.every((e) => e.muscleGroup == 'chest'), isTrue);
     final one = (await library.exercise(page.items.first.slug)).data;
     expect(one.name, page.items.first.name);
+
+    // ---- nutrition: targets on first view, search, the server's calculation, logging, editing, removing
+    final nutrition = NutritionRepository(api: api, cache: cache);
+    var fuelDay = (await nutrition.day()).data;
+    expect(fuelDay.targets, isNotNull, reason: 'targets exist from the first look at the day');
+    expect(fuelDay.meals.map((m) => m.meal), containsAll(['breakfast', 'lunch', 'dinner']));
+
+    final foods = await nutrition.search('chicken');
+    expect(foods, isNotEmpty);
+    final food = foods.first;
+    final calc = await nutrition.calculate(foodId: food.id, quantity: 150, unit: 'grams');
+    expect(calc.grams, 150);
+    // the server's own arithmetic: 150 g x (protein per 100 g) / 100
+    expect(calc.macros.proteinG, closeTo(150 * food.per100g.proteinG / 100, 0.11));
+    final viaServing = food.servings.isEmpty ? null : await nutrition.calculate(foodId: food.id, quantity: 2, unit: 'serving', servingId: food.defaultServing!.id);
+    if (viaServing != null) expect(viaServing.grams, closeTo(2 * food.defaultServing!.grams, 0.01));
+
+    final today = DateTime.now();
+    final entry = await nutrition.log(foodId: food.id, meal: 'lunch', date: today, quantity: 150, unit: 'grams');
+    expect(entry.macros.proteinG, closeTo(calc.macros.proteinG, 0.11), reason: 'what is logged equals what was calculated');
+    fuelDay = (await nutrition.day(today)).data;
+    expect(fuelDay.totals.calories, closeTo(entry.macros.calories, 0.6));
+    expect(fuelDay.meals.firstWhere((m) => m.meal == 'lunch').entries.single.name, entry.name);
+    expect((await nutrition.recent()).map((f) => f.id), contains(food.id));
+
+    await nutrition.updateLog(entry.id, quantity: 300, unit: 'grams');
+    fuelDay = (await nutrition.day(today)).data;
+    expect(fuelDay.meals.firstWhere((m) => m.meal == 'lunch').entries.single.grams, 300);
+
+    await nutrition.setFavorite(food.id, true);
+    expect((await nutrition.favorites()).map((f) => f.id), contains(food.id));
+    await nutrition.setFavorite(food.id, false);
+    expect((await nutrition.favorites()).map((f) => f.id), isNot(contains(food.id)));
+
+    await nutrition.deleteLog(entry.id);
+    expect((await nutrition.day(today)).data.totals.calories, 0);
 
     // ---- a whole workout
     final repo = SessionRepository(api: api, cache: cache);

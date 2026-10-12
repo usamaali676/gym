@@ -122,6 +122,7 @@ class TestWorld {
     server.reply('GET', '/programs', 200, {'data': [programmeJson(), programmeJson(id: 2, name: 'Hypertrophy Plus', selected: false, locked: true, entitlement: 'programs.premium')]});
     server.reply('GET', '/programs/1', 200, {'data': programmeDetailJson()});
     server.on('GET', '/exercises', (o) => exercisePageReply(o));
+    server.reply('GET', '/nutrition/day', 200, {'data': nutritionDayJson()});
   }
 }
 

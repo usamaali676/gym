@@ -468,3 +468,44 @@ Map<String, dynamic> summaryJson() => {
       ],
       'exercises': [],
     };
+
+// ------------------------------------------------------------------------------------------------ nutrition
+
+Map<String, dynamic> foodJson(int id, String name, {double kcal = 165, double protein = 31, double carbs = 0, double fat = 3.6, List<Map<String, dynamic>>? servings, bool custom = false}) => {
+      'id': id,
+      'name': name,
+      'brand': null,
+      'category': 'meat_fish',
+      'diet_type': 'nonveg',
+      'is_verified': true,
+      'custom': custom,
+      'per_100g': {'kcal': kcal, 'protein_g': protein, 'carbs_g': carbs, 'fat_g': fat, 'fibre_g': 0},
+      'servings': servings ??
+          [
+            {'id': id * 10 + 1, 'label': '1 palm-size piece (120 g)', 'grams': 120, 'is_default': true},
+            {'id': id * 10 + 2, 'label': '1 small breast (150 g)', 'grams': 150, 'is_default': false},
+          ],
+      'updated_at': '2026-10-01T10:00:00+00:00',
+    };
+
+Map<String, dynamic> logEntryJson(int id, {int foodId = 1, String meal = 'lunch', String name = 'Chicken breast, cooked', double grams = 150, double kcal = 247.5, double protein = 46.5}) =>
+    {'id': id, 'food_id': foodId, 'logged_on': '2026-10-12', 'meal': meal, 'name': name, 'quantity': grams, 'unit': 'grams', 'serving_label': null, 'grams': grams, 'kcal': kcal, 'protein_g': protein, 'carbs_g': 0, 'fat_g': 5.4, 'fibre_g': 0};
+
+Map<String, dynamic> nutritionDayJson({String date = '2026-10-12', List<Map<String, dynamic>> lunch = const [], bool targets = true, double eaten = 0}) => {
+      'date': date,
+      'is_training_day': true,
+      'totals': {'calories': eaten, 'protein_g': 0, 'carbs_g': 0, 'fat_g': 0, 'fibre_g': 0},
+      'targets': targets ? {'calories': 2400, 'protein_g': 160, 'carbs_g': 280, 'fat_g': 70, 'fibre_g': 30} : null,
+      'remaining': targets ? {'calories': 2400 - eaten, 'protein_g': 160, 'carbs_g': 280, 'fat_g': 70, 'fibre_g': 30} : null,
+      'suggestions': targets
+          ? [
+              {'food_id': 13, 'name': 'Prawns, cooked', 'serving': '10 medium prawns (100 g)', 'grams': 100, 'protein_g': 24, 'kcal': 99},
+            ]
+          : [],
+      'meals': [
+        {'meal': 'breakfast', 'label': 'Breakfast', 'kcal': 0, 'protein_g': 0, 'entries': []},
+        {'meal': 'lunch', 'label': 'Lunch', 'kcal': lunch.fold<double>(0, (n, e) => n + (e['kcal'] as num)), 'protein_g': lunch.fold<double>(0, (n, e) => n + (e['protein_g'] as num)), 'entries': lunch},
+        {'meal': 'snack', 'label': 'Snack', 'kcal': 0, 'protein_g': 0, 'entries': []},
+        {'meal': 'dinner', 'label': 'Dinner', 'kcal': 0, 'protein_g': 0, 'entries': []},
+      ],
+    };
