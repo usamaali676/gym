@@ -221,3 +221,26 @@ class SetEntry {
         'rpe': ?rpe,
       };
 }
+
+
+/// An exercise the member may do instead of the planned one (`GET /workout-sessions/{id}/exercises/{row}/alternatives`).
+/// The server picks them from the member's equipment and the move's pattern; the app only shows them.
+class SwapOption {
+  const SwapOption({required this.id, required this.slug, required this.name, required this.equipment, required this.difficulty, required this.mechanic});
+
+  final int id;
+  final String slug;
+  final String name;
+  final List<String> equipment;
+  final String? difficulty;
+  final String? mechanic;
+
+  factory SwapOption.fromJson(Map<String, dynamic> j) => SwapOption(
+        id: (j['id'] as num).toInt(),
+        slug: (j['slug'] ?? '').toString(),
+        name: (j['name'] ?? '').toString(),
+        equipment: [for (final e in (j['equipment'] as List? ?? const [])) e.toString()],
+        difficulty: j['difficulty'] as String?,
+        mechanic: j['mechanic'] as String?,
+      );
+}

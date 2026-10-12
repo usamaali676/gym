@@ -92,7 +92,10 @@ Built, and covered by tests (see the [progress log](../docs/mobile/PROGRESS.md) 
 * an optional rest-timer alert: a local notification while the app is in the background during a rest, off until the member
   turns it on ([details and limits](../docs/mobile/notifications.md))
 
-Not built yet: offline food/water/habit logging, progress photos, push notifications (FCM/APNs), in-app purchase.
+* swapping a planned exercise for one of the server's alternatives during a workout
+
+Not built yet: offline food/water/habit logging, progress photos, custom foods, imperial units (the app shows kilograms),
+push notifications (FCM/APNs), in-app purchase.
 
 **Nothing in this folder has been run on a physical phone, an emulator or an iOS device by the author of these changes.**
 The tests run on a desktop Flutter test host; the Android debug APK is built by GitHub Actions and never installed; iOS needs

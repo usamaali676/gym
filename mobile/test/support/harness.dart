@@ -184,6 +184,20 @@ class FakeWorkoutBackend {
       this.session = {...this.session, 'exercises': exercises};
       return FakeReply.json(200, {'data': {'ok': true}});
     });
+    server.on('GET', '/workout-sessions/1/exercises/1/alternatives', (o) {
+      alternativeGets++;
+      return alternativesReply ?? FakeReply.json(200, {'data': alternativeOptions});
+    });
+    server.on('POST', '/workout-sessions/1/exercises/1/swap', (o) {
+      final body = Map<String, dynamic>.from(o.data as Map);
+      swapPosts.add(body);
+      if (swapRefusal != null) return FakeReply.json(422, errorJson('validation_failed', swapRefusal!, details: {'exercise_id': [swapRefusal!]}));
+      final chosen = alternativeOptions.firstWhere((a) => a['id'] == body['exercise_id']);
+      final exercises = List<Map<String, dynamic>>.from((this.session['exercises'] as List).map((e) => Map<String, dynamic>.from(e as Map)));
+      exercises[0] = {...exercises[0], 'name': chosen['name'], 'slug': chosen['slug'], 'swapped_from': exercises[0]['swapped_from'] ?? exercises[0]['name']};
+      this.session = {...this.session, 'exercises': exercises};
+      return FakeReply.json(200, {'data': this.session});
+    });
     server.on('POST', '/workout-sessions/1/finish', (o) {
       finishPosts.add(Map<String, dynamic>.from(o.data as Map));
       return FakeReply.json(200, {'data': {'ok': true, 'session_id': 1, 'status': 'completed'}});
@@ -202,6 +216,18 @@ class FakeWorkoutBackend {
   final List<int> skips = [];
   final List<Map<String, dynamic>> finishPosts = [];
   int abandons = 0;
+  int alternativeGets = 0;
+  final List<Map<String, dynamic>> swapPosts = [];
+
+  /// What the server offers instead of the first exercise; replace [alternativesReply] to make the call fail.
+  List<Map<String, dynamic>> alternativeOptions = [
+    {'id': 901, 'slug': 'dumbbell-bench-press', 'name': 'Dumbbell bench press', 'kind': 'alternative', 'mechanic': 'compound', 'difficulty': 'beginner', 'equipment': ['dumbbell']},
+    {'id': 902, 'slug': 'machine-chest-press', 'name': 'Machine chest press', 'kind': 'alternative', 'mechanic': 'compound', 'difficulty': 'beginner', 'equipment': ['machine']},
+  ];
+  FakeReply? alternativesReply;
+
+  /// When set, the swap is refused with this message.
+  String? swapRefusal;
 
   /// The next N set requests fail with a server error.
   int failSets = 0;

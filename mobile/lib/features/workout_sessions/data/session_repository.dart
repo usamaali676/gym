@@ -116,6 +116,18 @@ class SessionRepository {
 
   Future<void> deleteSet(int sessionId, int setId) async => _api.delete('/workout-sessions/$sessionId/sets/$setId');
 
+  /// What the member may do instead of this exercise. Needs a connection: the server knows the equipment and the plan.
+  Future<List<SwapOption>> alternatives(int sessionId, int sessionExerciseId) async {
+    final res = await _api.get('/workout-sessions/$sessionId/exercises/$sessionExerciseId/alternatives');
+    return [for (final e in (res.data as List? ?? const [])) SwapOption.fromJson(Map<String, dynamic>.from(e as Map))];
+  }
+
+  /// Replaces the exercise (only before a set was logged for it). The server answers with the whole updated session.
+  Future<WorkoutSession> swap(int sessionId, int sessionExerciseId, int replacementId) async {
+    final res = await _api.post('/workout-sessions/$sessionId/exercises/$sessionExerciseId/swap', body: {'exercise_id': replacementId});
+    return WorkoutSession.fromJson(res.data);
+  }
+
   Future<void> skipExercise(int sessionId, int sessionExerciseId) async => _api.post('/workout-sessions/$sessionId/exercises/$sessionExerciseId/skip', idempotent: true);
 
   /// Resume convenience: failures are ignored because the phone keeps the same state locally.

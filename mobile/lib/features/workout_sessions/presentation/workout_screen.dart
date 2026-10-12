@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
+import '../../../core/api/api_error.dart';
+import '../../../core/policy/policy_controller.dart';
 import '../../../core/utilities/clock.dart';
 import '../../../core/utilities/device_feedback.dart';
 import '../../../core/widgets/error_banner.dart';
@@ -303,8 +305,118 @@ class _IntroPanel extends ConsumerWidget {
       const SizedBox(height: 24),
       NeonButton(label: exercise.sets.isEmpty ? 'Start set 1' : 'Start set ${view.engine.setIdx + 1}', size: NeonButtonSize.large, expand: true, icon: Icons.play_arrow, onPressed: controller.startSet),
       const SizedBox(height: 10),
+      // The server allows a swap only before a set was logged for this exercise, and only for planned moves.
+      if (exercise.canSwap && exercise.sets.isEmpty) ...[
+        const SizedBox(height: 10),
+        NeonButton(label: 'Swap exercise', icon: Icons.swap_horiz, expand: true, variant: NeonButtonVariant.ghost, loading: view.busy, onPressed: () => showSwapSheet(context, view.session.id)),
+      ],
+      const SizedBox(height: 10),
       NeonButton(label: 'Skip exercise', expand: true, variant: NeonButtonVariant.ghost, loading: view.busy, onPressed: controller.skipExercise),
     ]);
+  }
+}
+
+/// "Do something else instead": the server lists the valid alternatives for the member's equipment; choosing one replaces the
+/// exercise (only before a set was logged for it).
+Future<void> showSwapSheet(BuildContext context, int sessionId) => showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _SwapSheet(sessionId: sessionId),
+    );
+
+class _SwapSheet extends ConsumerStatefulWidget {
+  const _SwapSheet({required this.sessionId});
+  final int sessionId;
+
+  @override
+  ConsumerState<_SwapSheet> createState() => _SwapSheetState();
+}
+
+class _SwapSheetState extends ConsumerState<_SwapSheet> {
+  late Future<List<SwapOption>> _options = _load();
+  String? _error;
+  bool _working = false;
+
+  Future<List<SwapOption>> _load() => _controller().alternatives();
+
+  WorkoutController _controller() => ref.read(workoutControllerProvider(widget.sessionId).notifier);
+
+  String _message(ApiError e) => e.isOffline ? 'Swapping needs a connection. Check it and try again.' : e.message;
+
+  Future<void> _choose(SwapOption option) async {
+    setState(() {
+      _working = true;
+      _error = null;
+    });
+    final error = await _controller().swapExercise(option.id);
+    if (!mounted) return;
+    if (error == null) {
+      Navigator.pop(context);
+    } else {
+      setState(() {
+        _working = false;
+        _error = _message(error);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = {for (final o in ref.watch(policyControllerProvider).config?.libraryChoices('equipment') ?? const []) o.value.toString(): o.label};
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Swap exercise', style: IpText.display(17, color: IpColors.ink)),
+            const SizedBox(height: 6),
+            Text('Pick something that works the same muscles with the equipment you have. Your plan is not changed for next time.', style: IpText.body(13, color: IpColors.muted)),
+            const SizedBox(height: 14),
+            if (_error != null) ...[Text(_error!, style: IpText.body(13, weight: FontWeight.w600, color: IpColors.warn)), const SizedBox(height: 10)],
+            Flexible(
+              child: FutureBuilder<List<SwapOption>>(
+                future: _options,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) return const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator(color: IpColors.neon)));
+                  if (snapshot.hasError) {
+                    final e = snapshot.error;
+                    return Column(mainAxisSize: MainAxisSize.min, children: [
+                      Text(e is ApiError ? _message(e) : 'The alternatives could not be loaded.', style: IpText.body(14, color: IpColors.ink)),
+                      const SizedBox(height: 10),
+                      NeonButton(label: 'Try again', icon: Icons.refresh, size: NeonButtonSize.small, onPressed: () => setState(() {
+                        _options = _load();
+                      })),
+                    ]);
+                  }
+                  final options = snapshot.data ?? const [];
+                  if (options.isEmpty) return Text('There is no alternative for this move with your equipment.', style: IpText.body(14, color: IpColors.muted));
+                  return ListView(shrinkWrap: true, children: [
+                    for (final o in options)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: GlassCard(
+                          onTap: _working ? null : () => _choose(o),
+                          semanticLabel: 'Swap to ${o.name}',
+                          padding: const EdgeInsets.all(14),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(o.name, style: IpText.display(15, color: IpColors.ink)),
+                            const SizedBox(height: 6),
+                            Wrap(spacing: 6, runSpacing: 6, children: [
+                              if (o.difficulty != null) StatusChip(o.difficulty![0].toUpperCase() + o.difficulty!.substring(1)),
+                              for (final q in o.equipment) StatusChip(labels[q] ?? q),
+                            ]),
+                          ]),
+                        ),
+                      ),
+                  ]);
+                },
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }
 

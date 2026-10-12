@@ -152,6 +152,33 @@ class WorkoutController extends AsyncNotifier<WorkoutView> {
     _commit(view, next);
   }
 
+  /// The alternatives for the exercise on screen (needs a connection; throws [ApiError]).
+  Future<List<SwapOption>> alternatives() async {
+    final exercise = _view?.exercise;
+    if (exercise == null) return const [];
+    return _repo.alternatives(sessionId, exercise.id);
+  }
+
+  /// Swaps the exercise on screen for [replacementId]. The server refuses once a set was logged, or for a move that is not a
+  /// valid alternative; its message comes back. Returns null on success.
+  Future<ApiError?> swapExercise(int replacementId) async {
+    final view = _view;
+    final exercise = view?.exercise;
+    if (view == null || exercise == null || view.busy) return null;
+    state = AsyncData(view.copyWith(busy: true, clearError: true));
+    try {
+      final updated = await _repo.swap(sessionId, exercise.id, replacementId);
+      final current = _view ?? view;
+      // Sets still waiting in the offline queue count as done, exactly as when the workout was opened.
+      final session = withQueuedChanges(updated, ref.read(offlineQueueProvider).forSession(sessionId));
+      _commit(current, SessionEngine.reconcile(current.engine, stepsOf(session)), session: session);
+      return null;
+    } on ApiError catch (e) {
+      state = AsyncData((_view ?? view).copyWith(busy: false));
+      return e;
+    }
+  }
+
   void startSet() {
     final view = _view;
     if (view == null) return;

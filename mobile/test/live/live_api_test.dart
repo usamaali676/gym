@@ -231,6 +231,18 @@ void main() {
     expect(session.exercises, isNotEmpty);
     expect(session.exercises.first.suggested.reason, isNotNull);
 
+    // swapping a later exercise for one of the server's alternatives (the first exercise is used by the rest of the test)
+    final swappable = session.exercises.indexWhere((e) => e.canSwap && e.sets.isEmpty && e.id != session.exercises.first.id);
+    expect(swappable, greaterThan(0), reason: 'the seeded plan has planned exercises that can be swapped');
+    final original = session.exercises[swappable];
+    final options = await repo.alternatives(session.id, original.id);
+    expect(options, isNotEmpty);
+    expect(options.every((o) => o.id != original.exerciseId), isTrue, reason: 'an alternative is a different exercise');
+    session = await repo.swap(session.id, original.id, options.first.id);
+    expect(session.exercises[swappable].name, options.first.name);
+    expect(session.exercises[swappable].swappedFrom, original.name);
+    await expectLater(repo.swap(session.id, original.id, 999999), throwsA(isA<ApiError>()), reason: 'an exercise that is not an alternative is refused');
+
     // the active workout is the same one
     final active = await repo.active();
     expect(active?.id, session.id);
