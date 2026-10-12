@@ -81,6 +81,8 @@ function installAnimation(rig, spec) {
 }
 
 function framing(spec) {
+    // A demo can say where to look when its equipment reaches well beyond the figure (a leg press sled).
+    if (spec.setup.frame) return { target: new Vector3(...spec.setup.frame.target), distance: spec.setup.frame.distance };
     const ground = spec.setup.ground;
     if (ground === 'hands') return { target: new Vector3(0, 1.2, 0), distance: 5.4 };
     if (spec.base?.rootPitch && Math.abs(spec.base.rootPitch) > 60) return { target: new Vector3(0, 0.65, 0), distance: 4.2 };

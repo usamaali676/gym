@@ -125,7 +125,7 @@ function pushUp({ incline = false, name = 'Push-up' } = {}) {
     const bottom = { rootPitch: incline ? 70 : 86, E: 58, P: 74, el: 98 };
     return spec(name, base, {
         ground: 'floor', anchor: 'pelvisXZ',
-        props: incline ? (rig, ctx) => [addBlock(rig, { size: [0.5, 0.05, 0.4], position: [0, 0.6, ctx.pelvis.z + 0.5], material: undefined })] : undefined,
+        props: incline ? (rig) => [addBlock(rig, { size: [0.5, 0.26, 0.34], position: [0, 0.13, 0.74] })] : undefined,
     }, rep(top, bottom, { down: 0.5, pause: 0.05, up: 0.4 }), 3.4, 'side');
 }
 
@@ -163,7 +163,7 @@ function lateralRaise({ mode = 'side', cable = false, name = 'Lateral raise' } =
 function curl({ implement = 'barbell', neutral = false, incline = false, cable = false, name = 'Curl' } = {}) {
     const base = incline ? { rootPitch: -48, hF: 10, kn: 70, an: 6 } : { lean: 0 };
     const setup = incline
-        ? { ground: 'feet', anchor: 'pelvisXZ', props: (rig, ctx) => [...benchProps({ kind: 'incline', angle: 48 })(rig, ctx), addDumbbells(rig)] }
+        ? { ground: 'feet', anchor: 'pelvisXZ', props: (rig, ctx) => [...benchProps({ kind: 'incline', angle: 90 - 48 })(rig, ctx), addDumbbells(rig)] }
         : {
             ground: 'feet',
             props: (rig) => [
@@ -183,7 +183,7 @@ function preacherCurl({ name = 'Preacher curl' } = {}) {
         ...seatedSetup(),
         props: (rig, ctx) => [
             addPad(rig, { position: [0, ctx.pelvis.y - 0.115 - 0.035, ctx.pelvis.z + 0.02], size: [0.34, 0.07, 0.42] }),
-            addPad(rig, { position: [0, ctx.pelvis.y + 0.42, ctx.pelvis.z + 0.3], rotationX: -0.75, size: [0.36, 0.5, 0.07] }),
+            addPad(rig, { position: [0, ctx.pelvis.y + 0.4, ctx.pelvis.z + 0.33], rotationX: -0.75, size: [0.36, 0.5, 0.07] }),
             addBar(rig, { length: 1.1, plate: 0.15 }),
         ],
     }, rep({ E: 50, P: 90, el: 6 }, { E: 52, P: 90, el: 138 }, { down: 0.45, pause: 0.07, up: 0.4 }), 4);
@@ -217,7 +217,7 @@ function triceps({ mode = 'pushdown', reverse = false, rope = false, name = 'Tri
         const st = lyingStance(0);
         return spec(name, st.base, {
             ...st.setup,
-            props: (rig, ctx) => [...benchProps({ kind: 'flat' })(rig, ctx), addBar(rig, { length: 1.2, plate: 0.16 })],
+            props: (rig, ctx) => [...benchProps({ kind: 'flat' })(rig, ctx), addBar(rig, { length: 1.2, plate: 0.16, offset: [0, 0.015, 0] })],
         }, rep({ E: 90, P: 90, el: 4 }, { E: 94, P: 90, el: 116 }, { down: 0.5, pause: 0.07, up: 0.33 }), 4);
     }
     if (mode === 'ohdb') {
@@ -234,7 +234,7 @@ function triceps({ mode = 'pushdown', reverse = false, rope = false, name = 'Tri
     const base = { rootPitch: -18, hF: 38, kn: 12, an: 8, lean: 0 };
     return spec(name, base, {
         ground: 'feet', anchor: 'pelvisXZ',
-        props: (rig, ctx) => [addPad(rig, { position: [0, 0.43, ctx.pelvis.z - 0.34], size: [0.5, 0.07, 0.3] })],
+        props: (rig, ctx) => [addPad(rig, { position: [0, 0.43, ctx.pelvis.z - 0.34], size: [0.5, 0.07, 0.3], legs: true })],
     }, rep({ E: 12, P: -50, el: 8 }, { E: 20, P: -50, el: 100 }, { down: 0.5, up: 0.4 }), 3.6);
 }
 
@@ -253,8 +253,9 @@ function singleArmRow({ name = 'Single-arm dumbbell row' } = {}) {
     return spec(name, base, {
         ground: 'feet',
         props: (rig, ctx) => [
-            addPad(rig, { position: [0.26, ctx.pelvis.y - 0.18, ctx.pelvis.z + 0.2], size: [0.3, 0.07, 0.8] }),
-            addDumbbells(rig, { only: 'R' }),
+            addPad(rig, { position: [0.26, ctx.pelvis.y - 0.18, ctx.pelvis.z + 0.2], size: [0.3, 0.07, 0.8], legs: true }),
+            // Neutral grip: the dumbbell lies along the body, so its plates stay clear of the supporting knee.
+            addDumbbells(rig, { only: 'R', axis: 'z' }),
         ],
     }, rep({ rE: 10, rP: 84, rel: 6 }, { rE: 56, rP: 82, rel: 108 }, { down: 0.42, pause: 0.1, up: 0.38 }), 3.6, 'side');
 }
@@ -265,7 +266,7 @@ function seatedRow({ name = 'Seated cable row', machine = false } = {}) {
         ground: 'none', anchor: 'pelvis',
         props: (rig, ctx) => [
             addPad(rig, { position: [0, ctx.pelvis.y - 0.15, ctx.pelvis.z], size: [0.4, 0.07, 0.4] }),
-            ...(machine ? [addPad(rig, { position: [0, ctx.pelvis.y + 0.22, ctx.pelvis.z + 0.3], size: [0.4, 0.5, 0.07] })] : [addCable(rig, { anchor: [0, 0.35, 1.1], toBoth: true })]),
+            ...(machine ? [addPad(rig, { position: [0, ctx.pelvis.y + 0.22, ctx.pelvis.z + 0.3], size: [0.28, 0.5, 0.07] })] : [addCable(rig, { anchor: [0, 0.35, 1.1], toBoth: true })]),
             addHandles(rig),
         ],
     }, rep({ E: 78, P: 90, el: 6, lean: 10 }, { E: 14, P: 70, el: 112, lean: -6 }, { down: 0.45, pause: 0.12, up: 0.3 }), 3.6);
@@ -345,7 +346,7 @@ function splitSquat({ name = 'Split squat', walking = false } = {}) {
     const bottom = { lhF: 80, lkn: 92, rhF: -20, rkn: 106, lan: 18, ran: 40, lean: 10 };
     return spec(name, base, {
         ground: 'feet',
-        props: (rig) => [addDumbbells(rig, { axis: 'z' }), ...(walking ? [] : [addPad(rig, { position: [0, 0.4, -0.78], size: [0.4, 0.07, 0.3] })])],
+        props: (rig) => [addDumbbells(rig, { axis: 'z' }), ...(walking ? [] : [addPad(rig, { position: [0, 0.46, -0.78], size: [0.4, 0.07, 0.3], legs: true })])],
     }, rep(top, bottom, { down: 0.5, pause: 0.06, up: 0.38 }), 4.2);
 }
 
@@ -353,7 +354,7 @@ function hackSquat({ name = 'Hack squat' } = {}) {
     const base = { rootPitch: -26, hF: 10, kn: 6, an: 4, lean: 0 };
     return spec(name, base, {
         ground: 'feet', anchor: 'pelvisXZ',
-        props: (rig, ctx) => [addPad(rig, { position: [0, ctx.pelvis.y + 0.25, ctx.pelvis.z - 0.28], rotationX: -0.46, size: [0.45, 1.1, 0.07] })],
+        props: (rig, ctx) => [addPad(rig, { position: [0, ctx.pelvis.y + 0.25, ctx.pelvis.z - 0.28], rotationX: -0.46, size: [0.45, 1.1, 0.07], follow: 'pelvis' })],
     }, rep({ hF: 8, kn: 6, an: 2 }, { hF: 92, kn: 108, an: 18 }, { down: 0.5, up: 0.4 }), 4.2);
 }
 
@@ -361,9 +362,13 @@ function legPress({ name = 'Leg press' } = {}) {
     const base = { rootPitch: -50, hF: 60, kn: 82, an: 4, lean: 0 };
     return spec(name, base, {
         ground: 'none', anchor: 'pelvis',
+        // The foot plate travels well past the figure, so look at the middle of the whole machine.
+        frame: { target: [0, 0.95, 0.55], distance: 4.8 },
         props: (rig, ctx) => [
-            addPad(rig, { position: [0, ctx.pelvis.y + 0.18, ctx.pelvis.z - 0.2], rotationX: -0.5, size: [0.42, 0.9, 0.07] }),
-            addBlock(rig, { size: [0.8, 0.5, 0.06], position: [0, ctx.pelvis.y + 0.6, ctx.pelvis.z + 0.95], rotation: [0.75, 0, 0] }),
+            // The seat back is tilted to match the torso (rootPitch -50), 0.42 m up the back and 0.145 m behind it.
+            addPad(rig, { position: [0, ctx.pelvis.y + 0.16, ctx.pelvis.z - 0.415], rotationX: -0.873, size: [0.42, 0.9, 0.07] }),
+            // The sled carries the foot plate, so it travels with the feet instead of hanging in the air.
+            addPad(rig, { position: [0, ctx.pelvis.y + 0.6, ctx.pelvis.z + 0.95], rotationX: 0.75, size: [0.8, 0.5, 0.06], follow: 'ankles' }),
         ],
         camera: 'side',
     }, rep({ hF: 98, kn: 118, an: 22, rootY: 0.78, rootZ: 0 }, { hF: 28, kn: 8, an: 4, rootY: 0.78, rootZ: 0 }, { down: 0.5, up: 0.4 }).map(([t, p]) => [t, { ...p, rootY: 0.78 }]), 4, 'side');
@@ -438,7 +443,7 @@ function cableFly({ name = 'Cable fly', direction = 'down' } = {}) {
     const together = direction === 'down' ? { E: 40, P: 78, el: 18 } : { E: 90, P: 80, el: 18 };
     return spec(name, base, {
         ground: 'feet',
-        props: (rig) => [addCable(rig, { anchor: [0.3, direction === 'down' ? 2.1 : 0.25, 0.1], toBoth: true }), addHandles(rig, { shape: 'ball' })],
+        props: (rig) => [addCable(rig, { anchor: [0.8, direction === 'down' ? 2.1 : 0.25, 0.1], toBoth: true, split: true }), addHandles(rig, { shape: 'ball' })],
     }, rep(wide, together, { down: 0.42, pause: 0.12, up: 0.4 }), 3.6, 'front');
 }
 
@@ -483,11 +488,12 @@ function deadBug({ name = 'Dead bug' } = {}) {
         [[0, { rootY: 0.2 }], [0.25, { rootY: 0.2, lE: 168, lP: 88, rhF: 8, rkn: 8 }], [0.5, { rootY: 0.2 }], [0.75, { rootY: 0.2, rE: 168, rP: 88, lhF: 8, lkn: 8 }], [1, { rootY: 0.2 }]], 5);
 }
 
+// The tower stands well in front of the kneeling lifter so the head never enters the weight stack outline.
 function cableCrunch({ name = 'Cable crunch' } = {}) {
     const base = { hF: 4, kn: 100, hA: 10, an: -16, E: 120, P: 60, el: 125 };
     return spec(name, base, {
         ground: 'knees',
-        props: (rig) => [addCable(rig, { anchor: [0, 2.1, 0.0], toBoth: false }), addHandles(rig, { shape: 'ball' })],
+        props: (rig) => [addCable(rig, { anchor: [0, 2.1, 0.75], toBoth: false }), addHandles(rig, { shape: 'ball' })],
     }, rep({ lean: -2, hF: 4 }, { lean: 62, hF: 52, E: 80 }, { down: 0.4, pause: 0.1, up: 0.42 }), 3.4);
 }
 

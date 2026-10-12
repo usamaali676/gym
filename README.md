@@ -253,6 +253,7 @@ Then each user has to opt in on the coach page (or in Profile). What happens:
   the version they were scored with), restore any earlier version as a new one. Re-seeding never overwrites an exercise
   an admin has edited.
 - **Foods**: the shared database with serving sizes. People's private custom foods are not listed.
+- **3D demos**: every exercise at four points of its loop, from a 45 degree, side or front camera, for reviewing the animations. A JS test (`tests/js/demo-clearance.test.mjs`) measures overlap between the figure and its equipment for every demo, so a changed pose or prop that makes the figure sink into a bench, pad or bar fails the build.
 
 Every admin change is written to the application log as `admin.*` with the admin's id.
 

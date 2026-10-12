@@ -327,6 +327,9 @@ export function disposeObject(object) {
 
 const metalMat = () => new MeshStandardMaterial({ color: colors.metal, roughness: 0.3, metalness: 0.85 });
 const plateMat = () => new MeshStandardMaterial({ color: colors.plate, roughness: 0.6, metalness: 0.3, emissive: 0x0a2a10, emissiveIntensity: 0.5 });
+// Weight plates are drawn as translucent discs with a neon rim: from the side view the near plate sits in front of
+// the lifter, and a solid dark disc there reads as the body merging into the equipment.
+const glassPlateMat = () => new MeshStandardMaterial({ color: colors.plate, roughness: 0.5, metalness: 0.2, emissive: 0x0f3d1a, emissiveIntensity: 0.6, transparent: true, opacity: 0.32, depthWrite: false });
 const padMat = () => new MeshStandardMaterial({ color: colors.pad, roughness: 0.8, metalness: 0.05 });
 const frameMat = () => new MeshStandardMaterial({ color: colors.frame, roughness: 0.5, metalness: 0.6 });
 
@@ -348,7 +351,7 @@ function barbellObject(length = 1.55, plate = 0.2) {
     g.add(cylinderAlong('x', 0.013, length, metalMat()));
     for (const s of [-1, 1]) {
         for (const [i, w] of [[0, 0.04], [1, 0.03]]) {
-            const p = cylinderAlong('x', plate - i * 0.04, w, plateMat());
+            const p = neonEdges(cylinderAlong('x', plate - i * 0.04, w, glassPlateMat()), colors.neon, 0.55);
             p.position.x = s * (length / 2 - 0.1 - i * 0.05);
             g.add(p);
         }
@@ -360,7 +363,7 @@ function dumbbellObject(axis = 'x') {
     const g = new Group();
     g.add(cylinderAlong(axis, 0.014, 0.16, metalMat()));
     for (const s of [-1, 1]) {
-        const p = cylinderAlong(axis, 0.062, 0.035, plateMat());
+        const p = neonEdges(cylinderAlong(axis, 0.062, 0.035, plateMat()), colors.neon, 0.6);
         p.position[axis] = s * 0.09;
         g.add(p);
     }
@@ -419,20 +422,32 @@ export function addHandles(rig, { shape = 'bar', only = null } = {}) {
     return { object: null, update() {} };
 }
 
-/** A cable running from a fixed anchor to the hands, with a pulley and weight stack. */
-export function addCable(rig, { anchor = [0, 2.1, 0.3], toBoth = true, stack = true } = {}) {
+/**
+ * A cable running from a fixed anchor to the hands, with a pulley and weight stack.
+ * `split` puts one pulley on each side (a crossover machine) instead of one shared anchor, so the cables
+ * come in from outside the arms rather than from a single point beside one elbow.
+ */
+export function addCable(rig, { anchor = [0, 2.1, 0.3], toBoth = true, stack = true, split = false } = {}) {
     const group = new Group();
     rig.props.add(group);
 
-    // The weight stack is drawn as a ghost outline so it never hides the figure.
-    const stackMesh = new Mesh(new BoxGeometry(0.34, 1.7, 0.12), new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
-    stackMesh.position.set(anchor[0], 1.0, anchor[2] + 0.18);
-    neonEdges(stackMesh, colors.neonDim, 0.35);
-    if (stack) group.add(stackMesh);
-    const pulley = new Mesh(new CylinderGeometry(0.06, 0.06, 0.03, 16), metalMat());
-    pulley.rotation.z = Math.PI / 2;
-    pulley.position.set(anchor[0], anchor[1], anchor[2]);
-    group.add(pulley);
+    const sources = {
+        L: new Vector3(anchor[0], anchor[1], anchor[2]),
+        R: new Vector3(split ? -anchor[0] : anchor[0], anchor[1], anchor[2]),
+    };
+    const stacksAt = split ? [sources.L, sources.R] : [sources.L];
+
+    for (const at of stacksAt) {
+        // The weight stack is drawn as a ghost outline so it never hides the figure. Beside a split pulley it sits outboard.
+        const stackMesh = new Mesh(new BoxGeometry(0.34, 1.7, 0.12), new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+        stackMesh.position.set(split ? at.x + Math.sign(at.x) * 0.2 : at.x, 1.0, at.z + 0.18);
+        neonEdges(stackMesh, colors.neonDim, 0.35);
+        if (stack) group.add(stackMesh);
+        const pulley = new Mesh(new CylinderGeometry(0.06, 0.06, 0.03, 16), metalMat());
+        pulley.rotation.z = Math.PI / 2;
+        pulley.position.copy(at);
+        group.add(pulley);
+    }
 
     const lines = [];
     const ends = toBoth ? ['L', 'R'] : ['R'];
@@ -443,7 +458,6 @@ export function addCable(rig, { anchor = [0, 2.1, 0.3], toBoth = true, stack = t
         lines.push({ side, line });
     }
 
-    const from = new Vector3(...anchor);
     const to = new Vector3();
     const dir = new Vector3();
     const up = new Vector3(0, 1, 0);
@@ -451,6 +465,7 @@ export function addCable(rig, { anchor = [0, 2.1, 0.3], toBoth = true, stack = t
         object: group,
         update() {
             for (const { side, line } of lines) {
+                const from = sources[side];
                 rig[`arm${side}`].wrist.getWorldPosition(to);
                 dir.subVectors(to, from);
                 const len = dir.length();
@@ -484,8 +499,11 @@ export function addBench(rig, { kind = 'flat', angle = 0, y = 0.4, z = 0, length
         group.add(pivot);
     }
 
-    for (const sx of [-0.12, 0.12]) {
-        for (const sz of [-0.45, 0.45]) {
+    // An adjustable bench has a short seat, so its front legs sit under the seat and close together, clear of the lifter's feet.
+    const legX = kind === 'flat' ? 0.12 : 0.07;
+    const legZ = kind === 'flat' ? [-0.45, 0.45] : [-0.45, 0.3];
+    for (const sx of [-legX, legX]) {
+        for (const sz of legZ) {
             const leg = new Mesh(new BoxGeometry(0.04, y - 0.05, 0.04), frameMat());
             leg.position.set(sx, (y - 0.05) / 2, z + sz);
             group.add(leg);
@@ -494,12 +512,44 @@ export function addBench(rig, { kind = 'flat', angle = 0, y = 0.4, z = 0, length
     return { object: group, update() {} };
 }
 
-export function addPad(rig, { position, rotationX = 0, size = [0.34, 0.07, 0.5] }) {
+/**
+ * A flat or tilted pad. `legs` adds four posts to the floor so a bench stands instead of floating.
+ * `follow` keeps the pad at a fixed offset from the pelvis ('pelvis', a hack squat sled) or from the
+ * midpoint of the ankles ('ankles', a leg press foot plate), for carriages that move with the lifter.
+ */
+export function addPad(rig, { position, rotationX = 0, size = [0.34, 0.07, 0.5], follow = null, legs = false }) {
     const pad = neonEdges(new Mesh(new BoxGeometry(...size), padMat()));
     pad.position.set(...position);
     pad.rotation.x = rotationX;
     rig.props.add(pad);
-    return { object: pad, update() {} };
+
+    if (legs) {
+        const height = position[1] - size[1] / 2;
+        for (const sx of [-1, 1]) {
+            for (const sz of [-1, 1]) {
+                const post = new Mesh(new BoxGeometry(0.04, height, 0.04), frameMat());
+                post.position.set(position[0] + sx * (size[0] / 2 - 0.04), height / 2, position[2] + sz * (size[2] / 2 - 0.04));
+                rig.props.add(post);
+            }
+        }
+    }
+    if (!follow) return { object: pad, update() {} };
+
+    // Props are built while the rig is in its first pose, so these are the positions the pad was chosen against.
+    const anchor = new Vector3();
+    const reference = () => {
+        if (follow === 'ankles') {
+            return anchor.addVectors(rig.legL.ankle.getWorldPosition(new Vector3()), rig.legR.ankle.getWorldPosition(new Vector3())).multiplyScalar(0.5);
+        }
+        return rig.pelvis.getWorldPosition(anchor);
+    };
+    const offset = new Vector3(...position).sub(reference().clone());
+    return {
+        object: pad,
+        update() {
+            pad.position.copy(reference()).add(offset);
+        },
+    };
 }
 
 /** `ghost` draws only the neon outline, for walls and doorframes that would otherwise hide the figure. */

@@ -19,6 +19,9 @@ class DemoGalleryController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.demos', ['exercises' => $exercises, 'kind' => $kind]);
+        $view = $request->query('view');
+        $view = in_array($view, ['angle', 'side', 'front'], true) ? $view : 'angle';
+
+        return view('admin.demos', ['exercises' => $exercises, 'kind' => $kind, 'view' => $view]);
     }
 }
