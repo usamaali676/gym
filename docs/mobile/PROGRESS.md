@@ -1,5 +1,13 @@
 # Mobile conversion: progress log
 
+**Where it stands (read this first).** One Laravel backend serves the website and a native Flutter app (Android and iOS, no
+WebView) with the same look. Everything below was built and tested on a desktop test host, against a real local server and in
+GitHub Actions CI (Android debug and release builds, an iOS build without signing, PHP and JavaScript suites, a live contract
+test). **Nobody has run the app on a phone.** The pieces that touch real hardware or real stores are written and compiled but
+unverified: the camera and ML Kit pose layer, video playback, the local notification, and everything about signing, store
+accounts and in-app purchase (not built). The honest list of limits is in each feature's document and in
+[release.md](release.md) section 8; the first things to do with a device are in [device-test-plan.md](device-test-plan.md).
+
 Only things that were actually executed are marked as done. "Test results" quote real runs.
 Environment limits (no Android SDK, no Xcode, no device) are in [01-implementation-audit.md](01-implementation-audit.md) §0.
 
@@ -68,7 +76,7 @@ Environment limits (no Android SDK, no Xcode, no device) are in [01-implementati
 
 ## Phase 5: Advanced features
 
-**Status:** in progress. 5a (nutrition), 5b (progress and achievements) and 5c (camera form coach) are built; demo clips and progress photos are not. 5c has never run on a camera.
+**Status:** mostly done. Built: nutrition, progress and achievements, the camera form coach, rendered demonstration clips, swapping an exercise, your own foods. Not built: progress photos, saved meals, imperial units. The camera coach and the video player have never run on a phone.
 
 | | |
 | --- | --- |
@@ -91,8 +99,7 @@ Environment limits (no Android SDK, no Xcode, no device) are in [01-implementati
 
 ## Phase 6: Sync, offline and resilience
 
-**Status:** in progress. 6a (offline queue) and the maintenance/update refinement are built; local notifications, push (FCM) and
-the offline food log are not.
+**Status:** mostly done. Built: the offline queue, maintenance/update handling, refresh on return, one optional local notification (rest-timer alert), survival of unreadable server answers. Not built: push (FCM/APNs), the offline food log, a background sync service, a local database.
 
 | | |
 | --- | --- |
@@ -108,8 +115,7 @@ the offline food log are not.
 
 ## Phase 7: Quality, security and release preparation
 
-**Status:** in progress. Account deletion, an accessibility pass, release builds in CI, the iOS privacy manifest and the release
-guide are done; a device test pass, a store listing, signing and an external security review are not.
+**Status:** mostly done for what can be done without devices. Built and checked: account deletion, accessibility checks, own security review with two fixes, source-hygiene guards, release builds in CI (Android and, now, iOS), launcher icons, the release guide, a store-listing draft and a device test plan. Not done: anything that needs a phone, an external security review, signing keys, store accounts, store screenshots.
 
 | | |
 | --- | --- |
