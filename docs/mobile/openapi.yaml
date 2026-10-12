@@ -1,0 +1,5874 @@
+openapi: 3.1.0
+info:
+  title: IronPulse mobile API
+  version: 1.0.0
+  description: "REST API used by the IronPulse Android and iOS apps. The website keeps its own session-based routes; this\
+    \ API is\nbearer-token only and is the contract between the Laravel backend and the Flutter app.\n\n**Conventions**\n\n\
+    * Base path `/api/v1`. Every response is JSON. Success bodies are `{\"data\": ...}` (lists may add `meta` / `links`).\n\
+    * Errors always look like `{\"error\": {\"code\", \"message\", \"details\", \"request_id\"}}`. `code` is stable and meant\
+    \ for\n  program logic; `message` is human text. Quote `request_id` (also the `X-Request-Id` header) when reporting problems.\n\
+    * Authentication: `Authorization: Bearer <token>` from `/auth/login`, `/auth/register` or `/auth/guest`. Tokens expire\n\
+    \  (see `auth.token_ttl_days` in `/app/config`), are rotated by `/auth/refresh` and can be revoked at any time.\n  A `401`\
+    \ on an authenticated call means the token is no longer valid: sign out.\n* Send `X-App-Platform: android|ios` and `X-App-Version:\
+    \ 1.2.3` on every request. Builds below the minimum get `426\n  upgrade_required`; during maintenance every call except\
+    \ `/app/config` gets `503 maintenance`.\n* Mutating requests may carry `Idempotency-Key: <8-80 chars>`. A retry with the\
+    \ same key and body returns the first\n  response (`Idempotent-Replayed: true`); the same key with a different body is\
+    \ `422 idempotency_key_reused`.\n* Membership: routes marked `x-entitlement` are refused with `403 entitlement_required`\
+    \ (details name the missing\n  entitlement) when the member's plan does not include the feature. The server checks this\
+    \ on every call; hiding a\n  button in the app is a courtesy, never the protection.\n* Everything about a member is private\
+    \ to that member. Another member's record is answered `404`, never `403`.\n* Pagination: page-based (`page`, `per_page`,\
+    \ max 100) for catalogues, cursor-based (`cursor`) for histories.\n* Sync: see the `Sync` tag. Read `/content/manifest`\
+    \ first, download collections, then follow `/content/changes`.\n* Rate limits return `429 rate_limited` with a `Retry-After`\
+    \ header.\n\n**Not covered by this document**: the website's session endpoints under `/api/...` (same-origin, CSRF protected)\
+    \ and\nApple / Google store server notifications.\n"
+servers:
+- url: https://your-domain.example/api/v1
+  description: Production (HTTPS only)
+- url: http://localhost:8000/api/v1
+  description: Local development
+tags:
+- name: Account
+- name: App
+- name: Auth
+- name: Content
+- name: Dashboard
+- name: Habits
+- name: Library
+- name: Media
+- name: Membership
+- name: Notifications
+- name: Nutrition
+- name: Plan
+- name: Posture coach
+- name: Programs
+- name: Progress
+- name: Sync
+- name: Workouts
+security:
+- bearerAuth: []
+paths:
+  /achievements:
+    get:
+      tags:
+      - Progress
+      summary: Badges with progress, XP and level (server-calculated)
+      operationId: achievements
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Achievements'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /announcements:
+    get:
+      tags:
+      - Content
+      summary: Published announcements for this member
+      operationId: announcements
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /app/config:
+    get:
+      tags:
+      - App
+      summary: Version policy, maintenance, features and public settings (public)
+      operationId: app_config
+      security: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AppConfig'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/forgot-password:
+    post:
+      tags:
+      - Auth
+      summary: Email a password reset link (always 200)
+      operationId: auth_forgot_password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+              - email
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/guest:
+    post:
+      tags:
+      - Auth
+      summary: Start a guest account
+      operationId: auth_guest
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device:
+                  $ref: '#/components/schemas/DeviceInfo'
+              required:
+              - device
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuthResult'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Sign in and receive a bearer token
+      operationId: auth_login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                device:
+                  $ref: '#/components/schemas/DeviceInfo'
+              required:
+              - email
+              - password
+              - device
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuthResult'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/logout:
+    post:
+      tags:
+      - Auth
+      summary: Revoke this install's token
+      operationId: auth_logout
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/logout-all:
+    post:
+      tags:
+      - Auth
+      summary: Revoke every token of the account
+      operationId: auth_logout_all
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/refresh:
+    post:
+      tags:
+      - Auth
+      summary: Rotate the token (old one stops working)
+      operationId: auth_refresh
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        $ref: '#/components/schemas/Token'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/register:
+    post:
+      tags:
+      - Auth
+      summary: Create an account
+      operationId: auth_register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                device:
+                  $ref: '#/components/schemas/DeviceInfo'
+              required:
+              - name
+              - email
+              - password
+              - device
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuthResult'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/reset-password:
+    post:
+      tags:
+      - Auth
+      summary: Set a new password with a reset token
+      operationId: auth_reset_password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+              required:
+              - token
+              - email
+              - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/sessions:
+    get:
+      tags:
+      - Auth
+      summary: Signed-in installs of this account
+      operationId: auth_sessions
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Device'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/sessions/{device}:
+    delete:
+      tags:
+      - Auth
+      summary: Sign another install out
+      operationId: auth_sessions_destroy
+      parameters:
+      - name: device
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /banners:
+    get:
+      tags:
+      - Content
+      summary: Published banners (optional ?placement=)
+      operationId: banners
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Banner'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /content/changes:
+    get:
+      tags:
+      - Sync
+      summary: Documents changed after a cursor
+      operationId: content_changes
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentChanges'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /content/manifest:
+    get:
+      tags:
+      - Sync
+      summary: Sync cursor, per-collection versions and counts
+      operationId: content_manifest
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContentManifest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /content/{collection}:
+    get:
+      tags:
+      - Sync
+      summary: Full paginated list of one collection
+      operationId: content_snapshot
+      parameters:
+      - name: collection
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - programs
+          - exercises
+          - foods
+          - badges
+          - membership_plans
+          - announcements
+          - banners
+          - help
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentSnapshot'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /dashboard:
+    get:
+      tags:
+      - Dashboard
+      summary: Everything on the home screen in one call
+      operationId: dashboard
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Dashboard'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /exercises:
+    get:
+      tags:
+      - Library
+      summary: Search and filter the exercise library
+      operationId: exercises_index
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExercisePage'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /exercises/{exercise}:
+    get:
+      tags:
+      - Library
+      summary: One exercise (a teaser with locked=true if the plan lacks it)
+      operationId: exercises_show
+      parameters:
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Exercise'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /exercises/{exercise}/alternatives:
+    get:
+      tags:
+      - Library
+      summary: Same-muscle alternatives the member can do
+      operationId: exercises_alternatives
+      parameters:
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: string
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exercise'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /food-logs:
+    post:
+      tags:
+      - Nutrition
+      summary: Log a food; the server converts and stores the macros
+      operationId: food_logs_store
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                food_id:
+                  type: integer
+                logged_on:
+                  type: string
+                  format: date
+                meal:
+                  type: string
+                  enum:
+                  - breakfast
+                  - lunch
+                  - snack
+                  - dinner
+                quantity:
+                  type: number
+                unit:
+                  type: string
+                  enum:
+                  - grams
+                  - serving
+                serving_id:
+                  type: integer
+              required:
+              - food_id
+              - logged_on
+              - meal
+              - quantity
+              - unit
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      log:
+                        $ref: '#/components/schemas/FoodLog'
+                      day:
+                        $ref: '#/components/schemas/DayNutrition'
+                      badges:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BadgeBrief'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /food-logs/batch:
+    post:
+      tags:
+      - Nutrition
+      summary: Log several foods as one meal
+      operationId: food_logs_batch
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logged_on:
+                  type: string
+                  format: date
+                meal:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      food_id:
+                        type: integer
+                      grams:
+                        type: number
+                    required:
+                    - food_id
+                    - grams
+              required:
+              - logged_on
+              - meal
+              - items
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      logs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/FoodLog'
+                      day:
+                        $ref: '#/components/schemas/DayNutrition'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /food-logs/copy:
+    post:
+      tags:
+      - Nutrition
+      summary: Copy a day (meals already present are left alone)
+      operationId: food_logs_copy
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+                meal:
+                  type: string
+              required:
+              - from
+              - to
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      copied:
+                        type: integer
+                      skipped:
+                        type: array
+                        items:
+                          type: string
+                      day:
+                        $ref: '#/components/schemas/DayNutrition'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /food-logs/{log}:
+    patch:
+      tags:
+      - Nutrition
+      summary: Change the amount or meal of an entry
+      operationId: food_logs_update
+      parameters:
+      - name: log
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                unit:
+                  type: string
+                  enum:
+                  - grams
+                  - serving
+                serving_id:
+                  type: integer
+                meal:
+                  type: string
+              required:
+              - quantity
+              - unit
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      log:
+                        $ref: '#/components/schemas/FoodLog'
+                      day:
+                        $ref: '#/components/schemas/DayNutrition'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Nutrition
+      summary: Delete an entry
+      operationId: food_logs_destroy
+      parameters:
+      - name: log
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      day:
+                        $ref: '#/components/schemas/DayNutrition'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods:
+    post:
+      tags:
+      - Nutrition
+      summary: Create a private custom food
+      operationId: foods_store
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                brand:
+                  type: string
+                diet_type:
+                  type: string
+                kcal_100g:
+                  type: number
+                protein_100g:
+                  type: number
+                carbs_100g:
+                  type: number
+                fat_100g:
+                  type: number
+                fibre_100g:
+                  type: number
+                servings:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      label:
+                        type: string
+                      grams:
+                        type: number
+              required:
+              - name
+              - diet_type
+              - kcal_100g
+              - protein_100g
+              - carbs_100g
+              - fat_100g
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Food'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods/favorites:
+    get:
+      tags:
+      - Nutrition
+      summary: Favourite foods
+      operationId: foods_favorites
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Food'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods/recent:
+    get:
+      tags:
+      - Nutrition
+      summary: Foods logged most often recently
+      operationId: foods_recent
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Food'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods/search:
+    get:
+      tags:
+      - Nutrition
+      summary: Search the shared and the member's own foods
+      operationId: foods_search
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Food'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods/{food}:
+    get:
+      tags:
+      - Nutrition
+      summary: One food
+      operationId: foods_show
+      parameters:
+      - name: food
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Food'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Nutrition
+      summary: Delete a custom food (logged meals keep their numbers)
+      operationId: foods_destroy
+      parameters:
+      - name: food
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /foods/{food}/favorite:
+    put:
+      tags:
+      - Nutrition
+      summary: Add to favourites
+      operationId: foods_favorite
+      parameters:
+      - name: food
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      food_id:
+                        type: integer
+                      favorite:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Nutrition
+      summary: Remove from favourites
+      operationId: foods_unfavorite
+      parameters:
+      - name: food
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      food_id:
+                        type: integer
+                      favorite:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits:
+    get:
+      tags:
+      - Habits
+      summary: Water, creatine, sleep and mobility for a day
+      operationId: habits_show
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits/creatine:
+    put:
+      tags:
+      - Habits
+      summary: Tick creatine
+      operationId: habits_creatine
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taken:
+                  type: boolean
+              required:
+              - taken
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits/mobility:
+    put:
+      tags:
+      - Habits
+      summary: Set mobility minutes
+      operationId: habits_mobility
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                minutes:
+                  type: integer
+              required:
+              - minutes
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits/sleep:
+    put:
+      tags:
+      - Habits
+      summary: Log sleep
+      operationId: habits_sleep
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sleep_hours:
+                  type: number
+                sleep_quality:
+                  type: integer
+                bedtime:
+                  type: string
+                wake_time:
+                  type: string
+              required:
+              - sleep_hours
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits/water:
+    post:
+      tags:
+      - Habits
+      summary: Add a drink
+      operationId: habits_water_add
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount_ml:
+                  type: integer
+                  minimum: 10
+              required:
+              - amount_ml
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /habits/water/last:
+    delete:
+      tags:
+      - Habits
+      summary: Undo the last drink
+      operationId: habits_water_undo
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Habits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /help:
+    get:
+      tags:
+      - Content
+      summary: Published help articles
+      operationId: help_index
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HelpArticle'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /help/{slug}:
+    get:
+      tags:
+      - Content
+      summary: One help article
+      operationId: help_show
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HelpArticle'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /leaderboard:
+    get:
+      tags:
+      - Progress
+      summary: Weekly XP ranking (opted-in members only)
+      operationId: leaderboard
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      enabled:
+                        type: boolean
+                      opted_in:
+                        type: boolean
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            rank:
+                              type: integer
+                            name:
+                              type: string
+                            xp:
+                              type: integer
+                            level:
+                              type: integer
+                            me:
+                              type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me:
+    get:
+      tags:
+      - Account
+      summary: The signed-in member
+      operationId: me_show
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    patch:
+      tags:
+      - Account
+      summary: Change name / email
+      operationId: me_update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+              required:
+              - name
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Account
+      summary: Delete the account and everything it owns
+      operationId: me_destroy
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                confirm:
+                  type: string
+                  enum:
+                  - DELETE
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/claim:
+    post:
+      tags:
+      - Account
+      summary: Turn a guest into a registered account
+      operationId: me_claim
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+              required:
+              - email
+              - password
+              - password_confirmation
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/device/push:
+    put:
+      tags:
+      - Notifications
+      summary: Register this phone's push token
+      operationId: me_device_push
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum:
+                  - fcm
+                token:
+                  type: string
+              required:
+              - provider
+              - token
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      device:
+                        $ref: '#/components/schemas/Device'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Notifications
+      summary: Forget this phone's push token
+      operationId: me_device_push_destroy
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: Push categories, quiet hours, lock-screen detail
+      operationId: me_notifications
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NotificationPrefs'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    put:
+      tags:
+      - Notifications
+      summary: Change push preferences (stored on the server)
+      operationId: me_notifications_update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPrefsUpdate'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NotificationPrefs'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/onboarding:
+    post:
+      tags:
+      - Account
+      summary: Complete the first-run profile
+      operationId: me_onboarding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyProfile'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/password:
+    put:
+      tags:
+      - Account
+      summary: Change password (signs out other devices)
+      operationId: me_password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+              required:
+              - current_password
+              - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/profile:
+    get:
+      tags:
+      - Account
+      summary: The body / goal profile
+      operationId: me_profile
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    put:
+      tags:
+      - Account
+      summary: Update the body / goal profile
+      operationId: me_profile_update
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyProfile'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/program:
+    post:
+      tags:
+      - Programs
+      summary: Switch to a program
+      operationId: me_program
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                program_id:
+                  type: integer
+              required:
+              - program_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      program_id:
+                        type: integer
+                      plan_started_on:
+                        type: string
+                        format: date
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /me/settings:
+    get:
+      tags:
+      - Account
+      summary: Preferences and reminder times
+      operationId: me_settings
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Settings'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    put:
+      tags:
+      - Account
+      summary: Update preferences and reminder times
+      operationId: me_settings_update
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Settings'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /media/banner/{banner}:
+    get:
+      tags:
+      - Media
+      summary: Banner image (signed URL, expires)
+      operationId: media_banner
+      parameters:
+      - name: banner
+        in: path
+        required: true
+        schema:
+          type: integer
+      security: []
+      responses:
+        '200':
+          description: The file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /media/exercise/{media}:
+    get:
+      tags:
+      - Media
+      summary: Exercise video / image (signed URL, supports Range)
+      operationId: media_exercise
+      parameters:
+      - name: media
+        in: path
+        required: true
+        schema:
+          type: integer
+      security: []
+      responses:
+        '200':
+          description: The file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /membership:
+    get:
+      tags:
+      - Membership
+      summary: Current plan, subscription and entitlements
+      operationId: membership_show
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Membership'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /membership/entitlements:
+    get:
+      tags:
+      - Membership
+      summary: Entitlement map only (cheap re-check)
+      operationId: membership_entitlements
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      entitlements:
+                        $ref: '#/components/schemas/EntitlementMap'
+                      limits:
+                        type: object
+                        additionalProperties: true
+                      plan_slug:
+                        type: string
+                      checked_at:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /membership/plans:
+    get:
+      tags:
+      - Membership
+      summary: Published membership plans (public)
+      operationId: membership_plans
+      security: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MembershipPlan'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /membership/purchases/verify:
+    post:
+      tags:
+      - Membership
+      summary: Verify a store purchase on the server
+      operationId: membership_verify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum:
+                  - apple
+                  - google
+                product_id:
+                  type: string
+                receipt:
+                  type: string
+                transaction_id:
+                  type: string
+              required:
+              - provider
+              - product_id
+              - receipt
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Membership'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /membership/restore:
+    post:
+      tags:
+      - Membership
+      summary: Re-verify purchases after a reinstall
+      operationId: membership_restore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                purchases:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      provider:
+                        type: string
+                      product_id:
+                        type: string
+                      receipt:
+                        type: string
+                    required:
+                    - provider
+                    - product_id
+                    - receipt
+              required:
+              - purchases
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/calculate:
+    post:
+      tags:
+      - Nutrition
+      summary: What an amount of food is worth (nothing saved)
+      operationId: nutrition_calculate
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                food_id:
+                  type: integer
+                quantity:
+                  type: number
+                unit:
+                  type: string
+                  enum:
+                  - grams
+                  - serving
+                serving_id:
+                  type: integer
+              required:
+              - food_id
+              - quantity
+              - unit
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      food:
+                        $ref: '#/components/schemas/Food'
+                      grams:
+                        type: number
+                      serving_label:
+                        type: string
+                      macros:
+                        $ref: '#/components/schemas/Macros'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/day:
+    get:
+      tags:
+      - Nutrition
+      summary: Totals, targets, remaining and meals for a day
+      operationId: nutrition_day
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DayNutrition'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/history:
+    get:
+      tags:
+      - Nutrition
+      summary: Calories and protein per day
+      operationId: nutrition_history
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/meal-plan:
+    get:
+      tags:
+      - Nutrition
+      summary: Suggested meals that fit the targets
+      operationId: nutrition_meal_plan
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/targets:
+    get:
+      tags:
+      - Nutrition
+      summary: Active targets and how they were calculated
+      operationId: nutrition_targets
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /nutrition/targets/recalculate:
+    post:
+      tags:
+      - Nutrition
+      summary: Change goal / diet and rebuild targets
+      operationId: nutrition_recalculate
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                goal:
+                  type: string
+                diet_preference:
+                  type: string
+                calorie_cycling:
+                  type: boolean
+              required:
+              - goal
+              - diet_preference
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan-items/{item}/alternatives:
+    get:
+      tags:
+      - Plan
+      summary: Swap candidates for a plan row
+      operationId: plan_items_alternatives
+      parameters:
+      - name: item
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan-items/{item}/swap:
+    post:
+      tags:
+      - Plan
+      summary: Swap a plan exercise
+      operationId: plan_items_swap
+      parameters:
+      - name: item
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exercise_id:
+                  type: integer
+                permanent:
+                  type: boolean
+              required:
+              - exercise_id
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Plan
+      summary: Undo a swap
+      operationId: plan_items_unswap
+      parameters:
+      - name: item
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan/days/{weekday}:
+    get:
+      tags:
+      - Plan
+      summary: One day with exercises and next targets
+      operationId: plan_day
+      parameters:
+      - name: weekday
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PlanDay'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan/days/{weekday}/complete:
+    post:
+      tags:
+      - Plan
+      summary: Mark a day done without the player
+      operationId: plan_complete
+      parameters:
+      - name: weekday
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan/days/{weekday}/skip:
+    post:
+      tags:
+      - Plan
+      summary: Skip a day
+      operationId: plan_skip
+      parameters:
+      - name: weekday
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Plan
+      summary: Undo a skip
+      operationId: plan_unskip
+      parameters:
+      - name: weekday
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /plan/week:
+    get:
+      tags:
+      - Plan
+      summary: The week with a status per day
+      operationId: plan_week
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /posture/exercises:
+    get:
+      tags:
+      - Posture coach
+      summary: Exercises the coach can judge, with rule versions
+      operationId: posture_exercises
+      x-entitlement: posture_coach
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /posture/rules/{exercise}:
+    get:
+      tags:
+      - Posture coach
+      summary: The JSON rule (schema 1) for an exercise
+      operationId: posture_rule
+      parameters:
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: string
+      x-entitlement: posture_coach
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PostureRule'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /posture/sessions:
+    post:
+      tags:
+      - Posture coach
+      summary: Save the numeric summary of a camera set
+      operationId: posture_sessions_store
+      x-entitlement: posture_coach
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostureSessionSave'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /programs:
+    get:
+      tags:
+      - Programs
+      summary: Published programs (premium ones as locked cards)
+      operationId: programs_index
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Program'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /programs/{plan}:
+    get:
+      tags:
+      - Programs
+      summary: A program with phases and the weekly template
+      operationId: programs_show
+      parameters:
+      - name: plan
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProgramDetail'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/measurements:
+    get:
+      tags:
+      - Progress
+      summary: Measurements, newest first
+      operationId: progress_measurements
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Measurement'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    post:
+      tags:
+      - Progress
+      summary: Save a day's measurements (merges blanks)
+      operationId: progress_measurements_store
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeasurementSave'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      measurement:
+                        $ref: '#/components/schemas/Measurement'
+                      badges:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BadgeBrief'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/measurements/{measurement}:
+    delete:
+      tags:
+      - Progress
+      summary: Delete a measurement
+      operationId: progress_measurements_destroy
+      parameters:
+      - name: measurement
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/photos:
+    get:
+      tags:
+      - Progress
+      summary: Progress photos (metadata)
+      operationId: progress_photos
+      x-entitlement: progress_photos
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    post:
+      tags:
+      - Progress
+      summary: Upload a progress photo (multipart; re-encoded server-side)
+      operationId: progress_photos_store
+      x-entitlement: progress_photos
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                pose:
+                  type: string
+                  enum:
+                  - front
+                  - side
+                  - back
+                taken_on:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+              required:
+              - photo
+              - pose
+              - taken_on
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/photos/{photo}:
+    get:
+      tags:
+      - Progress
+      summary: The photo bytes (owner only)
+      operationId: progress_photos_show
+      parameters:
+      - name: photo
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: progress_photos
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: The file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    delete:
+      tags:
+      - Progress
+      summary: Delete a photo and its file
+      operationId: progress_photos_destroy
+      parameters:
+      - name: photo
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: progress_photos
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/records:
+    get:
+      tags:
+      - Progress
+      summary: Personal records per exercise
+      operationId: progress_records
+      x-entitlement: analytics
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/strength/{exercise}:
+    get:
+      tags:
+      - Progress
+      summary: Strength curve of an exercise
+      operationId: progress_strength
+      parameters:
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: string
+      x-entitlement: analytics
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /progress/summary:
+    get:
+      tags:
+      - Progress
+      summary: Weight trend, BMI, body fat
+      operationId: progress_summary
+      x-entitlement: analytics
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /saved-meals:
+    get:
+      tags:
+      - Nutrition
+      summary: Saved meals with recomputed totals
+      operationId: saved_meals_index
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    post:
+      tags:
+      - Nutrition
+      summary: Save a meal
+      operationId: saved_meals_store
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                meal:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      food_id:
+                        type: integer
+                      grams:
+                        type: number
+                    required:
+                    - food_id
+                    - grams
+              required:
+              - name
+              - items
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /saved-meals/{meal}:
+    delete:
+      tags:
+      - Nutrition
+      summary: Delete a saved meal
+      operationId: saved_meals_destroy
+      parameters:
+      - name: meal
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /saved-meals/{meal}/log:
+    post:
+      tags:
+      - Nutrition
+      summary: Log a saved meal on a day
+      operationId: saved_meals_log
+      parameters:
+      - name: meal
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: nutrition
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logged_on:
+                  type: string
+                  format: date
+                meal:
+                  type: string
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /sync/batch:
+    post:
+      tags:
+      - Sync
+      summary: Replay operations queued offline (idempotent per op_id)
+      operationId: sync_batch
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncBatch'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SyncResult'
+                      server_time:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions:
+    get:
+      tags:
+      - Workouts
+      summary: Workout history (cursor pagination)
+      operationId: workout_sessions_index
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+    post:
+      tags:
+      - Workouts
+      summary: Start (or resume) a workout
+      operationId: workout_sessions_store
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weekday:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                date:
+                  type: string
+                  format: date
+                client_uuid:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WorkoutSession'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/active:
+    get:
+      tags:
+      - Workouts
+      summary: The unfinished workout, if any
+      operationId: workout_sessions_active
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WorkoutSession'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}:
+    get:
+      tags:
+      - Workouts
+      summary: A workout with exercises, sets and resume state
+      operationId: workout_sessions_show
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WorkoutSession'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/abandon:
+    post:
+      tags:
+      - Workouts
+      summary: Abandon a workout
+      operationId: workout_sessions_abandon
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/exercises/{exercise}/alternatives:
+    get:
+      tags:
+      - Workouts
+      summary: Alternatives for an exercise in the session
+      operationId: workout_sessions_exercises_alternatives
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/exercises/{exercise}/skip:
+    post:
+      tags:
+      - Workouts
+      summary: Skip an exercise
+      operationId: workout_sessions_exercises_skip
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/exercises/{exercise}/swap:
+    post:
+      tags:
+      - Workouts
+      summary: Swap an exercise in the session
+      operationId: workout_sessions_exercises_swap
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: exercise
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exercise_id:
+                  type: integer
+              required:
+              - exercise_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WorkoutSession'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/finish:
+    post:
+      tags:
+      - Workouts
+      summary: Finish a workout (idempotent)
+      operationId: workout_sessions_finish
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                active_seconds:
+                  type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+                      session_id:
+                        type: integer
+                      status:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/sets:
+    post:
+      tags:
+      - Workouts
+      summary: Log or correct a set (same exercise + number updates)
+      operationId: workout_sessions_sets_store
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_exercise_id:
+                  type: integer
+                set_number:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                weight_kg:
+                  type: number
+                reps:
+                  type: integer
+                duration_seconds:
+                  type: integer
+                rpe:
+                  type: number
+                is_warmup:
+                  type: boolean
+              required:
+              - session_exercise_id
+              - set_number
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      set:
+                        $ref: '#/components/schemas/SessionSet'
+                      exercise_status:
+                        type: string
+                      is_pr:
+                        type: boolean
+                      personal_records:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: true
+                      xp:
+                        type: integer
+                      totals:
+                        type: object
+                        additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/sets/{set}:
+    delete:
+      tags:
+      - Workouts
+      summary: Delete a set
+      operationId: workout_sessions_sets_destroy
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: set
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/state:
+    put:
+      tags:
+      - Workouts
+      summary: Save resume state (older saves are ignored)
+      operationId: workout_sessions_state
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStateSave'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      applied:
+                        type: boolean
+                      client_state:
+                        type: object
+                        additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /workout-sessions/{session}/summary:
+    get:
+      tags:
+      - Workouts
+      summary: Results of a completed workout
+      operationId: workout_sessions_summary
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      x-entitlement: workouts
+      x-requires-onboarding: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/Invalid'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Sanctum personal access token (prefix `ipt_`)
+  responses:
+    Unauthenticated:
+      description: Missing, expired or revoked token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: unauthenticated
+              message: Missing, expired or revoked token.
+              details: {}
+              request_id: b2c1d1c8-...
+    Forbidden:
+      description: The member's plan does not include this (code entitlement_required, details.required_entitlement), the
+        account is suspended (account_suspended) or a plan limit was reached (limit_reached).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: entitlement_required
+              message: The member's plan does not include this (code entitlement_required, details.required_entitlement),
+                the account is suspended (account_suspended) or a plan limit was reached (limit_reached).
+              details: {}
+              request_id: b2c1d1c8-...
+    NotFound:
+      description: No such record for this member.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: not_found
+              message: No such record for this member.
+              details: {}
+              request_id: b2c1d1c8-...
+    Invalid:
+      description: Validation failed; details maps field names to messages.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: validation_failed
+              message: Validation failed; details maps field names to messages.
+              details: {}
+              request_id: b2c1d1c8-...
+    RateLimited:
+      description: Too many requests; see Retry-After.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: rate_limited
+              message: Too many requests; see Retry-After.
+              details: {}
+              request_id: b2c1d1c8-...
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+            request_id:
+              type: string
+          required:
+          - code
+          - message
+          - request_id
+      required:
+      - error
+    DeviceInfo:
+      type: object
+      properties:
+        installation_id:
+          type: string
+          pattern: ^[A-Za-z0-9-]{16,64}$
+          description: Generated by the app on first launch and kept in secure storage
+        platform:
+          type: string
+          enum:
+          - android
+          - ios
+        name:
+          type: string
+        app_version:
+          type: string
+        app_build:
+          type: string
+        os_version:
+          type: string
+        locale:
+          type: string
+        timezone:
+          type: string
+      required:
+      - installation_id
+      - platform
+      - app_version
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          enum:
+          - Bearer
+        expires_at:
+          type: string
+          format: date-time
+        refresh_after:
+          type: string
+          format: date-time
+      required:
+      - access_token
+      - token_type
+      - expires_at
+      - refresh_after
+    AuthResult:
+      type: object
+      properties:
+        token:
+          $ref: '#/components/schemas/Token'
+        device_id:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - token
+      - device_id
+      - user
+    Device:
+      type: object
+      properties:
+        id:
+          type: integer
+        platform:
+          type: string
+        name:
+          type: string
+        app_version:
+          type: string
+        os_version:
+          type: string
+        last_seen_at:
+          type: string
+          format: date-time
+        signed_in:
+          type: boolean
+        is_current:
+          type: boolean
+        push_enabled:
+          type: boolean
+    Profile:
+      type: object
+      properties:
+        age:
+          type: integer
+        sex:
+          type: string
+        height_cm:
+          type: number
+        weight_kg:
+          type: number
+        target_weight_kg:
+          type: number
+        activity_level:
+          type: string
+        fitness_level:
+          type: string
+        goal:
+          type: string
+          enum:
+          - cutting
+          - bulking
+          - maintenance
+          - recomposition
+        diet_preference:
+          type: string
+        equipment:
+          type: array
+          items:
+            type: string
+        training_days:
+          type: array
+          items:
+            type: integer
+        unit_system:
+          type: string
+          enum:
+          - metric
+          - imperial
+        timezone:
+          type: string
+        plan_id:
+          type: integer
+        plan_started_on:
+          type: string
+          format: date
+        public_name:
+          type: string
+    BodyProfile:
+      type: object
+      properties:
+        name:
+          type: string
+        public_name:
+          type: string
+        age:
+          type: integer
+          minimum: 14
+          maximum: 90
+        sex:
+          type: string
+        height_cm:
+          type: number
+        weight_kg:
+          type: number
+        activity_level:
+          type: string
+        fitness_level:
+          type: string
+        goal:
+          type: string
+        diet_preference:
+          type: string
+        equipment:
+          type: array
+          items:
+            type: string
+        training_days:
+          type: array
+          items:
+            type: integer
+        unit_system:
+          type: string
+        timezone:
+          type: string
+      required:
+      - name
+      - age
+      - sex
+      - height_cm
+      - weight_kg
+      - activity_level
+      - fitness_level
+      - goal
+      - diet_preference
+      - equipment
+      - training_days
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        is_guest:
+          type: boolean
+        role:
+          type: string
+          enum:
+          - user
+          - admin
+        status:
+          type: string
+          enum:
+          - active
+          - suspended
+        email_verified:
+          type: boolean
+        onboarded:
+          type: boolean
+        level:
+          type: integer
+        xp_total:
+          type: integer
+        workout_streak:
+          type: integer
+        longest_workout_streak:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        profile:
+          $ref: '#/components/schemas/Profile'
+      required:
+      - id
+      - name
+      - onboarded
+    Settings:
+      type: object
+      properties:
+        sound_enabled:
+          type: boolean
+        voice_coach:
+          type: boolean
+        leaderboard_opt_in:
+          type: boolean
+        ai_coach_opt_in:
+          type: boolean
+        public_name:
+          type: string
+        water_goal_ml:
+          type: integer
+        sleep_goal_hours:
+          type: number
+        creatine_dose_g:
+          type: number
+        notifications:
+          type: object
+          properties:
+            workout_reminder_at:
+              type: string
+              description: HH:MM
+            creatine_reminder_at:
+              type: string
+            sleep_reminder_at:
+              type: string
+            water_reminders:
+              type: boolean
+            water_interval_minutes:
+              type: integer
+            email_digest:
+              type: boolean
+            digest_day:
+              type: integer
+    EntitlementMap:
+      type: object
+      properties:
+        workouts:
+          type: boolean
+        programs.premium:
+          type: boolean
+        library.premium:
+          type: boolean
+        nutrition:
+          type: boolean
+        posture_coach:
+          type: boolean
+        analytics:
+          type: boolean
+        progress_photos:
+          type: boolean
+        coach.ai:
+          type: boolean
+      required:
+      - workouts
+      - programs.premium
+      - library.premium
+      - nutrition
+      - posture_coach
+      - analytics
+      - progress_photos
+      - coach.ai
+      description: One boolean per entitlement key. The set of keys is fixed by the server.
+    MembershipPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        is_default:
+          type: boolean
+        price:
+          type: object
+          properties:
+            amount_minor:
+              type: integer
+            currency:
+              type: string
+            display:
+              type: string
+        billing:
+          type: object
+          properties:
+            interval:
+              type: string
+              enum:
+              - none
+              - week
+              - month
+              - year
+              - lifetime
+            interval_count:
+              type: integer
+            duration_days:
+              type: integer
+            trial_days:
+              type: integer
+            auto_renews:
+              type: boolean
+        features:
+          type: array
+          items:
+            type: string
+        entitlements:
+          $ref: '#/components/schemas/EntitlementMap'
+        limits:
+          type: object
+          additionalProperties: true
+        store_product_ids:
+          type: object
+          properties:
+            apple:
+              type: string
+            google:
+              type: string
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - slug
+      - name
+      - entitlements
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - trialing
+          - active
+          - canceled
+          - expired
+          - revoked
+        source:
+          type: string
+        plan_slug:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        trial_ends_at:
+          type: string
+          format: date-time
+        current_period_ends_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        canceled_at:
+          type: string
+          format: date-time
+        auto_renew:
+          type: boolean
+    Membership:
+      type: object
+      properties:
+        plan:
+          $ref: '#/components/schemas/MembershipPlan'
+        subscription:
+          $ref: '#/components/schemas/Subscription'
+        entitlements:
+          $ref: '#/components/schemas/EntitlementMap'
+        limits:
+          type: object
+          additionalProperties: true
+        payments:
+          type: object
+          properties:
+            available_providers:
+              type: array
+              items:
+                type: string
+                enum:
+                - apple
+                - google
+        checked_at:
+          type: string
+          format: date-time
+        revalidate_after_seconds:
+          type: integer
+      required:
+      - entitlements
+      - revalidate_after_seconds
+    Macros:
+      type: object
+      properties:
+        kcal:
+          type: number
+        protein_g:
+          type: number
+        carbs_g:
+          type: number
+        fat_g:
+          type: number
+        fibre_g:
+          type: number
+    Food:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        brand:
+          type: string
+        category:
+          type: string
+        diet_type:
+          type: string
+        is_verified:
+          type: boolean
+        custom:
+          type: boolean
+        per_100g:
+          $ref: '#/components/schemas/Macros'
+        servings:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              label:
+                type: string
+              grams:
+                type: number
+              is_default:
+                type: boolean
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - per_100g
+    FoodLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        food_id:
+          type: integer
+        logged_on:
+          type: string
+          format: date
+        meal:
+          type: string
+          enum:
+          - breakfast
+          - lunch
+          - snack
+          - dinner
+        name:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+          enum:
+          - grams
+          - serving
+        serving_label:
+          type: string
+        grams:
+          type: number
+        kcal:
+          type: number
+        protein_g:
+          type: number
+        carbs_g:
+          type: number
+        fat_g:
+          type: number
+        fibre_g:
+          type: number
+      description: Values are computed and stored by the server when the entry is saved.
+    DayNutrition:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        is_training_day:
+          type: boolean
+        totals:
+          type: object
+          properties:
+            calories:
+              type: number
+            protein_g:
+              type: number
+            carbs_g:
+              type: number
+            fat_g:
+              type: number
+            fibre_g:
+              type: number
+        targets:
+          type: object
+          additionalProperties: true
+        remaining:
+          type: object
+          additionalProperties: true
+        suggestions:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        meals:
+          type: array
+          items:
+            type: object
+            properties:
+              meal:
+                type: string
+              label:
+                type: string
+              kcal:
+                type: number
+              protein_g:
+                type: number
+              entries:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodLog'
+    ExerciseMedia:
+      type: object
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+          enum:
+          - demo_video
+          - instruction_video
+          - image
+          - thumbnail
+        view:
+          type: string
+          enum:
+          - angle
+          - side
+          - front
+        url:
+          type: string
+          format: uri
+          description: Signed, expiring. Cache the file by id + checksum, not by URL.
+        checksum:
+          type: string
+        mime:
+          type: string
+        bytes:
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+        duration_ms:
+          type: integer
+    Exercise:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+        muscle_group:
+          type: string
+        muscle_group_label:
+          type: string
+        secondary_groups:
+          type: array
+          items:
+            type: string
+        mechanic:
+          type: string
+        difficulty:
+          type: string
+        equipment:
+          type: array
+          items:
+            type: string
+        is_timed:
+          type: boolean
+        per_side:
+          type: boolean
+        mobility_type:
+          type: string
+        required_entitlement:
+          type: string
+        locked:
+          type: boolean
+          description: 'true: only the fields above are present (a teaser)'
+        updated_at:
+          type: string
+          format: date-time
+        target_regions:
+          type: object
+          additionalProperties: true
+        rest:
+          type: object
+          properties:
+            min_seconds:
+              type: integer
+            max_seconds:
+              type: integer
+            default_seconds:
+              type: integer
+        default_hold_seconds:
+          type: integer
+        description:
+          type: string
+        form_cues:
+          type: array
+          items:
+            type: string
+        common_mistakes:
+          type: array
+          items:
+            type: string
+        breathing:
+          type: string
+        demo_key:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExerciseMedia'
+        posture:
+          type: object
+          properties:
+            supported:
+              type: boolean
+            tier:
+              type: string
+            camera_view:
+              type: string
+            rule_version:
+              type: integer
+      required:
+      - id
+      - slug
+      - name
+      - locked
+    ExercisePage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+        links:
+          type: object
+          additionalProperties: true
+        meta:
+          type: object
+          additionalProperties: true
+    Program:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        source:
+          type: string
+        version:
+          type: integer
+        is_default:
+          type: boolean
+        is_selected:
+          type: boolean
+        required_entitlement:
+          type: string
+        locked:
+          type: boolean
+        training_days:
+          type: integer
+        phases_count:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - slug
+      - name
+      - locked
+    ProgramDetail:
+      allOf:
+      - $ref: '#/components/schemas/Program'
+      - type: object
+        properties:
+          rules:
+            type: object
+            additionalProperties: true
+          phases:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                kind:
+                  type: string
+                  enum:
+                  - sprint
+                  - phase
+                name:
+                  type: string
+                summary:
+                  type: string
+                starts_week:
+                  type: integer
+                ends_week:
+                  type: integer
+                settings:
+                  type: object
+                  additionalProperties: true
+          days:
+            type: array
+            items:
+              $ref: '#/components/schemas/PlanDayHeader'
+    PlanDayHeader:
+      type: object
+      properties:
+        day_of_week:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        session_type:
+          type: string
+        label:
+          type: string
+        title:
+          type: string
+        focus:
+          type: string
+        is_rest:
+          type: boolean
+        description:
+          type: string
+        recovery_note:
+          type: string
+        estimated_minutes:
+          type: integer
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              position:
+                type: integer
+              exercise_id:
+                type: integer
+              exercise_slug:
+                type: string
+              name:
+                type: string
+              muscle_group:
+                type: string
+              sets:
+                type: integer
+              reps_min:
+                type: integer
+              reps_max:
+                type: integer
+              reps_label:
+                type: string
+              focus:
+                type: string
+              notes:
+                type: string
+              rest_seconds:
+                type: integer
+              is_timed:
+                type: boolean
+              hold_seconds:
+                type: integer
+    PlanDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        weekday:
+          type: integer
+        week_number:
+          type: integer
+        status:
+          type: string
+          enum:
+          - completed
+          - skipped
+          - in_progress
+          - rest
+          - missed
+          - today
+          - upcoming
+        estimated_minutes:
+          type: integer
+        can_act:
+          type: boolean
+        is_future:
+          type: boolean
+        day:
+          type: object
+          additionalProperties: true
+        session:
+          type: object
+          additionalProperties: true
+        exercises:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    SessionSet:
+      type: object
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        weight_kg:
+          type: number
+        reps:
+          type: integer
+        duration_seconds:
+          type: integer
+        rpe:
+          type: number
+        is_warmup:
+          type: boolean
+        is_pr:
+          type: boolean
+        completed_at:
+          type: string
+          format: date-time
+    SessionExercise:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'session_exercise id: use it when logging sets'
+        exercise_id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        swapped_from:
+          type: string
+        can_swap:
+          type: boolean
+        position:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - done
+          - skipped
+        muscle_group:
+          type: string
+        equipment:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        form_cues:
+          type: array
+          items:
+            type: string
+        common_mistakes:
+          type: array
+          items:
+            type: string
+        breathing:
+          type: string
+        is_timed:
+          type: boolean
+        hold_seconds:
+          type: integer
+        target_sets:
+          type: integer
+        reps_min:
+          type: integer
+        reps_max:
+          type: integer
+        rest_seconds:
+          type: integer
+        rest_label:
+          type: string
+        suggested:
+          type: object
+          properties:
+            weight_kg:
+              type: number
+            reps:
+              type: integer
+            reason:
+              type: string
+        has_history:
+          type: boolean
+        last:
+          type: object
+          additionalProperties: true
+        posture_supported:
+          type: boolean
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionSet'
+    WorkoutSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        client_uuid:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+          - in_progress
+          - paused
+          - completed
+          - skipped
+          - abandoned
+        source:
+          type: string
+        title:
+          type: string
+        plan_day:
+          type: object
+          additionalProperties: true
+        scheduled_for:
+          type: string
+          format: date
+        week_number:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+        active_seconds:
+          type: integer
+        volume_kg:
+          type: number
+        sets_completed:
+          type: integer
+        xp_earned:
+          type: integer
+        client_state:
+          $ref: '#/components/schemas/SessionState'
+        server_time:
+          type: string
+          format: date-time
+        preferences:
+          type: object
+          properties:
+            sound:
+              type: boolean
+            voice:
+              type: boolean
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionExercise'
+      required:
+      - id
+      - status
+      - started_at
+      - server_time
+      - exercises
+      description: Timers are derived from started_at, server_time and the timestamps in client_state; no running clock is
+        sent.
+    SessionState:
+      type: object
+      properties:
+        idx:
+          type: integer
+        setIdx:
+          type: integer
+        phase:
+          type: string
+          enum:
+          - intro
+          - work
+          - rest
+          - paused
+          - finish
+        rest_ends_at:
+          type: string
+          format: date-time
+        paused_at:
+          type: string
+          format: date-time
+        paused_ms:
+          type: integer
+        active_ms:
+          type: integer
+        saved_at:
+          type: string
+          format: date-time
+      required:
+      - idx
+      - setIdx
+      - phase
+    SessionStateSave:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/SessionState'
+      required:
+      - state
+    Habits:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        water:
+          type: object
+          additionalProperties: true
+        creatine:
+          type: object
+          additionalProperties: true
+        sleep:
+          type: object
+          additionalProperties: true
+        mobility_minutes:
+          type: integer
+        history:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/BadgeBrief'
+    Dashboard:
+      type: object
+      properties:
+        greeting_period:
+          type: string
+          enum:
+          - late_night
+          - morning
+          - afternoon
+          - evening
+        today:
+          type: string
+          format: date
+        workout:
+          type: object
+          additionalProperties: true
+        week:
+          type: object
+          additionalProperties: true
+        streak:
+          type: integer
+        xp:
+          type: object
+          additionalProperties: true
+        nutrition:
+          type: object
+          additionalProperties: true
+        habits:
+          type: object
+          additionalProperties: true
+        quote:
+          type: string
+        membership:
+          type: object
+          properties:
+            plan_slug:
+              type: string
+            entitlements:
+              $ref: '#/components/schemas/EntitlementMap'
+    Achievements:
+      type: object
+      properties:
+        xp:
+          type: object
+          additionalProperties: true
+        streak:
+          type: object
+          additionalProperties: true
+        earned_count:
+          type: integer
+        badges:
+          type: array
+          items:
+            type: object
+            properties:
+              slug:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              icon:
+                type: string
+              category:
+                type: string
+              tier:
+                type: string
+              xp_reward:
+                type: integer
+              earned:
+                type: boolean
+              awarded_at:
+                type: string
+                format: date-time
+              progress:
+                type: object
+                properties:
+                  value:
+                    type: number
+                  target:
+                    type: number
+                  pct:
+                    type: integer
+    BadgeBrief:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        icon:
+          type: string
+        tier:
+          type: string
+        xp_reward:
+          type: integer
+    Measurement:
+      type: object
+      properties:
+        id:
+          type: integer
+        measured_on:
+          type: string
+          format: date
+        weight_kg:
+          type: number
+        body_fat_pct:
+          type: number
+        neck_cm:
+          type: number
+        shoulders_cm:
+          type: number
+        chest_cm:
+          type: number
+        waist_cm:
+          type: number
+        hips_cm:
+          type: number
+        bicep_left_cm:
+          type: number
+        bicep_right_cm:
+          type: number
+        thigh_cm:
+          type: number
+        calf_cm:
+          type: number
+        notes:
+          type: string
+    MeasurementSave:
+      type: object
+      properties:
+        measured_on:
+          type: string
+          format: date
+        weight_kg:
+          type: number
+          minimum: 30
+          maximum: 300
+        body_fat_pct:
+          type: number
+        waist_cm:
+          type: number
+        notes:
+          type: string
+      required:
+      - measured_on
+      description: Provide at least one measurement. Other *_cm fields follow the Measurement schema.
+    PostureRule:
+      type: object
+      properties:
+        exercise:
+          type: object
+          additionalProperties: true
+        rule_id:
+          type: integer
+        rule_version:
+          type: integer
+        tier:
+          type: string
+        camera_view:
+          type: string
+        config:
+          type: object
+          description: JSON rule schema 1 evaluated by the on-device engine
+        guidance:
+          type: object
+          additionalProperties: true
+        updated_at:
+          type: string
+          format: date-time
+    PostureSessionSave:
+      type: object
+      properties:
+        client_uuid:
+          type: string
+          format: uuid
+        exercise_id:
+          type: integer
+        posture_rule_id:
+          type: integer
+        workout_session_id:
+          type: integer
+        rule_version:
+          type: integer
+        camera_view:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        duration_seconds:
+          type: integer
+        total_reps:
+          type: integer
+        good_reps:
+          type: integer
+        bad_reps:
+          type: integer
+        hold_seconds:
+          type: integer
+        form_score_avg:
+          type: integer
+          minimum: 0
+          maximum: 100
+        form_score_min:
+          type: integer
+        error_counts:
+          type: object
+          additionalProperties: true
+        rep_log:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        avg_fps:
+          type: number
+        model_variant:
+          type: string
+      required:
+      - client_uuid
+      - exercise_id
+      - rule_version
+      - camera_view
+      - started_at
+      - duration_seconds
+      - total_reps
+      - good_reps
+      - bad_reps
+      - form_score_avg
+      - form_score_min
+      description: Numbers only. Camera frames and video are never sent.
+    Announcement:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        severity:
+          type: string
+          enum:
+          - info
+          - promo
+          - warning
+          - maintenance
+        pinned:
+          type: boolean
+        cta:
+          type: object
+          properties:
+            label:
+              type: string
+            url:
+              type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        published_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Banner:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subtitle:
+          type: string
+        placement:
+          type: string
+          enum:
+          - home
+          - programs
+          - library
+        image:
+          type: object
+          properties:
+            url:
+              type: string
+              format: uri
+            checksum:
+              type: string
+            mime:
+              type: string
+        cta:
+          type: object
+          properties:
+            label:
+              type: string
+            url:
+              type: string
+        sort_order:
+          type: integer
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    HelpArticle:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        category:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+          description: 'Markdown subset: paragraphs, **bold**, "- " lists, [links](https://...)'
+        sort_order:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+    NotificationPrefs:
+      type: object
+      properties:
+        push_available:
+          type: boolean
+        push_registered:
+          type: boolean
+        categories:
+          type: object
+          properties:
+            workout_reminders:
+              type: boolean
+            membership:
+              type: boolean
+            achievements:
+              type: boolean
+            announcements:
+              type: boolean
+            nutrition:
+              type: boolean
+        quiet_hours:
+          type: object
+          properties:
+            start:
+              type: string
+            end:
+              type: string
+        lock_screen_details:
+          type: boolean
+          description: 'false (default): lock screens show a generic message'
+    NotificationPrefsUpdate:
+      type: object
+      properties:
+        categories:
+          type: object
+          properties:
+            workout_reminders:
+              type: boolean
+            membership:
+              type: boolean
+            achievements:
+              type: boolean
+            announcements:
+              type: boolean
+            nutrition:
+              type: boolean
+        quiet_hours:
+          type: object
+          properties:
+            start:
+              type: string
+            end:
+              type: string
+          description: null clears
+        lock_screen_details:
+          type: boolean
+    AppConfig:
+      type: object
+      properties:
+        api_version:
+          type: string
+        server_time:
+          type: string
+          format: date-time
+        version_policy:
+          type: object
+          properties:
+            platform:
+              type: string
+            status:
+              type: string
+              enum:
+              - ok
+              - update_recommended
+              - update_required
+            min_supported:
+              type: string
+            recommended:
+              type: string
+            latest:
+              type: string
+            store_url:
+              type: string
+            release_notes:
+              type: string
+        policies:
+          type: object
+          additionalProperties: true
+        maintenance:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            message:
+              type: string
+            ends_at:
+              type: string
+              format: date-time
+        releases:
+          type: array
+          items:
+            type: object
+            properties:
+              platform:
+                type: string
+              version:
+                type: string
+              notes:
+                type: string
+              published_at:
+                type: string
+                format: date-time
+        auth:
+          type: object
+          properties:
+            guest_mode:
+              type: boolean
+            token_ttl_days:
+              type: integer
+            refresh_window_days:
+              type: integer
+        features:
+          type: object
+          properties:
+            coach:
+              type: boolean
+            payments:
+              type: array
+              items:
+                type: string
+            push:
+              type: boolean
+        settings:
+          type: object
+          additionalProperties: true
+    ContentManifest:
+      type: object
+      properties:
+        cursor:
+          type: integer
+        collections:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              version:
+                type: integer
+              count:
+                type: integer
+        server_time:
+          type: string
+          format: date-time
+    ContentSnapshot:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        meta:
+          type: object
+          properties:
+            collection:
+              type: string
+            page:
+              type: integer
+            per_page:
+              type: integer
+            total:
+              type: integer
+            last_page:
+              type: integer
+    ContentChanges:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              change_id:
+                type: integer
+              collection:
+                type: string
+              id:
+                type: integer
+              action:
+                type: string
+                enum:
+                - upsert
+                - delete
+              resource:
+                type: object
+                additionalProperties: true
+        meta:
+          type: object
+          properties:
+            cursor:
+              type: integer
+            has_more:
+              type: boolean
+            server_time:
+              type: string
+              format: date-time
+      description: 'Apply in order. Repeat with after=meta.cursor while has_more is true. 410 cursor_expired means: download
+        the collections again.'
+    SyncBatch:
+      type: object
+      properties:
+        operations:
+          type: array
+          items:
+            type: object
+            properties:
+              op_id:
+                type: string
+                format: uuid
+              type:
+                type: string
+                enum:
+                - workout.set.log
+                - workout.set.delete
+                - workout.state.save
+                - workout.finish
+                - workout.abandon
+                - food.log.create
+                - food.log.delete
+                - water.add
+                - water.undo
+                - habit.creatine
+                - habit.sleep
+                - measurement.save
+                - posture.session.save
+              payload:
+                type: object
+                additionalProperties: true
+              client_created_at:
+                type: string
+                format: date-time
+            required:
+            - op_id
+            - type
+            - payload
+          maxItems: 100
+      required:
+      - operations
+    SyncResult:
+      type: object
+      properties:
+        op_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+          - applied
+          - duplicate
+          - conflict
+          - rejected
+          - error
+          - not_processed
+        original_status:
+          type: string
+        server:
+          type: object
+          additionalProperties: true
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+        retryable:
+          type: boolean
+      required:
+      - op_id
+      - status
+      description: 'applied: done. duplicate: this op_id was handled before. conflict: the server holds newer data (returned
+        in `server`); resubmit with a fresh client_created_at to keep the local value. rejected: final, show the error. error/not_processed:
+        retry the rest of the batch later.'

@@ -165,6 +165,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/announcements/{announcement}/edit', [AdminAnnouncementController::class, 'edit'])->whereNumber('announcement')->name('announcements.edit');
     Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->whereNumber('announcement')->name('announcements.update');
     Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->whereNumber('announcement')->name('announcements.destroy');
+    Route::post('/announcements/{announcement}/push', [AdminAnnouncementController::class, 'push'])->whereNumber('announcement')->name('announcements.push');
     Route::get('/banners', [AdminBannerController::class, 'index'])->name('banners.index');
     Route::get('/banners/create', [AdminBannerController::class, 'create'])->name('banners.create');
     Route::post('/banners', [AdminBannerController::class, 'store'])->name('banners.store');

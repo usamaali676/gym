@@ -30,6 +30,22 @@ abstract class TestCase extends BaseTestCase
         $this->app['auth']->shouldUse($this->defaultGuard);
     }
 
+    /**
+     * Guards cache the user they resolved. A real request is a new process, so forget the token guard's user before
+     * every call (otherwise a header array reused for a second member would still authenticate the first one) while
+     * keeping whoever `actingAs()` signed in on the web guard.
+     */
+    private function forgetCachedTokenUsers(): void
+    {
+        $auth = $this->app['auth'];
+        $web = $auth->guard('web')->user();
+
+        $auth->forgetGuards();
+        if ($web) {
+            $auth->guard('web')->setUser($web);
+        }
+    }
+
     public function be(Authenticatable $user, $guard = null)
     {
         $this->resetDefaultGuard();
@@ -39,6 +55,7 @@ abstract class TestCase extends BaseTestCase
 
     public function call($method, $uri, $parameters = [], $cookies = [], $files = [], $server = [], $content = null)
     {
+        $this->forgetCachedTokenUsers();
         $this->resetDefaultGuard();
 
         return parent::call($method, $uri, $parameters, $cookies, $files, $server, $content);

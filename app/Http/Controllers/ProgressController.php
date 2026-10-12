@@ -8,6 +8,8 @@ use App\Models\Exercise;
 use App\Models\Measurement;
 use App\Models\ProgressPhoto;
 use App\Services\BadgeService;
+use App\Services\MeasurementService;
+use App\Services\Membership\EntitlementService;
 use App\Services\ProgressPhotoService;
 use App\Services\ProgressService;
 use Carbon\CarbonImmutable;
@@ -50,25 +52,10 @@ class ProgressController extends Controller
         ]);
     }
 
-    public function storeMeasurement(StoreMeasurementRequest $request): RedirectResponse
+    public function storeMeasurement(StoreMeasurementRequest $request, MeasurementService $measurements): RedirectResponse
     {
-        $user = $request->user()->load('profile');
-        $data = $request->measurementData();
-        $on = $request->input('measured_on');
-
-        $existing = Measurement::where('user_id', $user->id)->whereDate('measured_on', $on)->first();
-        $row = $existing ?? new Measurement(['user_id' => $user->id, 'measured_on' => $on]);
-        // Fields left blank keep what was already stored for that day.
-        $row->fill(array_filter($data, fn ($v) => $v !== null));
-        $row->save();
-
-        // The newest weight is the user's current weight: the diet page then offers to recalculate.
-        $latest = Measurement::where('user_id', $user->id)->whereNotNull('weight_kg')->orderByDesc('measured_on')->first();
-        if ($latest && $user->profile && abs($user->profile->weight_kg - $latest->weight_kg) > 0.04) {
-            $user->profile->update(['weight_kg' => $latest->weight_kg]);
-        }
-
-        $awarded = $this->badges->evaluate($user->refresh(), ['body']);
+        $result = $measurements->save($request->user()->load('profile'), $request->input('measured_on'), $request->measurementData());
+        $awarded = $result['badges'];
 
         return redirect()->route('progress.index')->with('status', 'Measurements saved.'.($awarded ? ' Badge earned: '.collect($awarded)->pluck('name')->implode(', ').'.' : ''));
     }
@@ -84,6 +71,7 @@ class ProgressController extends Controller
     public function storePhoto(StorePhotoRequest $request): RedirectResponse
     {
         $user = $request->user();
+        app(EntitlementService::class)->assertWithinLimit($user, 'progress_photos', ProgressPhoto::where('user_id', $user->id)->count(), 'progress photos');
         $this->photos->store($user, $request->file('photo'), $request->input('pose'), CarbonImmutable::parse($request->input('taken_on')), $request->input('notes'));
         $awarded = $this->badges->evaluate($user->refresh(), ['body']);
 

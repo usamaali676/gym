@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Services\Coach\AnthropicCoachModel;
 use App\Services\Coach\CoachModel;
 use App\Services\DietCalculatorService;
+use App\Services\Push\FcmPushProvider;
+use App\Services\Push\NullPushProvider;
+use App\Services\Push\PushProvider;
 use App\View\Composers\NavComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Swappable in tests; in the app it is the official Anthropic SDK, called from the server only.
         $this->app->bind(CoachModel::class, AnthropicCoachModel::class);
+
+        // Push goes nowhere until a Firebase project is configured (see config/ironpulse.php, 'push').
+        $this->app->bind(PushProvider::class, fn () => config('ironpulse.push.enabled') ? new FcmPushProvider : new NullPushProvider);
     }
 
     public function boot(): void

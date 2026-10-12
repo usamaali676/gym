@@ -11,3 +11,8 @@ Artisan::command('inspire', function () {
 // Needs a cron entry: * * * * * php /path/to/artisan schedule:run
 Schedule::command('ironpulse:send-digests')->hourly()->withoutOverlapping();
 Schedule::command('ironpulse:prune-guests')->dailyAt('03:30')->withoutOverlapping();
+
+// Mobile API housekeeping
+Schedule::command('membership:maintain')->hourly()->withoutOverlapping();
+Schedule::command('api:prune')->dailyAt('03:45')->withoutOverlapping();
+Schedule::command('sanctum:prune-expired --hours=24')->dailyAt('04:00')->withoutOverlapping();

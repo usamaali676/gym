@@ -16,5 +16,18 @@
         <x-admin.audience :plans="$plans" :selected="$item->audience ?? []"/>
         <div class="md:col-span-2"><button class="btn btn-primary">{{ $isNew ? 'Save announcement' : 'Save changes' }}</button></div>
     </form>
+    @unless ($isNew)
+        <section class="glass mt-6 p-5" aria-labelledby="push-title">
+            <h2 id="push-title" class="text-sm font-bold uppercase">Push notification</h2>
+            @if ($item->push_sent_at)
+                <p class="mt-2 text-sm text-muted">Sent {{ $item->push_sent_at->diffForHumans() }}.</p>
+            @elseif (! config('ironpulse.push.enabled'))
+                <p class="mt-2 text-sm text-muted">Push is not set up on this server, so announcements reach members inside the app only. Configure Firebase (see the mobile docs) to notify members' phones.</p>
+            @else
+                <p class="mt-2 text-sm text-muted">Sends once to members in the audience who allowed announcement notifications. On lock screens they see a generic message unless they chose to show details.</p>
+                <form method="POST" action="{{ route('admin.announcements.push', $item) }}" class="mt-3">@csrf<button class="btn btn-ghost btn-sm" @disabled($item->status !== 'published')>Send notification</button></form>
+            @endif
+        </section>
+    @endunless
     @unless ($isNew)<form method="POST" action="{{ route('admin.announcements.destroy', $item) }}" class="mt-6" onsubmit="return confirm('Delete this announcement?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm"><x-icon name="trash" class="size-4"/>Delete</button></form>@endunless
 </x-admin.shell>

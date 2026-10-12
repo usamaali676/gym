@@ -76,6 +76,20 @@ class EntitlementService
         ]);
     }
 
+    /**
+     * Refuse to go past a plan's numeric limit (custom foods, progress photos, ...).
+     *
+     * @throws ApiException 403 limit_reached
+     */
+    public function assertWithinLimit(User $user, string $limit, int $currentCount, string $what): void
+    {
+        $max = $this->for($user)->limit($limit);
+
+        if ($max !== null && $currentCount >= $max) {
+            throw new ApiException('limit_reached', "Your plan allows up to {$max} {$what}. Upgrade or delete some to add more.", 403, ['limit' => $limit, 'max' => $max]);
+        }
+    }
+
     /** True while the user is below a plan's numeric limit (or the limit is unset). */
     public function withinLimit(User $user, string $limit, int $currentCount): bool
     {

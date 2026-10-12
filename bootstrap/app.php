@@ -6,6 +6,7 @@ use App\Http\Middleware\Api\EnforceAppVersion;
 use App\Http\Middleware\Api\EnsureAccountActive;
 use App\Http\Middleware\Api\EnsureOnboardedApi;
 use App\Http\Middleware\Api\ForceJson;
+use App\Http\Middleware\Api\Idempotent;
 use App\Http\Middleware\Api\TouchDevice;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureEntitled;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.active' => EnsureAccountActive::class,
             'api.onboarded' => EnsureOnboardedApi::class,
             'api.touch' => TouchDevice::class,
+            'api.idempotent' => Idempotent::class,
             'entitled' => EnsureEntitled::class,
         ]);
         $middleware->group('api.v1', [AssignRequestId::class, ForceJson::class, EnforceAppVersion::class]);

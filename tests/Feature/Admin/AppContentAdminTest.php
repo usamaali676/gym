@@ -14,7 +14,6 @@ use App\Models\Plan;
 use App\Models\PlanDayExercise;
 use App\Models\ProgramPhase;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -23,37 +22,6 @@ beforeEach(function () {
     $this->admin = User::factory()->onboarded()->admin()->create();
     $this->member = User::factory()->onboarded()->create();
 });
-
-/**
- * An upload backed by a real temp file. Laravel's UploadedFile::fake() reports its type from the file *name*, which
- * would make a content-sniffing test meaningless; this one is judged by its bytes, like a real upload.
- */
-function realUpload(string $name, string $bytes): UploadedFile
-{
-    $path = tempnam(sys_get_temp_dir(), 'up');
-    file_put_contents($path, $bytes);
-
-    return new UploadedFile($path, $name, null, null, true);
-}
-
-/** A few bytes libmagic recognises as an MP4 container. */
-function fakeMp4(string $name = 'clip.mp4'): UploadedFile
-{
-    return realUpload($name, pack('N', 24).'ftypmp42'.pack('N', 0).'mp42isom'.str_repeat("\0", 200));
-}
-
-function realImage(string $name = 'pic.png', string $format = 'png'): UploadedFile
-{
-    $img = imagecreatetruecolor(40, 20);
-    ob_start();
-    match ($format) {
-        'jpeg' => imagejpeg($img),
-        'webp' => imagewebp($img),
-        default => imagepng($img),
-    };
-
-    return realUpload($name, ob_get_clean());
-}
 
 describe('access', function () {
     it('keeps every app-content screen away from members and visitors', function (string $route) {

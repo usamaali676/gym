@@ -3,12 +3,13 @@
 namespace App\Exceptions;
 
 use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * A domain error the mobile API reports with a stable machine-readable code.
  * Rendered as {"error": {"code", "message", "details", "request_id"}} by App\Support\Api\ErrorRenderer.
  */
-class ApiException extends RuntimeException
+class ApiException extends RuntimeException implements HttpExceptionInterface
 {
     /**
      * @param  array<string, mixed>  $details
@@ -22,6 +23,17 @@ class ApiException extends RuntimeException
         public readonly array $headers = [],
     ) {
         parent::__construct($message, $status);
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->status;
+    }
+
+    /** @return array<string, string> */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 
     public static function forbidden(string $message = 'You are not allowed to do that.'): self

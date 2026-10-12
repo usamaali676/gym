@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendAnnouncementPush;
 use App\Models\Announcement;
 use App\Models\MembershipPlan;
 use App\Support\AdminAudit;
@@ -45,6 +46,25 @@ class AnnouncementController extends Controller
         AdminAudit::record('announcement.update', ['id' => $announcement->id]);
 
         return redirect()->route('admin.announcements.edit', $announcement)->with('status', 'Announcement saved. Apps pick it up on their next refresh.');
+    }
+
+    /** Queue a one-time push for a published announcement (only reaches members who opted in and registered a device). */
+    public function push(Announcement $announcement): RedirectResponse
+    {
+        if ($announcement->status !== 'published') {
+            return back()->withErrors(['status' => 'Publish the announcement before sending a notification.']);
+        }
+        if ($announcement->push_sent_at) {
+            return back()->withErrors(['status' => 'A notification for this announcement was already sent.']);
+        }
+        if (! config('ironpulse.push.enabled')) {
+            return back()->withErrors(['status' => 'Push notifications are not configured on this server (set FCM_PROJECT_ID and FCM_CREDENTIALS_PATH).']);
+        }
+
+        SendAnnouncementPush::dispatch($announcement->id);
+        AdminAudit::record('announcement.push', ['id' => $announcement->id]);
+
+        return back()->with('status', 'Notification queued. A queue worker must be running to deliver it.');
     }
 
     public function destroy(Announcement $announcement): RedirectResponse
