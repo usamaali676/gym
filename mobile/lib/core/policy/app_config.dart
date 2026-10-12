@@ -12,6 +12,8 @@ class AppConfig {
     required this.pushEnabled,
     required this.coachEnabled,
     required this.profileOptions,
+    required this.entitlementCatalog,
+    required this.limitLabels,
     required this.settings,
     required this.serverTime,
   });
@@ -26,6 +28,12 @@ class AppConfig {
   final bool pushEnabled;
   final bool coachEnabled;
   final Map<String, List<ProfileOption>> profileOptions;
+
+  /// What a membership can unlock, with the server's wording (key, label, description).
+  final List<EntitlementInfo> entitlementCatalog;
+
+  /// Labels for numeric plan limits, by key.
+  final Map<String, String> limitLabels;
 
   /// Dashboard-managed switches and copy (`features.help_center`, `support.email`, ...).
   final Map<String, dynamic> settings;
@@ -72,6 +80,14 @@ class AppConfig {
               if (o is Map) ProfileOption(o['value'], (o['label'] ?? o['value']).toString()),
           ],
       },
+      entitlementCatalog: [
+        for (final e in (json['entitlements'] as List? ?? const []))
+          if (e is Map) EntitlementInfo(e['key'].toString(), (e['label'] ?? e['key']).toString(), (e['description'] ?? '').toString()),
+      ],
+      limitLabels: {
+        for (final l in (json['limits'] as List? ?? const []))
+          if (l is Map) l['key'].toString(): (l['label'] ?? l['key']).toString(),
+      },
       settings: json['settings'] is Map ? Map<String, dynamic>.from(json['settings'] as Map) : const {},
       serverTime: DateTime.tryParse((json['server_time'] ?? '').toString())?.toUtc(),
     );
@@ -104,4 +120,11 @@ class ProfileOption {
   /// String for enums (`cutting`), int for weekdays (1 = Monday).
   final Object? value;
   final String label;
+}
+
+class EntitlementInfo {
+  const EntitlementInfo(this.key, this.label, this.description);
+  final String key;
+  final String label;
+  final String description;
 }

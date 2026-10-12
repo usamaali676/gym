@@ -85,7 +85,7 @@ class TestWorld {
   ];
 
   ProviderContainer container() {
-    final c = ProviderContainer(overrides: overrides);
+    final c = ProviderContainer(overrides: overrides, retry: noAutoRetry);
     addTearDown(c.dispose);
     return c;
   }
@@ -106,6 +106,9 @@ class TestWorld {
   void serveSignedInMember({Map<String, dynamic>? user, Map<String, dynamic>? config}) {
     server.reply('GET', '/app/config', 200, {'data': config ?? configJson()});
     server.reply('GET', '/me', 200, {'data': user ?? userJson()});
+    server.reply('GET', '/dashboard', 200, {'data': dashboardJson()});
+    server.reply('GET', '/membership', 200, {'data': membershipJson()});
+    server.reply('GET', '/membership/plans', 200, {'data': [planJson()]});
   }
 }
 

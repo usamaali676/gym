@@ -79,7 +79,7 @@ void main() {
 
     await tester.dragUntilVisible(find.text('FINISH'), find.byType(SingleChildScrollView), const Offset(0, -150));
     await tester.tap(find.text('FINISH'));
-    await pumpUntil(tester, find.text('WELCOME BACK'));
+    await pumpUntilHome(tester);
 
     final body = w.server.adapter.requests.firstWhere((r) => r.path == '/me/onboarding').data as Map;
     expect(body, {

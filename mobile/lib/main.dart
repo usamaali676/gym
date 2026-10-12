@@ -25,6 +25,7 @@ Future<void> main() async {
   await wipeStaleSecretsOnFreshInstall(prefs, FlutterSecureStore());
 
   runApp(ProviderScope(
+    retry: noAutoRetry,
     overrides: [
       appEnvironmentProvider.overrideWithValue(env),
       sharedPreferencesProvider.overrideWithValue(prefs),

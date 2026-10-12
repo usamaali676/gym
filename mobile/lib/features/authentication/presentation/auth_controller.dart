@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_error.dart';
 import '../../../core/authentication/session_manager.dart';
 import '../../../core/providers.dart';
+import '../../../core/storage/json_cache.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_user.dart';
 
@@ -48,6 +49,8 @@ class AuthController extends Notifier<AuthState> {
   @override
   AuthState build() {
     _ends = ref.watch(sessionManagerProvider).ends.listen((reason) {
+      // Signing out (or being signed out) takes the member's private cached answers off the phone too.
+      JsonCache.clearAll(ref.read(sharedPreferencesProvider));
       if (reason == SessionEnd.revoked) {
         state = const SignedOut(notice: 'Your session ended. Please sign in again.');
       } else {

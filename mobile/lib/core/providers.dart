@@ -33,3 +33,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   ref.onDispose(client.dispose);
   return client;
 });
+
+/// Riverpod 3 retries failed providers on its own. Our failures are mostly "offline", which the screens explain and
+/// let the member retry, so automatic background retries are off.
+Duration? noAutoRetry(int retryCount, Object error) => null;

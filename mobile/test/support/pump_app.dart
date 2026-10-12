@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ironpulse/app/app.dart';
 import 'package:ironpulse/app/theme/app_theme.dart';
 
+import 'package:ironpulse/core/providers.dart';
+
 import 'harness.dart';
 
 /// Phone-sized surface (360 x 740 logical px) so layout problems show up as overflow errors.
@@ -24,15 +26,19 @@ Future<void> pumpUntil(WidgetTester tester, Finder finder, {int maxFrames = 80})
 
 Future<void> pumpApp(WidgetTester tester, TestWorld world) async {
   usePhoneScreen(tester);
-  await tester.pumpWidget(ProviderScope(overrides: world.overrides, child: const IronPulseApp()));
+  await tester.pumpWidget(ProviderScope(retry: noAutoRetry, overrides: world.overrides, child: const IronPulseApp()));
 }
 
 /// A single screen inside the real theme, without the router.
 Future<void> pumpScreen(WidgetTester tester, TestWorld world, Widget screen) async {
   usePhoneScreen(tester);
   await tester.pumpWidget(ProviderScope(
+    retry: noAutoRetry,
     overrides: world.overrides,
     child: MaterialApp(theme: buildAppTheme(), home: screen),
   ));
   await tester.pump();
 }
+
+/// The signed-in home is ready once the dashboard has loaded (its header shows while loading).
+Future<void> pumpUntilHome(WidgetTester tester) => pumpUntil(tester, find.text('DAY STREAK'));

@@ -14,6 +14,7 @@ use App\Models\AppVersionPolicy;
 use App\Services\App\AppVersionService;
 use App\Services\Membership\PaymentVerifierRegistry;
 use App\Support\AppSettingKeys;
+use App\Support\Entitlement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -53,6 +54,9 @@ class AppConfigController extends Controller
             ],
             'settings' => AppSettingKeys::publicValues(),
             'profile_options' => $this->profileOptions(),
+            // Names and one-line descriptions of what a membership can unlock, so the paywall never hard-codes copy.
+            'entitlements' => array_map(fn (Entitlement $e) => ['key' => $e->value, 'label' => $e->label(), 'description' => $e->description()], Entitlement::cases()),
+            'limits' => collect(Entitlement::LIMITS)->map(fn (string $label, string $key) => ['key' => $key, 'label' => $label])->values()->all(),
         ]]);
     }
 

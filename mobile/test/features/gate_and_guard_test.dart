@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,11 +59,12 @@ void main() {
       await w.storeSession();
       w.serveSignedInMember();
       await pumpApp(tester, w);
-      await pumpUntil(tester, find.text('WELCOME BACK'));
+      await pumpUntilHome(tester);
 
       expect(find.text('Sam Lifter'), findsOneWidget);
       expect(find.text('420'), findsOneWidget); // XP
       expect(find.text('5'), findsOneWidget); // streak
+      expect(find.text('Push day'), findsOneWidget); // today's workout
     });
 
     testWidgets('a member who has not finished onboarding is sent to the profile form', (tester) async {
@@ -72,15 +75,31 @@ void main() {
       await pumpUntil(tester, find.text('Set up your profile'));
     });
 
-    testWidgets('starting offline with a cached account opens the app with an offline banner', (tester) async {
+    testWidgets('starting offline with a cached account opens the app and explains that home needs a connection', (tester) async {
       final w = await TestWorld.create();
       await w.storeSession(cachedUser: userJson(name: 'Cached Sam'));
       w.server.on('GET', '/app/config', (_) => FakeReply.fail(DioExceptionType.connectionError));
       w.server.on('GET', '/me', (_) => FakeReply.fail(DioExceptionType.connectionError));
+      w.server.on('GET', '/dashboard', (_) => FakeReply.fail(DioExceptionType.connectionError));
       await pumpApp(tester, w);
-      await pumpUntil(tester, find.text('Cached Sam'));
+      await pumpUntil(tester, find.text('You are offline'));
 
-      expect(find.text('Offline. Showing saved data.'), findsOneWidget);
+      expect(find.text('TRY AGAIN'), findsOneWidget);
+      expect(find.text('HOME'), findsOneWidget, reason: 'the app shell is there, only the data is missing');
+    });
+
+    testWidgets('a cached dashboard is shown offline, with a banner saying so', (tester) async {
+      final w = await TestWorld.create();
+      await w.storeSession(cachedUser: userJson());
+      w.serveSignedInMember();
+      w.server.on('GET', '/dashboard', (_) => FakeReply.fail(DioExceptionType.connectionError));
+      // the cache a previous online session left behind
+      await w.prefs.setString('ip.cache.7.dashboard', '{"saved_at":"2026-10-12T08:30:00.000Z","data":${jsonEncode(dashboardJson())}}');
+      await pumpApp(tester, w);
+      await pumpUntilHome(tester);
+
+      expect(find.textContaining('Offline. Showing data saved at'), findsOneWidget);
+      expect(find.text('Push day'), findsOneWidget);
     });
 
     testWidgets('sign out asks first, then returns to welcome and forgets the account', (tester) async {
@@ -89,7 +108,7 @@ void main() {
       w.serveSignedInMember();
       w.server.reply('POST', '/auth/logout', 200, {'data': {'ok': true}});
       await pumpApp(tester, w);
-      await pumpUntil(tester, find.text('WELCOME BACK'));
+      await pumpUntilHome(tester);
 
       await tester.tap(find.text('ACCOUNT'));
       await pumpUntil(tester, find.text('Member'));
@@ -107,7 +126,7 @@ void main() {
       await w.storeSession();
       w.serveSignedInMember(user: userJson(guest: true));
       await pumpApp(tester, w);
-      await pumpUntil(tester, find.text('WELCOME BACK'));
+      await pumpUntilHome(tester);
 
       await tester.tap(find.text('ACCOUNT'));
       await pumpUntil(tester, find.text('Guest account'));
@@ -126,7 +145,7 @@ void main() {
       await pumpUntil(tester, find.text('Update required'));
 
       expect(find.text('OPEN THE STORE'), findsOneWidget);
-      expect(find.text('WELCOME BACK'), findsNothing);
+      expect(find.text('GOOD MORNING'), findsNothing);
     });
 
     testWidgets('no store button when the gym has not set a store link', (tester) async {
@@ -157,11 +176,11 @@ void main() {
       await w.storeSession();
       w.serveSignedInMember();
       await pumpApp(tester, w);
-      await pumpUntil(tester, find.text('WELCOME BACK'));
+      await pumpUntilHome(tester);
 
-      w.server.reply('GET', '/me', 426, errorJson('upgrade_required', 'Update please.'));
-      // pull to refresh triggers /app/config and /me
-      await tester.fling(find.text('WELCOME BACK'), const Offset(0, 400), 1000);
+      w.server.reply('GET', '/dashboard', 426, errorJson('upgrade_required', 'Update please.'));
+      // pull to refresh reloads the dashboard, which the server now refuses
+      await tester.fling(find.text('GOOD MORNING'), const Offset(0, 400), 1000);
       await pumpUntil(tester, find.text('Update required'));
     });
   });

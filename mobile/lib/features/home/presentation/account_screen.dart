@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router.dart';
+import '../../membership/presentation/membership_providers.dart';
 
 import '../../../app/config/environment.dart';
 import '../../../app/theme/tokens.g.dart';
@@ -38,6 +42,7 @@ class AccountScreen extends ConsumerWidget {
     if (auth is! SignedIn) return const SizedBox.shrink();
     final user = auth.user;
     final env = ref.watch(appEnvironmentProvider);
+    final planName = ref.watch(membershipProvider).asData?.value.data.plan?.name;
 
     return SafeArea(
       bottom: false,
@@ -56,6 +61,23 @@ class AccountScreen extends ConsumerWidget {
                 StatusChip(user.isGuest ? 'Guest account' : 'Member', tone: user.isGuest ? Tone.warn : Tone.good),
                 if (user.isAdmin) const StatusChip('Admin'),
               ]),
+            ]),
+          ),
+          const SizedBox(height: 16),
+          GlassCard(
+            onTap: () => context.push(Routes.membership),
+            semanticLabel: 'Membership',
+            child: Row(children: [
+              const Icon(Icons.card_membership_outlined, color: IpColors.neon),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Membership', style: IpText.display(15, color: IpColors.ink)),
+                  const SizedBox(height: 2),
+                  Text(planName ?? 'See your plan and what it includes', style: IpText.body(13, color: IpColors.muted)),
+                ]),
+              ),
+              const Icon(Icons.chevron_right, color: IpColors.muted),
             ]),
           ),
           const SizedBox(height: 16),

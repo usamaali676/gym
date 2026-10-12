@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../core/policy/policy_controller.dart';
 import '../features/app_gate/presentation/gate_screens.dart';
 import '../features/authentication/presentation/auth_controller.dart';
+import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/authentication/presentation/forgot_password_screen.dart';
 import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/register_screen.dart';
 import '../features/authentication/presentation/welcome_screen.dart';
 import '../features/home/presentation/account_screen.dart';
 import '../features/home/presentation/app_shell.dart';
-import '../features/home/presentation/home_screen.dart';
+import '../features/membership/presentation/membership_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 
 abstract final class Routes {
@@ -25,12 +26,13 @@ abstract final class Routes {
   static const updateRequired = '/update-required';
   static const home = '/home';
   static const account = '/account';
+  static const membership = '/membership';
 
   /// Pages a signed-out visitor may see.
   static const signedOutPages = {welcome, login, register, forgotPassword};
 
   /// The signed-in app. Feature routes added later live under one of these prefixes.
-  static const signedInAreas = [home, account];
+  static const signedInAreas = [home, account, membership];
 
   static bool inSignedInArea(String location) => signedInAreas.any(location.startsWith);
 }
@@ -78,10 +80,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.register, builder: (_, _) => const RegisterScreen()),
       GoRoute(path: Routes.forgotPassword, builder: (_, _) => const ForgotPasswordScreen()),
       GoRoute(path: Routes.onboarding, builder: (_, _) => const OnboardingScreen()),
+      GoRoute(path: Routes.membership, builder: (_, _) => const MembershipScreen()),
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => AppShell(shell: shell),
         branches: [
-          StatefulShellBranch(routes: [GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen())]),
+          StatefulShellBranch(routes: [GoRoute(path: Routes.home, builder: (_, _) => const DashboardScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen())]),
         ],
       ),

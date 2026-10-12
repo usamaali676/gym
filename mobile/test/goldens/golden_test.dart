@@ -120,7 +120,7 @@ void main() {
     await w.storeSession();
     w.serveSignedInMember();
     await pumpApp(tester, w);
-    await pumpUntil(tester, find.text('WELCOME BACK'));
+    await pumpUntilHome(tester);
     await tester.pump(const Duration(milliseconds: 300));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('home.png'));
   });
@@ -132,5 +132,37 @@ void main() {
     await pumpUntil(tester, find.text('Update required'));
     await tester.pump(const Duration(milliseconds: 300));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('update_required.png'));
+  });
+
+  testWidgets('dashboard with a locked workout card and no nutrition', (tester) async {
+    final w = await TestWorld.create();
+    await w.storeSession();
+    w.serveSignedInMember();
+    w.server.reply('GET', '/dashboard', 200, {'data': dashboardJson(allow: ['library.premium'], nutrition: false)});
+    await pumpApp(tester, w);
+    await pumpUntilHome(tester);
+    await tester.pump(const Duration(milliseconds: 300));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('dashboard_locked.png'));
+  });
+
+  testWidgets('membership screen', (tester) async {
+    final w = await TestWorld.create();
+    await w.storeSession();
+    w.serveSignedInMember();
+    w.server.reply('GET', '/membership', 200, {
+      'data': membershipJson(
+        plan: planJson(id: 2, slug: 'pro', name: 'Pro', free: false, allow: ['workouts', 'library.premium', 'nutrition']),
+        allow: ['workouts', 'library.premium', 'nutrition'],
+        subscription: {'id': 1, 'status': 'active', 'source': 'admin', 'plan_slug': 'pro', 'ends_at': '2030-06-30T00:00:00+00:00', 'current_period_ends_at': '2030-06-30T00:00:00+00:00', 'auto_renew': false},
+      ),
+    });
+    await pumpApp(tester, w);
+    await pumpUntilHome(tester);
+    await tester.tap(find.text('ACCOUNT'));
+    await pumpUntil(tester, find.text('Membership'));
+    await tester.tap(find.text('Membership'));
+    await pumpUntil(tester, find.text('YOUR PLAN'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('membership.png'));
   });
 }

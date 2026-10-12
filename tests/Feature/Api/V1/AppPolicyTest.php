@@ -6,6 +6,7 @@ use App\Models\AppSetting;
 use App\Models\AppVersionPolicy;
 use App\Models\User;
 use App\Services\App\AppVersionService;
+use App\Support\Entitlement;
 
 function androidHeaders(string $version = '1.0.0'): array
 {
@@ -137,4 +138,12 @@ it('publishes the profile form choices so the apps do not hard-code them', funct
         ->and(collect($options['equipment'])->pluck('value')->all())->toBe(array_keys(config('ironpulse.equipment')))
         ->and($options['training_days'][0])->toBe(['value' => 1, 'label' => 'Monday'])
         ->and($options['training_days'])->toHaveCount(7);
+});
+
+it('publishes the entitlement catalogue so the paywall shows server-provided names', function () {
+    $data = $this->getJson('/api/v1/app/config')->json('data');
+
+    expect(collect($data['entitlements'])->pluck('key')->all())->toBe(Entitlement::keys())
+        ->and($data['entitlements'][0])->toHaveKeys(['key', 'label', 'description'])
+        ->and(collect($data['limits'])->pluck('key')->all())->toBe(array_keys(Entitlement::LIMITS));
 });

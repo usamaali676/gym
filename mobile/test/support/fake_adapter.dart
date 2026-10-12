@@ -79,6 +79,20 @@ Map<String, dynamic> configJson({String status = 'ok', bool guest = true, bool m
       'auth': {'guest_mode': guest, 'token_ttl_days': 60, 'refresh_window_days': 30},
       'features': {'coach': false, 'payments': [], 'push': false},
       'settings': {},
+      'entitlements': [
+        {'key': 'workouts', 'label': 'Workouts and training plan', 'description': 'Plan pages, starting and logging workouts.'},
+        {'key': 'programs.premium', 'label': 'Premium programs', 'description': 'Programs an admin marks as premium.'},
+        {'key': 'library.premium', 'label': 'Premium exercise library', 'description': 'Exercises an admin marks as premium.'},
+        {'key': 'nutrition', 'label': 'Nutrition and food tracking', 'description': 'Diet targets, meal plans, food search and the food log.'},
+        {'key': 'posture_coach', 'label': 'Camera posture coach', 'description': 'Live camera form feedback and rep counting.'},
+        {'key': 'analytics', 'label': 'Progress analytics and reports', 'description': 'Strength curves, summaries and weekly reports.'},
+        {'key': 'progress_photos', 'label': 'Progress photos', 'description': 'Private progress photo uploads.'},
+        {'key': 'coach.ai', 'label': 'AI coach', 'description': 'The optional AI coach.'},
+      ],
+      'limits': [
+        {'key': 'custom_foods', 'label': 'Custom foods a member can create'},
+        {'key': 'progress_photos', 'label': 'Progress photos a member can keep'},
+      ],
       'profile_options': {
         'sex': [
           {'value': 'male', 'label': 'Male'},
@@ -115,4 +129,71 @@ Map<String, dynamic> configJson({String status = 'ok', bool guest = true, bool m
 
 Map<String, dynamic> errorJson(String code, String message, {Map<String, dynamic> details = const {}}) => {
       'error': {'code': code, 'message': message, 'details': details, 'request_id': 'req-123'},
+    };
+
+const allEntitlements = ['workouts', 'programs.premium', 'library.premium', 'nutrition', 'posture_coach', 'analytics', 'progress_photos', 'coach.ai'];
+
+Map<String, bool> entitlementMap({List<String> allow = allEntitlements}) => {for (final k in allEntitlements) k: allow.contains(k)};
+
+Map<String, dynamic> planJson({int id = 1, String slug = 'free', String name = 'Free', bool free = true, List<String> allow = allEntitlements, List<String> features = const [], String? display}) => {
+      'id': id,
+      'slug': slug,
+      'name': name,
+      'description': null,
+      'is_default': free,
+      'price': {'amount_minor': free ? 0 : 999, 'currency': 'USD', 'display': display ?? (free ? 'Free' : 'USD 9.99')},
+      'billing': {'interval': free ? 'none' : 'month', 'interval_count': 1, 'duration_days': null, 'trial_days': 0, 'auto_renews': !free},
+      'features': features,
+      'entitlements': entitlementMap(allow: allow),
+      'limits': {'custom_foods': free ? 5 : null, 'progress_photos': null},
+      'store_product_ids': {},
+      'updated_at': '2026-10-12T10:00:00+00:00',
+    };
+
+Map<String, dynamic> membershipJson({Map<String, dynamic>? plan, Map<String, dynamic>? subscription, List<String> allow = allEntitlements, List<String> providers = const []}) => {
+      'plan': plan ?? planJson(allow: allow),
+      'subscription': subscription,
+      'entitlements': entitlementMap(allow: allow),
+      'limits': {'custom_foods': 5, 'progress_photos': null},
+      'payments': {'available_providers': providers},
+      'checked_at': '2026-10-12T10:00:00+00:00',
+      'revalidate_after_seconds': 300,
+    };
+
+Map<String, dynamic> dashboardJson({
+  String status = 'today',
+  bool rest = false,
+  bool hasDay = true,
+  int? openSessionId,
+  bool nutrition = true,
+  List<String> allow = allEntitlements,
+}) =>
+    {
+      'greeting_period': 'morning',
+      'today': '2026-10-12',
+      'workout': {
+        'status': status,
+        'day': hasDay ? {'id': 3, 'weekday': 1, 'title': 'Push day', 'label': 'PUSH', 'focus': 'Chest, shoulders, triceps', 'is_rest': rest} : null,
+        'estimated_minutes': rest ? 0 : 55,
+        'open_session_id': openSessionId,
+      },
+      'week': {
+        'done': 2,
+        'target': 5,
+        'days': [
+          for (var i = 0; i < 7; i++)
+            {'date': '2026-10-${12 + i}', 'weekday': i + 1, 'status': ['completed', 'completed', 'today', 'upcoming', 'upcoming', 'rest', 'rest'][i], 'is_today': i == 2},
+        ],
+      },
+      'streak': 5,
+      'xp': {'total': 420, 'level': 3, 'into': 120, 'needed': 300, 'pct': 0.4, 'next_at': 700},
+      'nutrition': nutrition
+          ? {
+              'targets': {'calories': 2400, 'protein_g': 160, 'carbs_g': 280, 'fat_g': 70, 'fibre_g': 30},
+              'totals': {'calories': 900.5, 'protein_g': 60, 'carbs_g': 100, 'fat_g': 20, 'fibre_g': 8},
+            }
+          : null,
+      'habits': {},
+      'quote': 'Discipline is choosing between what you want now and what you want most.',
+      'membership': {'plan_slug': 'free', 'entitlements': entitlementMap(allow: allow)},
     };
