@@ -5991,6 +5991,7 @@ components:
                 enum:
                 - workout.set.log
                 - workout.set.delete
+                - workout.exercise.skip
                 - workout.state.save
                 - workout.finish
                 - workout.abandon

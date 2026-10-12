@@ -175,6 +175,43 @@ void main() {
       expect(w.server.log, isNot(contains('POST /progress/measurements')));
     });
 
+    testWidgets('without a connection a measurement is kept on the phone, said so, and sent later as the same data', (tester) async {
+      final w = await TestWorld.create();
+      var offline = true;
+      w.server.on('POST', '/progress/measurements', (_) => FakeReply.fail(DioExceptionType.connectionError));
+      final received = <Map<String, dynamic>>[];
+      w.server.on('POST', '/sync/batch', (o) {
+        if (offline) return FakeReply.fail(DioExceptionType.connectionError);
+        final ops = ((o.data as Map)['operations'] as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        received.addAll(ops);
+        return FakeReply.json(200, {
+          'data': {
+            'results': [for (final op in ops) {'op_id': op['op_id'], 'status': 'applied'}],
+            'server_time': '2026-10-12T18:00:00+00:00',
+          },
+        });
+      });
+      await openBody(tester, w);
+
+      await tester.tap(find.text('LOG MEASUREMENT'));
+      await pumpUntil(tester, find.text('Log measurement'));
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.enterText(find.byType(EditableText).at(0), '79,9');
+      await tester.tap(find.text('SAVE'));
+      await pumpUntil(tester, find.text('Saved on this phone. It will be sent when you are back online.'));
+      expect(find.text('LOG MEASUREMENT'), findsOneWidget, reason: 'the form closed; nothing to retype');
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.textContaining('1 change is saved on this phone and waiting to sync'), findsOneWidget);
+
+      offline = false;
+      await tester.pump(const Duration(seconds: 20));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(received.single['type'], 'measurement.save');
+      expect(received.single['payload'], {'measured_on': received.single['payload']['measured_on'], 'weight_kg': 79.9});
+      expect(received.single['payload']['measured_on'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+      expect(find.textContaining('waiting to sync'), findsNothing);
+    });
+
     testWidgets('the server\'s message for an impossible value appears on its field', (tester) async {
       final w = await TestWorld.create();
       w.server.reply('POST', '/progress/measurements', 422, errorJson('validation_failed', 'The given data was invalid.', details: {'weight_kg': ['The weight must be between 30 and 300.']}));

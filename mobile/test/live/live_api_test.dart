@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart' show Options;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ironpulse/app/config/environment.dart';
 import 'package:ironpulse/core/api/api_client.dart';
@@ -13,8 +14,13 @@ import 'package:ironpulse/core/api/api_error.dart';
 import 'package:ironpulse/core/authentication/session_manager.dart';
 import 'package:ironpulse/core/authentication/token_store.dart';
 import 'package:ironpulse/core/policy/app_config.dart';
+import 'package:ironpulse/core/providers.dart';
+import 'package:ironpulse/core/sync/offline_queue.dart';
+import 'package:ironpulse/core/sync/pending_op.dart';
+import 'package:ironpulse/core/sync/pending_store.dart';
 import 'package:ironpulse/core/storage/json_cache.dart';
 import 'package:ironpulse/core/storage/secure_store.dart';
+import 'package:ironpulse/core/utilities/clock.dart';
 import 'package:ironpulse/core/device/device_identity.dart';
 import 'package:ironpulse/features/authentication/data/auth_repository.dart';
 import 'package:ironpulse/features/authentication/domain/auth_user.dart';
@@ -60,10 +66,19 @@ class _Device implements DeviceIdentity {
       };
 }
 
-void main() {
-  setUpAll(() => HttpOverrides.global = null); // flutter_test blocks real HTTP by default
+/// A real account on the live server, signed up and onboarded the way the app does it.
+class _Live {
+  _Live({required this.api, required this.auth, required this.cache, required this.config, required this.user, required this.sessions});
 
-  test('the app talks to the real API: sign-up, onboarding, browsing, a whole workout, results', () async {
+  final ApiClient api;
+  final AuthRepository auth;
+  final JsonCache cache;
+  final AppConfig config;
+  final AuthUser user;
+  final SessionManager sessions;
+}
+
+Future<_Live> _signUp() async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final store = MemorySecureStore();
@@ -107,6 +122,16 @@ void main() {
     expect(await auth.me().then((u) => u.id), user.id);
 
     final cache = JsonCache(prefs, scope: '${user.id}');
+    return _Live(api: api, auth: auth, cache: cache, config: config, user: user, sessions: sessions);
+}
+
+void main() {
+  setUpAll(() => HttpOverrides.global = null); // flutter_test blocks real HTTP by default
+
+  test('the app talks to the real API: sign-up, onboarding, browsing, a whole workout, results', () async {
+    final live = await _signUp();
+    final (api, auth, cache, config, user, sessions) = (live.api, live.auth, live.cache, live.config, live.user, live.sessions);
+    final env = const AppEnvironment(apiBaseUrl: liveUrl, platform: 'android', appVersion: '1.0.0', appBuild: '1');
 
     // ---- membership
     final membership = (await MembershipRepository(api: api, cache: cache).membership()).data;
@@ -297,6 +322,69 @@ void main() {
     final raw = buildDio(env);
     final res = await raw.get<dynamic>('/me', options: Options(headers: {'Authorization': 'Bearer $token'}));
     expect(res.statusCode, 401);
+  }, skip: liveUrl.isEmpty ? 'set --dart-define=LIVE_API_URL to run against a live server' : false, timeout: const Timeout(Duration(minutes: 2)));
+
+  test('the offline queue replays what a phone held through the real /sync/batch: in order, once, with conflicts and refusals reported', () async {
+    final live = await _signUp();
+    final api = live.api;
+    final planRepo = PlanRepository(api: api, cache: live.cache);
+    final week = (await planRepo.week()).data;
+    final day = week.days.firstWhere((d) => d.isTraining && !d.date.isAfter(DateTime.now()));
+    final repo = SessionRepository(api: api, cache: live.cache);
+    final session = await repo.start(weekday: day.weekday, date: day.date);
+    final first = session.exercises[0];
+    final second = session.exercises[1];
+
+    final store = MemoryPendingStore();
+    final container = ProviderContainer(overrides: [
+      queueScopeProvider.overrideWithValue('${live.user.id}'),
+      pendingStoreProvider.overrideWithValue(store),
+      apiClientProvider.overrideWithValue(api),
+      clockProvider.overrideWithValue(() => DateTime.now().toUtc()),
+    ]);
+    addTearDown(container.dispose);
+    final queue = container.read(offlineQueueProvider.notifier);
+
+    // what a phone with no signal holds after a workout: two sets, a skip, a body measurement, a camera set, the finish
+    SetEntry entry(SessionExercise e, int n, double kg, int reps) => SetEntry(sessionExerciseId: e.id, setNumber: n, weightKg: kg, reps: reps);
+    await queue.enqueue(OpTypes.setLog, SessionRepository.setPayload(session.id, entry(first, 1, 40, 8)), label: 'set 1', flushNow: false);
+    await queue.enqueue(OpTypes.setLog, SessionRepository.setPayload(session.id, entry(first, 2, 40, 7)), label: 'set 2', flushNow: false);
+    await queue.enqueue(OpTypes.exerciseSkip, {'session_id': session.id, 'session_exercise_id': second.id}, label: 'skip', flushNow: false);
+    await queue.enqueue(OpTypes.measurementSave, ProgressRepository.measurementPayload(date: DateTime.now(), weightKg: 81.2), label: 'weigh-in', flushNow: false);
+    await queue.enqueue(OpTypes.workoutFinish, {'session_id': session.id, 'active_seconds': 600}, label: 'finish', flushNow: false);
+    // one the server must refuse: a set for a workout that is not theirs
+    await queue.enqueue(OpTypes.setLog, SessionRepository.setPayload(session.id + 100000, entry(first, 1, 40, 8)), label: 'not mine', flushNow: false);
+    expect(container.read(offlineQueueProvider).waiting, hasLength(6));
+
+    final report = await queue.flush();
+
+    expect(report.offline, isFalse);
+    expect(report.applied, 5, reason: 'everything the server could accept');
+    expect(report.rejected, 1, reason: 'the set for a workout that is not theirs');
+    final state = container.read(offlineQueueProvider);
+    expect(state.rejected.single.label, 'not mine');
+    expect(state.rejected.single.errorCode, 'not_found');
+    expect(state.waiting, isEmpty);
+
+    // the server really holds the results, in the order they were made
+    final after = await repo.load(session.id);
+    expect(after.status, 'completed');
+    expect(after.exercises.first.sets.map((s) => s.number), [1, 2]);
+    expect(after.exercises[1].status, 'skipped');
+    expect((await repo.summary(session.id)).setsCompleted, 2);
+
+    // a replay of the same change (the answer was lost on the way back) is recognised by its op id and changes nothing
+    const replayId = 'c0ffee00-1111-4222-8333-444455556666';
+    Future<Map<String, dynamic>> sendWater() async => Map<String, dynamic>.from(
+          ((await api.post('/sync/batch', body: {'operations': [{'op_id': replayId, 'type': 'water.add', 'payload': {'amount_ml': 250}}]})).map['results'] as List).single as Map,
+        );
+    expect((await sendWater())['status'], 'applied');
+    final again = await sendWater();
+    expect(again['status'], 'duplicate');
+    expect(again['original_status'], 'applied');
+
+    await queue.discard(state.rejected.single.opId);
+    expect(container.read(offlineQueueProvider).isEmpty, isTrue);
   }, skip: liveUrl.isEmpty ? 'set --dart-define=LIVE_API_URL to run against a live server' : false, timeout: const Timeout(Duration(minutes: 2)));
 }
 

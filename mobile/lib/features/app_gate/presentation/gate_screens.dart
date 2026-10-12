@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/policy/policy_controller.dart';
+import '../../../core/providers.dart';
+import '../../../core/sync/offline_queue.dart';
 import '../../../core/widgets/brand.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../authentication/presentation/auth_controller.dart';
+import '../../workout_sessions/data/local_workout.dart';
 
 /// Shown while the stored session is read and confirmed. Offline with nothing cached, it offers a retry.
 class SplashScreen extends ConsumerWidget {
@@ -73,6 +78,7 @@ class MaintenanceScreen extends ConsumerWidget {
                   loading: policy.loading,
                   onPressed: () => ref.read(policyControllerProvider.notifier).refresh(),
                 ),
+                const _ContinueWorkout(),
               ]),
             ),
           ),
@@ -130,10 +136,33 @@ class UpdateRequiredScreen extends ConsumerWidget {
                   loading: ref.watch(policyControllerProvider).loading,
                   onPressed: () => ref.read(policyControllerProvider.notifier).refresh(),
                 ),
+                const _ContinueWorkout(),
               ]),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// "Continue my workout": a workout in progress on this phone is not stranded by maintenance or a required update. Its
+/// sets and its finish are kept in the offline queue and sent when the server is back (and, for an update, after it).
+class _ContinueWorkout extends ConsumerWidget {
+  const _ContinueWorkout();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    final id = auth is SignedIn ? localWorkoutInProgress(ref.read(sharedPreferencesProvider), ref.read(queueScopeProvider)) : null;
+    if (id == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: NeonButton(
+        label: 'Continue my workout',
+        icon: Icons.fitness_center,
+        variant: NeonButtonVariant.ghost,
+        onPressed: () => context.go('${Routes.workout}/$id'),
       ),
     );
   }

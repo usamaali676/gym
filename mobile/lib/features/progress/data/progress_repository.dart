@@ -31,12 +31,13 @@ class ProgressRepository {
 
   Future<Loaded<Achievements>> achievements() => loadWithCache(cache: _cache, key: 'achievements', fetch: () async => (await _api.get('/achievements')).data, parse: Achievements.fromJson);
 
+  /// The body of `POST /progress/measurements` and of the offline queue's `measurement.save`.
+  static Map<String, dynamic> measurementPayload({required DateTime date, double? weightKg, double? bodyFatPct, double? waistCm, String? notes}) =>
+      {'measured_on': dateParam(date), 'weight_kg': ?weightKg, 'body_fat_pct': ?bodyFatPct, 'waist_cm': ?waistCm, 'notes': ?notes};
+
   /// Saves a body measurement. A second one for the same day replaces the first (the server decides).
-  Future<void> saveMeasurement({required DateTime date, double? weightKg, double? bodyFatPct, double? waistCm, String? notes}) async => _api.post(
-        '/progress/measurements',
-        idempotent: true,
-        body: {'measured_on': dateParam(date), 'weight_kg': ?weightKg, 'body_fat_pct': ?bodyFatPct, 'waist_cm': ?waistCm, 'notes': ?notes},
-      );
+  Future<void> saveMeasurement({required DateTime date, double? weightKg, double? bodyFatPct, double? waistCm, String? notes}) async =>
+      _api.post('/progress/measurements', idempotent: true, body: measurementPayload(date: date, weightKg: weightKg, bodyFatPct: bodyFatPct, waistCm: waistCm, notes: notes));
 
   Future<void> deleteMeasurement(int id) async => _api.delete('/progress/measurements/$id');
 }

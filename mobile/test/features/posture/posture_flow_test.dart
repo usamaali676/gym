@@ -320,7 +320,7 @@ void main() {
       return rig;
     }
 
-    testWidgets('offline: the set stays on screen, and trying again sends the same upload id', (tester) async {
+    testWidgets('offline: the set is kept on the phone, shown as such, and sent by the offline queue when the connection is back', (tester) async {
       final w = await TestWorld.create();
       w.serveSignedInMember();
       var offline = true;
@@ -329,6 +329,18 @@ void main() {
       });
       w.server.reply('GET', '/posture/rules/barbell-squat', 200, {'data': ruleApiJson('barbell-squat')});
       w.server.on('POST', '/posture/sessions', (o) => offline ? FakeReply.fail(DioExceptionType.connectionError) : FakeReply.json(201, savedSessionReply));
+      w.server.on('POST', '/sync/batch', (o) {
+        if (offline) return FakeReply.fail(DioExceptionType.connectionError);
+        final ops = ((o.data as Map)['operations'] as List).cast<Map>();
+        return FakeReply.json(200, {
+          'data': {
+            'results': [
+              for (final op in ops) {'op_id': op['op_id'], 'status': 'applied', 'posture_session_id': 9, 'created': true, 'xp': 30},
+            ],
+            'server_time': '2026-10-12T18:00:00+00:00',
+          },
+        });
+      });
       final opener = FakeOpener();
       await w.storeSession();
       await pumpApp(tester, w, extraOverrides: [poseCaptureOpenerProvider.overrideWithValue(opener)]);
@@ -344,16 +356,20 @@ void main() {
       await feedFrames(tester, opener, scenarioFrames('squat_clean', timeOffsetMs: end + 67));
 
       await tester.tap(find.text('FINISH'));
-      await pumpUntil(tester, find.text('TRY SAVING AGAIN'));
+      await pumpUntil(tester, find.textContaining('Saved on this phone'));
       expect(find.text('SET COMPLETE'), findsOneWidget, reason: 'the result is still shown');
-      expect(find.textContaining('You are offline'), findsOneWidget);
+      expect(find.text('TRY SAVING AGAIN'), findsNothing, reason: 'the queue retries on its own');
+      expect(find.textContaining('waiting to sync'), findsOneWidget, reason: 'the sync strip says so');
 
       offline = false;
-      await tester.tap(find.text('TRY SAVING AGAIN'));
-      await pumpUntil(tester, find.textContaining('Saved.'));
-      final posts = w.server.adapter.requests.where((r) => r.method == 'POST' && r.path == '/posture/sessions').toList();
-      expect(posts.length, greaterThanOrEqualTo(2));
-      expect({for (final p in posts) (p.data as Map)['client_uuid']}, hasLength(1), reason: 'every attempt carries the same upload id, so a retry cannot create a second session');
+      await tester.pump(const Duration(seconds: 20)); // the queue's first automatic retry is after 15 s
+      await tester.pump(const Duration(milliseconds: 200));
+      final batch = w.server.adapter.requests.lastWhere((r) => r.path == '/sync/batch');
+      final op = ((batch.data as Map)['operations'] as List).single as Map;
+      expect(op['type'], 'posture.session.save');
+      expect((op['payload'] as Map)['total_reps'], 3);
+      expect((op['payload'] as Map)['client_uuid'], isNotNull, reason: 'the server also recognises the set by its own id');
+      expect(find.textContaining('waiting to sync'), findsNothing, reason: 'sent: the strip is gone');
     });
 
     testWidgets('a rejected set says it was not saved', (tester) async {

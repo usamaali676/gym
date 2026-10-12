@@ -16,6 +16,7 @@ import '../../../core/widgets/neon_progress.dart';
 import '../../../core/widgets/number_stepper.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../core/widgets/status_chip.dart';
+import '../../sync/presentation/sync_widgets.dart';
 import '../domain/session_engine.dart';
 import '../domain/workout_session.dart';
 import 'workout_controller.dart';
@@ -138,6 +139,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> with WidgetsBindi
           body: SafeArea(
             child: Column(children: [
               _TopBar(view: view, onClose: () => _leave(view)),
+              const SyncStatusStrip(compact: true),
               if (view.error != null) Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 8), child: MessageBanner(view.error!.message)),
               Expanded(child: _Body(view: view)),
             ]),
@@ -361,6 +363,7 @@ class _WorkPanelState extends ConsumerState<_WorkPanel> {
               const Spacer(),
               Text(s.durationSeconds != null && (s.reps ?? 0) == 0 ? '${s.durationSeconds} s' : '${s.weightKg == null ? 'Bodyweight' : '${_trim(s.weightKg!)} kg'} × ${s.reps}', style: IpText.body(14, weight: FontWeight.w600, color: IpColors.ink)),
               if (s.isPr) ...[const SizedBox(width: 8), const StatusChip('PR', tone: Tone.good)],
+              if (s.pending) ...[const SizedBox(width: 8), const Tooltip(message: 'Saved on this phone, waiting to sync', child: Icon(Icons.cloud_off_outlined, size: 16, color: IpColors.warn))],
             ]),
           ),
       ],

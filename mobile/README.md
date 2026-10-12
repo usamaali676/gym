@@ -83,8 +83,11 @@ Built, and covered by tests (see the [progress log](../docs/mobile/PROGRESS.md) 
   ([details and limits](../docs/mobile/posture-coach.md))
 * every screen has a loading, error, offline (cached) and locked-by-plan state
 
-Not built yet: offline queue for logging while disconnected (workout sets and posture sets need a connection), exercise
-demo clips, progress photos, local and push notifications, in-app purchase.
+* the offline queue: sets, skips, finish and abandon of a workout in progress, camera sets and body measurements are kept on
+  the phone without a connection and sent in order, once, when it returns ([how it works](../docs/mobile/offline-sync.md))
+
+Not built yet: offline food/water/habit logging, exercise demo clips, progress photos, local and push notifications,
+in-app purchase.
 
 **Nothing in this folder has been run on a physical phone, an emulator or an iOS device by the author of these changes.**
 The tests run on a desktop Flutter test host; the Android debug APK is built by GitHub Actions and never installed; iOS needs

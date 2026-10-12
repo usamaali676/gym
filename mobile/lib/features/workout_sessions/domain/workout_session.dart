@@ -3,8 +3,9 @@
 DateTime? _time(Object? v) => v is String ? DateTime.tryParse(v)?.toUtc() : null;
 
 class LoggedSet {
-  const LoggedSet({required this.id, required this.number, required this.weightKg, required this.reps, required this.durationSeconds, required this.isPr});
+  const LoggedSet({required this.id, required this.number, required this.weightKg, required this.reps, required this.durationSeconds, required this.isPr, this.pending = false});
 
+  /// Negative for a set that exists only on this phone so far.
   final int id;
 
   /// 1-based
@@ -13,6 +14,11 @@ class LoggedSet {
   final int? reps;
   final int? durationSeconds;
   final bool isPr;
+
+  /// Logged on this phone but not yet accepted by the server (it is in the offline queue).
+  final bool pending;
+
+  LoggedSet copyWith({bool? pending}) => LoggedSet(id: id, number: number, weightKg: weightKg, reps: reps, durationSeconds: durationSeconds, isPr: isPr, pending: pending ?? this.pending);
 
   factory LoggedSet.fromJson(Map<String, dynamic> j) => LoggedSet(
         id: (j['id'] as num).toInt(),
@@ -171,6 +177,8 @@ class WorkoutSession {
 
   bool get isOpen => status == 'in_progress' || status == 'paused';
   int get setsLogged => exercises.fold(0, (n, e) => n + e.sets.length);
+
+  WorkoutSession withExercises(List<SessionExercise> exercises) => WorkoutSession(id: id, status: status, title: title, startedAt: startedAt, serverTime: serverTime, exercises: exercises, clientState: clientState, soundOn: soundOn);
 
   WorkoutSession withExercise(int index, SessionExercise exercise) =>
       WorkoutSession(id: id, status: status, title: title, startedAt: startedAt, serverTime: serverTime, exercises: [for (var i = 0; i < exercises.length; i++) i == index ? exercise : exercises[i]], clientState: clientState, soundOn: soundOn);

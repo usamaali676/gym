@@ -5,11 +5,16 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
+import '../../../core/storage/cache_provider.dart';
+import '../../../core/sync/offline_queue.dart';
+import '../../../core/sync/pending_op.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../data/session_repository.dart';
+import '../../sync/presentation/sync_widgets.dart';
+import '../domain/workout_session.dart';
 import 'workout_controller.dart';
 
 /// Results of a finished workout. XP, personal records, level and badges are all computed on the server.
@@ -25,6 +30,11 @@ class WorkoutSummaryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // A workout finished without a connection has no results yet: the server works out XP, records and the streak.
+    final queued = ref.watch(offlineQueueProvider).forSession(sessionId);
+    final finish = queued.where((o) => o.type == OpTypes.workoutFinish).firstOrNull;
+    if (finish != null) return _PendingSummary(sessionId: sessionId, finish: finish, queued: queued);
+
     final summary = ref.watch(workoutSummaryProvider(sessionId));
 
     return Scaffold(
@@ -117,4 +127,70 @@ class _Figure extends StatelessWidget {
         const SizedBox(height: 4),
         FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: IpText.number(26, color: IpColors.neon))),
       ]);
+}
+
+/// Shown after finishing a workout without a connection. Only what the phone itself knows is shown, and it says so.
+class _PendingSummary extends ConsumerWidget {
+  const _PendingSummary({required this.sessionId, required this.finish, required this.queued});
+
+  final int sessionId;
+  final PendingOp finish;
+  final List<PendingOp> queued;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cached = ref.read(jsonCacheProvider).read('session.$sessionId.data')?.data;
+    WorkoutSession? session;
+    try {
+      session = cached == null ? null : WorkoutSession.fromJson(cached);
+    } catch (_) {}
+    final queuedSets = queued.where((o) => o.type == OpTypes.setLog).length;
+    final sets = withQueuedChanges(session ?? _empty, queued).setsLogged;
+    final seconds = (finish.payload['active_seconds'] as num?)?.toInt() ?? 0;
+    final attention = queued.any((o) => o.state != OpState.queued);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(children: [
+          const SyncStatusStrip(),
+          Expanded(
+            child: ListView(padding: const EdgeInsets.fromLTRB(20, 24, 20, 24), children: [
+              const Icon(Icons.cloud_off_outlined, size: 56, color: IpColors.warn),
+              const SizedBox(height: 10),
+              Center(child: Text('Workout finished', style: IpText.display(24, color: IpColors.ink))),
+              const SizedBox(height: 4),
+              Center(child: Text(session?.title ?? 'Workout', style: IpText.body(14, color: IpColors.muted))),
+              const SizedBox(height: 20),
+              GlassCard(
+                neon: true,
+                child: Row(children: [
+                  Expanded(child: _Figure(label: 'Time', value: WorkoutSummaryScreen._duration(seconds))),
+                  Expanded(child: _Figure(label: 'Sets', value: '$sets')),
+                ]),
+              ),
+              const SizedBox(height: 14),
+              GlassCard(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(attention ? 'NEEDS YOUR ATTENTION' : 'SAVED ON THIS PHONE', style: IpText.eyebrow(color: IpColors.warn)),
+                  const SizedBox(height: 8),
+                  Text(
+                    attention
+                        ? 'Some of this workout was not accepted by the server. Open Sync to see what and decide what to do.'
+                        : 'Your workout is safe here${queuedSets > 0 ? ' ($queuedSets ${queuedSets == 1 ? 'set' : 'sets'} waiting)' : ''}. It is sent as soon as the phone reaches the server. XP, personal records and your streak are worked out there, so they appear in this summary once it has synced.',
+                    style: IpText.body(13.5, color: IpColors.muted, height: 1.45),
+                  ),
+                  const SizedBox(height: 14),
+                  NeonButton(label: 'Sync now', icon: Icons.sync, variant: NeonButtonVariant.ghost, expand: true, onPressed: ref.read(offlineQueueProvider.notifier).flush),
+                ]),
+              ),
+              const SizedBox(height: 24),
+              NeonButton(label: 'Done', size: NeonButtonSize.large, expand: true, onPressed: () => context.go(Routes.home)),
+            ]),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  static final _empty = WorkoutSession(id: 0, status: 'completed', title: 'Workout', startedAt: DateTime.fromMillisecondsSinceEpoch(0), serverTime: DateTime.fromMillisecondsSinceEpoch(0), exercises: const [], clientState: null, soundOn: false);
 }

@@ -104,6 +104,27 @@ describe('offline batch', function () {
             ->and($r->json('data.results.0.totals.sets'))->toBe(1);
     });
 
+    it('skips an exercise offline, harmlessly twice, and refuses it on someone else\'s workout', function () {
+        $s = $this->postJson('/api/v1/workout-sessions', [], ($this->h)())->json('data');
+        $row = $s['exercises'][0]['id'];
+
+        $r = batch($this, [op('workout.exercise.skip', ['session_id' => $s['id'], 'session_exercise_id' => $row])])->assertOk();
+        expect($r->json('data.results.0.status'))->toBe('applied')
+            ->and($this->getJson("/api/v1/workout-sessions/{$s['id']}", ($this->h)())->json('data.exercises.0.status'))->toBe('skipped');
+
+        $again = batch($this, [op('workout.exercise.skip', ['session_id' => $s['id'], 'session_exercise_id' => $row])])->json('data.results.0');
+        expect($again['status'])->toBe('applied');
+
+        $stranger = User::factory()->onboarded()->create();
+        $theirs = batch($this, [op('workout.exercise.skip', ['session_id' => $s['id'], 'session_exercise_id' => $row])], apiAs($stranger))->json('data.results.0');
+        expect($theirs['status'])->toBe('rejected')->and($theirs['error']['code'])->toBe('not_found');
+
+        $closing = batch($this, [op('workout.set.log', ['session_id' => $s['id'], 'session_exercise_id' => $s['exercises'][1]['id'], 'set_number' => 1, 'weight_kg' => 40, 'reps' => 8]), op('workout.finish', ['session_id' => $s['id']])])->assertOk();
+        $closed = batch($this, [op('workout.exercise.skip', ['session_id' => $s['id'], 'session_exercise_id' => $s['exercises'][2]['id']])])->json('data.results.0');
+        // finishing already marks what was not done as skipped, so a late skip is the state the member asked for
+        expect($closed['status'])->toBe('applied')->and(WorkoutSession::find($s['id'])->status->value)->toBe('completed');
+    });
+
     it('applies each operation once however often the batch is sent', function () {
         $food = Food::whereNull('user_id')->first();
         $ops = [

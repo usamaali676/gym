@@ -90,6 +90,15 @@ void main() {
       expect(loaded.fromCache, isTrue);
     });
 
+    test('maintenance and a build the server no longer supports also show the saved answer', () async {
+      final cache = JsonCache(prefs, scope: '1');
+      await cache.write('k', 1);
+      for (final kind in [ApiErrorKind.maintenance, ApiErrorKind.upgradeRequired]) {
+        final loaded = await loadWithCache<int>(cache: cache, key: 'k', fetch: () async => throw error(kind), parse: (j) => j as int);
+        expect(loaded.fromCache, isTrue, reason: '$kind');
+      }
+    });
+
     test('offline with nothing cached is still an error', () async {
       final cache = JsonCache(prefs, scope: '1');
       await expectLater(

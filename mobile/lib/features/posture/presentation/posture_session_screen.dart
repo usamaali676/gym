@@ -7,6 +7,8 @@ import '../../../app/theme/app_theme.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
+import '../../../core/sync/offline_queue.dart';
+import '../../../core/sync/pending_op.dart';
 import '../../../core/utilities/device_feedback.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/glass_card.dart';
@@ -18,6 +20,7 @@ import '../../membership/presentation/locked_view.dart';
 import '../domain/posture_models.dart';
 import 'posture_coach.dart';
 import 'posture_providers.dart';
+import '../../sync/presentation/sync_widgets.dart';
 import 'skeleton_painter.dart';
 
 /// One camera-coached set of one exercise.
@@ -71,6 +74,7 @@ class _CoachStageState extends ConsumerState<_CoachStage> with WidgetsBindingObs
       repository: ref.read(postureRepositoryProvider),
       feedback: ref.read(deviceFeedbackProvider),
       workoutSessionId: widget.workoutSessionId,
+      queueOffline: (payload, label) => ref.read(offlineQueueProvider.notifier).enqueue(OpTypes.postureSave, payload, label: label),
     );
     WidgetsBinding.instance.addObserver(this);
   }
@@ -417,7 +421,9 @@ class _Summary extends StatelessWidget {
     final rule = coach.rule;
     final errors = s.errorCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     final timed = rule.timed;
-    return ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
+    return ListView(padding: const EdgeInsets.fromLTRB(20, 0, 20, 28), children: [
+      const SyncStatusStrip(compact: true),
+      const SizedBox(height: 12),
       GlassCard(
         neon: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -479,6 +485,14 @@ class _SaveStatus extends StatelessWidget {
         return const Row(children: [SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: IpColors.neon)), SizedBox(width: 10), Text('Saving…')]);
       case SaveState.empty:
         return const MessageBanner('Nothing was counted, so nothing was saved.', tone: Tone.warn);
+      case SaveState.queued:
+        return const GlassCard(
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Icon(Icons.cloud_off_outlined, color: IpColors.warn, size: 20),
+            SizedBox(width: 10),
+            Expanded(child: Text('Saved on this phone. It is sent as soon as the phone reaches the server, and counts towards your XP then.')),
+          ]),
+        );
       case SaveState.failed:
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           MessageBanner(coach.saveError, tone: Tone.warn),

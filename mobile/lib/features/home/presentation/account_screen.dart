@@ -8,6 +8,7 @@ import '../../membership/presentation/membership_providers.dart';
 import '../../../app/config/environment.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
+import '../../../core/sync/offline_queue.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
@@ -17,16 +18,26 @@ class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
 
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref, {required bool guest}) async {
+    final unsent = ref.read(offlineQueueProvider).ops.length;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Sign out?'),
-        content: Text(
-          guest
-              ? 'You are using a guest account. Signing out removes your access to it, and your data cannot be recovered on another device.'
-              : 'You will need your email and password to sign in again.',
-          style: IpText.body(14, color: IpColors.muted),
-        ),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (unsent > 0) ...[
+            Text(
+              '$unsent ${unsent == 1 ? 'change has' : 'changes have'} not reached the server yet. They stay on this phone and are sent the next time you sign in to this account. Open Sync first if you want to send them now.',
+              style: IpText.body(14, weight: FontWeight.w600, color: IpColors.warn),
+            ),
+            const SizedBox(height: 10),
+          ],
+          Text(
+            guest
+                ? 'You are using a guest account. Signing out removes your access to it, and your data cannot be recovered on another device.'
+                : 'You will need your email and password to sign in again.',
+            style: IpText.body(14, color: IpColors.muted),
+          ),
+        ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           NeonButton(label: 'Sign out', variant: NeonButtonVariant.danger, size: NeonButtonSize.small, onPressed: () => Navigator.pop(context, true)),
@@ -81,6 +92,8 @@ class AccountScreen extends ConsumerWidget {
             ]),
           ),
           const SizedBox(height: 12),
+          _SyncTile(),
+          const SizedBox(height: 12),
           GlassCard(
             onTap: () => context.push(Routes.posture),
             semanticLabel: 'Camera form coach',
@@ -133,4 +146,32 @@ class _Row extends StatelessWidget {
           Flexible(child: Text(value, textAlign: TextAlign.end, style: IpText.body(14, color: IpColors.ink))),
         ]),
       );
+}
+
+class _SyncTile extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final q = ref.watch(offlineQueueProvider);
+    final subtitle = q.isEmpty
+        ? 'Everything is saved to the server'
+        : q.needAttention > 0
+            ? '${q.needAttention} ${q.needAttention == 1 ? 'change needs' : 'changes need'} your attention'
+            : '${q.waiting.length} ${q.waiting.length == 1 ? 'change is' : 'changes are'} waiting to be sent';
+    return GlassCard(
+      onTap: () => context.push(Routes.sync),
+      semanticLabel: 'Sync. $subtitle',
+      child: Row(children: [
+        Icon(q.isEmpty ? Icons.cloud_done_outlined : Icons.cloud_off_outlined, color: q.isEmpty ? IpColors.neon : IpColors.warn),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Sync', style: IpText.display(15, color: IpColors.ink)),
+            const SizedBox(height: 2),
+            Text(subtitle, style: IpText.body(13, color: IpColors.muted)),
+          ]),
+        ),
+        const Icon(Icons.chevron_right, color: IpColors.muted),
+      ]),
+    );
+  }
 }

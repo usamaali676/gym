@@ -104,8 +104,9 @@ that ML Kit's 33 landmark names line up one-to-one with the rule engine's indice
    ankle" appears less often than on the web). This needs real-device tuning, possibly per-rule.
 3. **Rules are unvalidated** against real lifters on any platform (also true of the web).
 4. **No spoken cues or audio tones** (the web speaks cues and plays tones). The app shows the cue text and uses haptics.
-5. **Saving needs a connection.** A set that cannot be saved stays on screen with "Try saving again"; the offline queue
-   (`POST /sync/batch` already accepts posture sessions) is Phase 6.
+5. **Saving offline is queued.** If a finished set cannot be sent, it is kept on the phone in the offline queue and sent when
+   the server can be reached ([offline-sync.md](offline-sync.md)); the summary says so. (A server that answers with an error, such as a
+   rejected set, is shown, not queued.)
 6. A set started from a workout in progress is supported by the route (`/posture/{slug}?workout={id}` sets
    `workout_session_id`) but the workout screen has no button for it yet.
 7. One person in frame; a second person can steal the tracking (ML Kit returns one pose in this configuration).

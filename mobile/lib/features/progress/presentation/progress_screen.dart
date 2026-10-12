@@ -7,6 +7,8 @@ import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
+import '../../../core/sync/offline_queue.dart';
+import '../../../core/sync/pending_op.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/loaded_view.dart';
@@ -14,6 +16,7 @@ import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/neon_progress.dart';
 import '../../../core/widgets/neon_text_field.dart';
 import '../../../core/widgets/status_chip.dart';
+import '../data/progress_repository.dart';
 import '../domain/progress.dart';
 import 'charts.dart';
 import 'progress_providers.dart';
@@ -315,11 +318,26 @@ class _MeasurementFormState extends ConsumerState<_MeasurementForm> {
       return;
     }
     setState(() => _busy = true);
+    final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     try {
-      await ref.read(progressRepositoryProvider).saveMeasurement(date: DateTime.now(), weightKg: weight, bodyFatPct: fat, waistCm: waist, notes: _notes.text.trim().isEmpty ? null : _notes.text.trim());
+      await ref.read(progressRepositoryProvider).saveMeasurement(date: DateTime.now(), weightKg: weight, bodyFatPct: fat, waistCm: waist, notes: notes);
       invalidateProgress(ref);
-      if (mounted) Navigator.pop(context);
+      if (mounted) navigator.pop();
     } on ApiError catch (e) {
+      // No connection: keep it on the phone and send it later, instead of making the member type it again.
+      if (e.isOffline) {
+        final payload = ProgressRepository.measurementPayload(date: DateTime.now(), weightKg: weight, bodyFatPct: fat, waistCm: waist, notes: notes);
+        try {
+          await ref.read(offlineQueueProvider.notifier).enqueue(OpTypes.measurementSave, payload, label: 'Body measurement: ${[if (weight != null) '${weight.toStringAsFixed(1)} kg', if (fat != null) '${fat.toStringAsFixed(1)} % fat', if (waist != null) 'waist ${waist.toStringAsFixed(0)} cm'].join(', ')}');
+          messenger.showSnackBar(const SnackBar(content: Text('Saved on this phone. It will be sent when you are back online.')));
+          if (mounted) navigator.pop();
+          return;
+        } catch (_) {
+          // Not signed in or storage failed: show the ordinary error below.
+        }
+      }
       if (mounted) {
         setState(() {
           _server = e.fieldErrors;

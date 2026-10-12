@@ -56,6 +56,32 @@ void main() {
     });
   });
 
+  group('a workout in progress is not stranded by maintenance or a required update', () {
+    final down = PolicyState(forcedMaintenance: Maintenance(message: 'Back soon', endsAt: null));
+    const mustUpdate = PolicyState(forcedUpdate: true);
+    final auth = SignedIn(user());
+
+    String? go2(PolicyState policy, String location, {int? workout}) => appRedirect(auth: auth, policy: policy, location: location, localWorkoutId: workout);
+
+    test('the workout on this phone (and its summary) stay reachable; everything else is still blocked', () {
+      expect(go2(down, '/workout/7', workout: 7), isNull);
+      expect(go2(down, '/workout/7/summary', workout: 7), isNull);
+      expect(go2(down, Routes.home, workout: 7), Routes.maintenance);
+      expect(go2(down, '/workout/8', workout: 7), Routes.maintenance, reason: 'only the workout that is actually in progress here');
+      expect(go2(mustUpdate, '/workout/7', workout: 7), isNull);
+      expect(go2(mustUpdate, Routes.account, workout: 7), Routes.updateRequired);
+    });
+
+    test('with no workout in progress, nothing changes', () {
+      expect(go2(down, '/workout/7'), Routes.maintenance);
+      expect(go2(mustUpdate, '/workout/7'), Routes.updateRequired);
+    });
+
+    test('a signed-out visitor never gets through', () {
+      expect(appRedirect(auth: const SignedOut(), policy: down, location: '/workout/7', localWorkoutId: 7), Routes.maintenance);
+    });
+  });
+
   group('server policy overrides everything', () {
     test('maintenance wins over a signed-in member', () {
       final policy = PolicyState(config: config(maintenance: true));

@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/policy/policy_controller.dart';
+import '../core/providers.dart';
+import '../core/sync/offline_queue.dart';
+import '../features/workout_sessions/data/local_workout.dart';
 import '../features/app_gate/presentation/gate_screens.dart';
 import '../features/authentication/presentation/auth_controller.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
@@ -19,6 +22,7 @@ import '../features/nutrition/presentation/food_search_screen.dart';
 import '../features/nutrition/presentation/nutrition_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/posture/presentation/posture_list_screen.dart';
+import '../features/sync/presentation/sync_widgets.dart';
 import '../features/posture/presentation/posture_session_screen.dart';
 import '../features/progress/presentation/progress_screen.dart';
 import '../features/progress/presentation/strength_screen.dart';
@@ -48,6 +52,7 @@ abstract final class Routes {
   static const library = '/library';
   static const workout = '/workout';
   static const posture = '/posture';
+  static const sync = '/sync';
   static const fuel = '/fuel';
   static const foodSearch = '/fuel/search';
   static const foodAmount = '/fuel/food';
@@ -57,16 +62,24 @@ abstract final class Routes {
   static const signedOutPages = {welcome, login, register, forgotPassword};
 
   /// The signed-in app. Feature routes added later live under one of these prefixes.
-  static const signedInAreas = [home, train, fuel, progress, library, account, membership, workout, posture];
+  static const signedInAreas = [home, train, fuel, progress, library, account, membership, workout, posture, sync];
 
   static bool inSignedInArea(String location) => signedInAreas.any(location.startsWith);
 }
 
 /// Decides where the member belongs right now. Pure so it can be tested without a widget tree.
 /// Order matters: a build the server no longer supports, or maintenance, overrides everything else.
-String? appRedirect({required AuthState auth, required PolicyState policy, required String location}) {
-  if (policy.maintenance != null) return location == Routes.maintenance ? null : Routes.maintenance;
-  if (policy.updateRequired) return location == Routes.updateRequired ? null : Routes.updateRequired;
+///
+/// [localWorkoutId] is a workout this phone is in the middle of. While the server is in maintenance or an update is
+/// required it may be carried on: its sets and its finish go to the offline queue and are sent when the server is back,
+/// so a member is never stranded mid-session.
+String? appRedirect({required AuthState auth, required PolicyState policy, required String location, int? localWorkoutId}) {
+  final blockedPage = policy.maintenance != null ? Routes.maintenance : (policy.updateRequired ? Routes.updateRequired : null);
+  if (blockedPage != null) {
+    if (location == blockedPage) return null;
+    final training = auth is SignedIn && localWorkoutId != null && (location == '${Routes.workout}/$localWorkoutId' || location == '${Routes.workout}/$localWorkoutId/summary');
+    return training ? null : blockedPage;
+  }
 
   return switch (auth) {
     AuthInitializing() => location == Routes.splash ? null : Routes.splash,
@@ -95,6 +108,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       auth: ref.read(authControllerProvider),
       policy: ref.read(policyControllerProvider),
       location: state.uri.path,
+      localWorkoutId: localWorkoutInProgress(ref.read(sharedPreferencesProvider), ref.read(queueScopeProvider)),
     ),
     routes: [
       GoRoute(path: Routes.splash, builder: (_, _) => const SplashScreen()),
@@ -131,6 +145,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '${Routes.strength}/:slug', builder: (_, state) => StrengthScreen(slug: state.pathParameters['slug'] ?? '')),
       GoRoute(path: '${Routes.workout}/:id', builder: (_, state) => WorkoutScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
       GoRoute(path: '${Routes.workout}/:id/summary', builder: (_, state) => WorkoutSummaryScreen(sessionId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0)),
+      GoRoute(path: Routes.sync, builder: (_, _) => const SyncScreen()),
       GoRoute(path: Routes.posture, builder: (_, _) => const PostureListScreen()),
       GoRoute(
         path: '${Routes.posture}/:slug',

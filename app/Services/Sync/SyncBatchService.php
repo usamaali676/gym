@@ -147,6 +147,7 @@ class SyncBatchService
         return match ($type) {
             'workout.set.log' => $this->logSet($user, $p, $clientAt),
             'workout.set.delete' => $this->deleteSet($user, $p),
+            'workout.exercise.skip' => $this->skipExercise($user, $p),
             'workout.state.save' => $this->saveState($user, $p),
             'workout.finish' => $this->finish($user, $p),
             'workout.abandon' => $this->abandon($user, $p),
@@ -200,6 +201,18 @@ class SyncBatchService
         }
 
         return ['status' => 'applied']; // already gone is the state the member asked for
+    }
+
+    /** @param  array<string, mixed>  $p */
+    private function skipExercise(User $user, array $p): array
+    {
+        $session = $this->session($user, $p);
+        $row = $session->exercises()->whereKey((int) ($p['session_exercise_id'] ?? 0))->first() ?? throw ApiException::notFound('Exercise not found in this workout.');
+        if ($row->status !== 'skipped') {
+            $this->sessions->skipExercise($session, $row);
+        }
+
+        return ['status' => 'applied'];
     }
 
     /** @param  array<string, mixed>  $p */

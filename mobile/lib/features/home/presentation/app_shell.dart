@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../sync/presentation/sync_widgets.dart';
+
 /// Bottom navigation around the signed-in screens. Tabs are added as their features ship; every visible tab works.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.shell});
@@ -9,7 +11,11 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: shell,
+      // The sync strip sits just above the tab bar, so it never fights the screens' own top padding.
+      body: Column(children: [
+        Expanded(child: shell),
+        const SyncStatusStrip(),
+      ]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),

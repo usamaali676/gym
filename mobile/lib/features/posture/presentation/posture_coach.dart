@@ -24,7 +24,7 @@ import '../domain/posture_models.dart';
 
 enum CoachPhase { intro, loading, position, countdown, live, summary, error }
 
-enum SaveState { idle, saving, saved, failed, empty }
+enum SaveState { idle, saving, saved, failed, empty, queued }
 
 enum CueTone { ok, warn, bad }
 
@@ -64,6 +64,7 @@ class PostureCoach extends ChangeNotifier {
     required this.repository,
     required this.feedback,
     this.workoutSessionId,
+    this.queueOffline,
     DateTime Function()? now,
     String Function()? newUuid,
     this._front = true,
@@ -75,6 +76,9 @@ class PostureCoach extends ChangeNotifier {
   final PostureRepository repository;
   final DeviceFeedback feedback;
   final int? workoutSessionId;
+
+  /// Keeps a set on the phone for later when the server cannot be reached (the offline queue).
+  final Future<void> Function(Map<String, dynamic> payload, String label)? queueOffline;
   final DateTime Function() _now;
   final String Function() _newUuid;
 
@@ -436,6 +440,17 @@ class PostureCoach extends ChangeNotifier {
       saveState = SaveState.saved;
     } catch (error) {
       final e = ApiError.from(error);
+      final queue = queueOffline;
+      if (e.isOffline && queue != null) {
+        try {
+          await queue(PostureRepository.payload(rule, FinishedSet(summary: s, startedAt: _liveStartedAt ?? _now(), clientUuid: _clientUuid!, avgFps: _avgFps), workoutSessionId: workoutSessionId), 'Camera set: ${rule.exercise.name} (${s.totalReps} ${rule.timed ? (s.totalReps == 1 ? 'hold' : 'holds') : (s.totalReps == 1 ? 'rep' : 'reps')})');
+          saveState = SaveState.queued;
+          _notify();
+          return;
+        } catch (_) {
+          // Not signed in or the phone's storage failed: fall through to the ordinary failure message.
+        }
+      }
       saveState = SaveState.failed;
       saveError = switch (e.kind) {
         ApiErrorKind.validation => 'The server rejected this set. It is shown here but was not saved.',

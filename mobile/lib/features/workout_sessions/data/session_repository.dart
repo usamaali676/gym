@@ -100,6 +100,9 @@ class SessionRepository {
     return res.data == null ? null : WorkoutSession.fromJson(res.data);
   }
 
+  /// The body of the offline queue's `workout.set.log` operation: the same fields the online endpoint takes.
+  static Map<String, dynamic> setPayload(int sessionId, SetEntry entry) => {'session_id': sessionId, ...entry.toJson()};
+
   Future<SetResult> logSet(int sessionId, SetEntry entry) async {
     final res = await _api.post('/workout-sessions/$sessionId/sets', body: entry.toJson(), idempotent: true);
     final d = res.map;

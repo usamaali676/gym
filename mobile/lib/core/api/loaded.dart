@@ -9,8 +9,8 @@ class Loaded<T> {
   final DateTime? savedAt;
 }
 
-/// Fetch from the server; remember the answer; when the network (or the server) is down fall back to the last
-/// remembered answer. Errors that mean "you may not see this" (401, 403, 404, 422...) are never papered over with
+/// Fetch from the server; remember the answer; when the network (or the server) is down, in maintenance, or refusing
+/// this build, fall back to the last remembered answer. Errors that mean "you may not see this" (401, 403, 404, 422...) are never papered over with
 /// old data.
 Future<Loaded<T>> loadWithCache<T>({
   required JsonCache cache,
@@ -24,7 +24,7 @@ Future<Loaded<T>> loadWithCache<T>({
     await cache.write(key, json);
     return Loaded(value);
   } on ApiError catch (e) {
-    if (e.isOffline || e.kind == ApiErrorKind.server) {
+    if (e.isOffline || e.kind == ApiErrorKind.server || e.kind == ApiErrorKind.maintenance || e.kind == ApiErrorKind.upgradeRequired) {
       final entry = cache.read(key);
       if (entry != null) {
         try {
