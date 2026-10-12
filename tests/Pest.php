@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Database\Seeders\BadgeSeeder;
 use Database\Seeders\ExerciseLibrarySeeder;
 use Database\Seeders\FoodSeeder;
@@ -7,6 +8,7 @@ use Database\Seeders\MealTemplateSeeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\PostureRuleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -88,6 +90,50 @@ function bodyProfilePayload(array $overrides = []): array
         'unit_system' => 'metric',
         'timezone' => 'UTC',
     ], $overrides);
+}
+
+/*
+| Mobile API helpers
+*/
+
+/** A valid `device` block for sign-in requests. */
+function deviceBlock(array $overrides = []): array
+{
+    return array_merge([
+        'installation_id' => (string) Str::uuid(),
+        'platform' => 'android',
+        'name' => 'Pixel 8',
+        'app_version' => '1.0.0',
+        'app_build' => '1',
+        'os_version' => '15',
+        'locale' => 'en-US',
+        'timezone' => 'UTC',
+    ], $overrides);
+}
+
+/** A real Sanctum token for the user (so expiry, revocation and the hashed lookup are all exercised). */
+function apiToken(User $user, ?DateTimeInterface $expiresAt = null): string
+{
+    return $user->createToken('test', ['*'], $expiresAt ?? now()->addDays(60))->plainTextToken;
+}
+
+/**
+ * Authorization header for the given token. The auth manager caches the resolved user per guard, so it is reset
+ * here to let one test call the API with several different tokens.
+ *
+ * @return array<string, string>
+ */
+function bearer(string $token): array
+{
+    app('auth')->forgetGuards();
+
+    return ['Authorization' => 'Bearer '.$token];
+}
+
+/** Headers for an onboarded user with a fresh token. */
+function apiAs(User $user): array
+{
+    return bearer(apiToken($user));
 }
 
 /*

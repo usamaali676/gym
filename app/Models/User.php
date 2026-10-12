@@ -12,11 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     // Role, XP and streak columns are deliberately NOT mass-assignable.
     protected $fillable = ['name', 'email', 'password'];
@@ -27,6 +28,7 @@ class User extends Authenticatable
     protected $attributes = [
         'is_guest' => false,
         'role' => 'user',
+        'status' => 'active',
         'xp_total' => 0,
         'level' => 1,
         'workout_streak' => 0,
@@ -43,13 +45,18 @@ class User extends Authenticatable
             'last_workout_on' => 'date',
             'onboarded_at' => 'datetime',
             'last_seen_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
     }
 
     protected static function booted(): void
     {
         // Database rows cascade, files do not: progress photos live on disk and must go with the account.
-        static::deleting(fn (User $user) => Storage::disk(ProgressPhotoService::DISK)->deleteDirectory("progress/{$user->id}"));
+        static::deleting(function (User $user) {
+            Storage::disk(ProgressPhotoService::DISK)->deleteDirectory("progress/{$user->id}");
+            // Sanctum tokens are polymorphic (no foreign key), so they do not cascade.
+            $user->tokens()->delete();
+        });
     }
 
     public function profile(): HasOne
@@ -60,6 +67,11 @@ class User extends Authenticatable
     public function notificationSetting(): HasOne
     {
         return $this->hasOne(NotificationSetting::class);
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(Device::class);
     }
 
     public function workoutSessions(): HasMany
@@ -110,6 +122,11 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === Role::Admin;
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
     }
 
     public function isOnboarded(): bool

@@ -49,6 +49,13 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('uploads', fn (Request $request) => Limit::perMinute(20)->by($key($request)));
         RateLimiter::for('guest', fn (Request $request) => Limit::perMinute(6)->by($request->ip()));
 
+        // Mobile API (/api/v1)
+        RateLimiter::for('v1-public', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('v1-auth', fn (Request $request) => Limit::perMinute(20)->by($request->ip()));
+        RateLimiter::for('v1', fn (Request $request) => Limit::perMinute(240)->by($key($request)));
+        RateLimiter::for('v1-sync', fn (Request $request) => Limit::perMinute(60)->by($key($request)));
+        RateLimiter::for('v1-uploads', fn (Request $request) => Limit::perMinute(20)->by($key($request)));
+
         View::composer('components.layouts.app', NavComposer::class);
     }
 }

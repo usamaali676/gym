@@ -52,6 +52,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mobile API (/api/v1)
+    |--------------------------------------------------------------------------
+    | Bearer-token API used by the Android and iOS apps. Web sessions are unaffected.
+    */
+    'mobile' => [
+        // Absolute lifetime of an access token. The app refreshes it (rotating the token) while it is still valid.
+        'token_ttl_days' => (int) env('IRONPULSE_TOKEN_TTL_DAYS', 60),
+        // The app is told to refresh when fewer than this many days remain.
+        'refresh_window_days' => (int) env('IRONPULSE_TOKEN_REFRESH_WINDOW_DAYS', 30),
+        // Signed-in devices kept per account; the oldest session is revoked beyond this.
+        'max_devices' => (int) env('IRONPULSE_MAX_DEVICES', 10),
+        'page_size' => ['default' => 20, 'max' => 100],
+        // Idempotency keys (and their stored responses) are kept this many hours.
+        'idempotency_hours' => 24,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Progressive overload
     |--------------------------------------------------------------------------
     | The plan says: add 1-2 reps OR add 2.5-5 kg each week.
