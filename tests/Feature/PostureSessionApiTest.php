@@ -152,6 +152,7 @@ test('invalid summaries are rejected', function (array $override, string $field)
     'score out of range' => [['form_score_avg' => 140], 'form_score_avg'],
     'lowest score above the average' => [['form_score_min' => 95, 'form_score_avg' => 90], 'form_score_min'],
     'absurd duration' => [['duration_seconds' => 99999], 'duration_seconds'],
+    'impossibly many reps for the time (a modified app)' => [['duration_seconds' => 5, 'total_reps' => 40, 'good_reps' => 40, 'bad_reps' => 0, 'rep_log' => []], 'total_reps'],
     'started in the future' => [['started_at' => '2030-01-01T00:00:00Z'], 'started_at'],
     'unknown camera view' => [['camera_view' => 'overhead'], 'camera_view'],
     'unknown model' => [['model_variant' => 'gigantic'], 'model_variant'],
@@ -161,6 +162,13 @@ test('invalid summaries are rejected', function (array $override, string $field)
     'too many log entries' => [['rep_log' => array_fill(0, 201, ['n' => 1, 'ms' => 1000, 'score' => 90, 'good' => true, 'errors' => []])], 'rep_log'],
     'rep log error ids must be identifiers' => [['rep_log' => [['n' => 1, 'ms' => 1000, 'score' => 90, 'good' => true, 'errors' => ['DROP TABLE']]]], 'rep_log.0.errors.0'],
 ]);
+
+test('a fast but possible set is accepted (two reps a second is the ceiling)', function () {
+    $user = User::factory()->onboarded()->create();
+
+    $this->actingAs($user)->postJson('/api/posture-sessions', postureSetPayload('barbell-squat', ['duration_seconds' => 10, 'total_reps' => 20, 'good_reps' => 20, 'bad_reps' => 0, 'rep_log' => []]))
+        ->assertSuccessful();
+});
 
 test('a rule from a different exercise is rejected', function () {
     $user = User::factory()->onboarded()->create();

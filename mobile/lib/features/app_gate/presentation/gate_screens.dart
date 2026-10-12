@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/utilities/store_link.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
@@ -125,7 +125,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
                   NeonButton(
                     label: 'Open the store',
                     icon: Icons.open_in_new,
-                    onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+                    onPressed: () => openStoreLink(context, ref, url),
                   )
                 else
                   Text('The store link has not been set by the gym yet. Look for IronPulse in your app store.', textAlign: TextAlign.center, style: IpText.body(13, color: IpColors.muted)),

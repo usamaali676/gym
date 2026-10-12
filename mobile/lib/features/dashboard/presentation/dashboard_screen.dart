@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/utilities/store_link.dart';
 import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/policy/app_config.dart';
@@ -256,12 +256,12 @@ class _NutritionCard extends StatelessWidget {
   }
 }
 
-class _UpdateCard extends StatelessWidget {
+class _UpdateCard extends ConsumerWidget {
   const _UpdateCard({required this.config});
   final AppConfig config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final url = config.storeUrl;
     return GlassCard(
       child: Row(children: [
@@ -276,7 +276,7 @@ class _UpdateCard extends StatelessWidget {
         ),
         if (url != null) ...[
           const SizedBox(width: 8),
-          NeonButton(label: 'Update', size: NeonButtonSize.small, onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)),
+          NeonButton(label: 'Update', size: NeonButtonSize.small, onPressed: () => openStoreLink(context, ref, url)),
         ],
       ]),
     );

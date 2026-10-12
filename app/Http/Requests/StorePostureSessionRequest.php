@@ -60,6 +60,13 @@ class StorePostureSessionRequest extends FormRequest
             if ((int) ($data['total_reps'] ?? 0) === 0 && (int) ($data['hold_seconds'] ?? 0) === 0) {
                 $v->errors()->add('total_reps', 'There is nothing to save: no reps or holds were counted.');
             }
+            // The counting happens on the member's own device, so the server cannot check it; it can refuse numbers that are
+            // impossible (a modified app posting 500 reps for a 5-second set to earn a badge). The fastest honest exercise
+            // (jumping jacks) is about one rep a second; two a second is already generous.
+            $duration = (int) ($data['duration_seconds'] ?? 0);
+            if ($duration > 0 && (int) ($data['total_reps'] ?? 0) > 2 * $duration + 2) {
+                $v->errors()->add('total_reps', 'More reps than the time allows. Check the set and try again.');
+            }
             foreach (array_keys($data['error_counts'] ?? []) as $key) {
                 if (! is_string($key) || ! preg_match('/^[a-z][a-z0-9_]{0,39}$/', $key)) {
                     $v->errors()->add('error_counts', 'Error ids must be short lowercase names.');
