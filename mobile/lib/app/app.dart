@@ -4,9 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/policy/policy_controller.dart';
 import '../core/sync/offline_queue.dart';
 import '../core/sync/pending_op.dart';
+import '../core/utilities/clock.dart';
 import '../core/widgets/app_background.dart';
 import '../features/authentication/presentation/auth_controller.dart';
 import '../features/dashboard/presentation/dashboard_providers.dart';
+import '../features/membership/presentation/membership_providers.dart';
+import '../features/nutrition/presentation/nutrition_providers.dart';
+import '../features/posture/presentation/posture_providers.dart';
 import '../features/progress/presentation/progress_providers.dart';
 import '../features/workout_programs/presentation/plan_providers.dart';
 import '../features/workout_sessions/presentation/workout_controller.dart';
@@ -21,6 +25,10 @@ class IronPulseApp extends ConsumerStatefulWidget {
 }
 
 class _IronPulseAppState extends ConsumerState<IronPulseApp> with WidgetsBindingObserver {
+  /// When the app went to the background, so that coming back after a while shows what changed on the server meanwhile.
+  DateTime? _leftAt;
+  static const _staleAfter = Duration(minutes: 5);
+
   @override
   void initState() {
     super.initState();
@@ -40,11 +48,29 @@ class _IronPulseAppState extends ConsumerState<IronPulseApp> with WidgetsBinding
   /// Coming back to the foreground re-checks the version/maintenance policy and the account.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) _leftAt ??= ref.read(clockProvider)();
     if (state != AppLifecycleState.resumed) return;
+    final left = _leftAt;
+    _leftAt = null;
+    if (left != null && ref.read(clockProvider)().difference(left) >= _staleAfter) _refreshStaleScreens();
     ref.read(policyControllerProvider.notifier).refresh();
     final auth = ref.read(authControllerProvider);
     if (auth is SignedIn) ref.read(authControllerProvider.notifier).refreshUser();
     ref.read(offlineQueueProvider.notifier).nudge();
+  }
+
+  /// Published content (programmes, exercises, announcements) and the member's own numbers change on the server while the app
+  /// sleeps. Screens keep their last answer, so after a while away they are asked again (the old answer still shows until
+  /// the new one arrives, and offline it stays).
+  void _refreshStaleScreens() {
+    ref.invalidate(dashboardProvider);
+    ref.invalidate(weekPlanProvider);
+    ref.invalidate(dayDetailProvider);
+    ref.invalidate(nutritionDayProvider);
+    ref.invalidate(membershipProvider);
+    ref.invalidate(plansProvider);
+    ref.invalidate(postureExercisesProvider);
+    invalidateProgress(ref);
   }
 
   /// The server accepted queued changes: every screen that shows what they changed must ask again.
