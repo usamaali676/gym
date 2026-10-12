@@ -155,6 +155,19 @@ jobs:
       - name: Unit, widget and golden tests
         run: flutter test
 
+      # The runner's NDK download is sometimes corrupt ("Error on ZipFile unknown archive": runs 26 and 39 failed on exactly that
+      # and the same code passed on a rerun). Fetch it up front, and again if the first download is bad.
+      - name: Android NDK (retry the download)
+        run: |
+          NDK=28.2.13676358
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          for attempt in 1 2 3; do
+            rm -rf "$ANDROID_HOME/ndk/$NDK"
+            if yes | "$SDKM" "ndk;$NDK" && [ -f "$ANDROID_HOME/ndk/$NDK/source.properties" ]; then exit 0; fi
+            echo "NDK download attempt $attempt failed"; sleep 10
+          done
+          exit 1
+
       # No server is baked in on purpose: the API address is a build-time choice (see mobile/README.md).
       - name: Debug APK
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://api.example.invalid
