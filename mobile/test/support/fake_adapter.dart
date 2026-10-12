@@ -79,6 +79,17 @@ Map<String, dynamic> configJson({String status = 'ok', bool guest = true, bool m
       'auth': {'guest_mode': guest, 'token_ttl_days': 60, 'refresh_window_days': 30},
       'features': {'coach': false, 'payments': [], 'push': false},
       'settings': {},
+      'library_options': {
+        'muscle': [
+          {'value': 'chest', 'label': 'Chest'},
+          {'value': 'back', 'label': 'Back'},
+          {'value': 'quads', 'label': 'Quads'},
+        ],
+        'difficulty': [
+          {'value': 'beginner', 'label': 'Beginner'},
+          {'value': 'advanced', 'label': 'Advanced'},
+        ],
+      },
       'entitlements': [
         {'key': 'workouts', 'label': 'Workouts and training plan', 'description': 'Plan pages, starting and logging workouts.'},
         {'key': 'programs.premium', 'label': 'Premium programs', 'description': 'Programs an admin marks as premium.'},
@@ -197,3 +208,169 @@ Map<String, dynamic> dashboardJson({
       'quote': 'Discipline is choosing between what you want now and what you want most.',
       'membership': {'plan_slug': 'free', 'entitlements': entitlementMap(allow: allow)},
     };
+
+Map<String, dynamic> dayHeaderJson(int weekday, {String title = 'Push day', bool rest = false, String focus = 'Chest, shoulders, triceps'}) =>
+    {'id': weekday + 10, 'weekday': weekday, 'name': 'Day $weekday', 'slug': 'day-$weekday', 'session_type': rest ? 'rest' : 'push', 'label': rest ? 'REST' : 'PUSH', 'focus': focus, 'title': title, 'is_rest': rest};
+
+Map<String, dynamic> weekPlanJson({DateTime? monday, bool thisWeek = true, int done = 2, int target = 4}) {
+  final m = monday ?? DateTime.utc(2026, 10, 12);
+  const names = ['Push day', 'Pull day', 'Legs', 'Rest', 'Upper', 'Lower', 'Rest'];
+  const statuses = ['completed', 'completed', 'today', 'rest', 'upcoming', 'upcoming', 'rest'];
+  String d(DateTime x) => '${x.year}-${x.month.toString().padLeft(2, '0')}-${x.day.toString().padLeft(2, '0')}';
+  return {
+    'program': {'id': 1, 'name': 'Strength Block'},
+    'week_number': thisWeek ? 3 : 4,
+    'monday': d(m),
+    'sunday': d(m.add(const Duration(days: 6))),
+    'is_this_week': thisWeek,
+    'progress': {'done': done, 'target': target},
+    'days': [
+      for (var i = 0; i < 7; i++)
+        {
+          'date': d(m.add(Duration(days: i))),
+          'weekday': i + 1,
+          'status': statuses[i],
+          'is_today': thisWeek && i == 2,
+          'is_training': names[i] != 'Rest',
+          'day': dayHeaderJson(i + 1, title: names[i], rest: names[i] == 'Rest'),
+          'session': i < 2 ? {'id': 100 + i, 'status': 'completed'} : null,
+        },
+    ],
+  };
+}
+
+Map<String, dynamic> planExerciseJson({int item = 1, String name = 'Bench press', int sets = 4, String reps = '6-8', bool withTarget = true, String? notes = 'Pause on the chest.'}) => {
+      'item_id': item,
+      'position': item,
+      'name': name,
+      'swapped': false,
+      'permanent_swap': false,
+      'original_exercise_id': null,
+      'exercise': {'id': 20 + item, 'slug': 'bench-press', 'name': name, 'muscle_group': 'chest', 'equipment': ['barbell'], 'is_timed': false},
+      'sets': sets,
+      'reps_min': 6,
+      'reps_max': 8,
+      'reps_label': reps,
+      'focus': 'Chest',
+      'notes': notes,
+      'rest_seconds': 120,
+      'rest_label': '2-3 min',
+      'target': withTarget ? {'last': '60 kg × 8, 8, 7', 'next': '62.5 kg × 8', 'reason': 'You hit the top of the range on every set.'} : null,
+    };
+
+Map<String, dynamic> dayDetailJson({
+  int weekday = 3,
+  String date = '2026-10-14',
+  String status = 'today',
+  bool canAct = true,
+  bool future = false,
+  bool rest = false,
+  Map<String, dynamic>? session,
+}) =>
+    {
+      'date': date,
+      'weekday': weekday,
+      'week_number': 3,
+      'status': status,
+      'estimated_minutes': 55,
+      'can_act': canAct,
+      'is_future': future,
+      'day': {...dayHeaderJson(weekday, title: rest ? 'Rest day' : 'Legs', rest: rest, focus: 'Quads and hamstrings'), 'description': rest ? null : 'Heavy squats first.', 'recovery_note': rest ? 'Walk and stretch.' : null},
+      'session': session,
+      'exercises': rest ? [] : [planExerciseJson(), planExerciseJson(item: 2, name: 'Romanian deadlift', sets: 3, reps: '8-10', withTarget: false, notes: null)],
+    };
+
+Map<String, dynamic> programmeJson({int id = 1, String name = 'Strength Block', bool selected = true, bool locked = false, String? entitlement}) => {
+      'id': id,
+      'slug': 'p$id',
+      'name': name,
+      'description': 'Heavy compound lifts, three weeks on.',
+      'source': 'gym',
+      'version': 1,
+      'is_default': id == 1,
+      'is_selected': selected,
+      'required_entitlement': entitlement,
+      'locked': locked,
+      'training_days': 4,
+      'phases_count': 2,
+      'updated_at': '2026-10-01T10:00:00+00:00',
+    };
+
+Map<String, dynamic> programmeDetailJson({int id = 1, bool selected = true}) => {
+      ...programmeJson(id: id, selected: selected),
+      'rules': {},
+      'phases': [
+        {'id': 1, 'kind': 'sprint', 'name': 'Foundation sprint', 'summary': 'Learn the lifts.', 'starts_week': 1, 'ends_week': 4, 'settings': {}},
+        {'id': 2, 'kind': 'phase', 'name': 'Strength phase', 'summary': 'Add load.', 'starts_week': 5, 'ends_week': 5, 'settings': {}},
+      ],
+      'days': [
+        {
+          'day_of_week': 1,
+          'slug': 'push',
+          'name': 'Monday',
+          'session_type': 'push',
+          'label': 'PUSH',
+          'title': 'Push day',
+          'focus': 'Chest',
+          'is_rest': false,
+          'description': null,
+          'recovery_note': null,
+          'estimated_minutes': 50,
+          'exercises': [
+            {'id': 1, 'position': 1, 'exercise_id': 21, 'exercise_slug': 'bench-press', 'name': 'Bench press', 'muscle_group': 'chest', 'sets': 4, 'reps_min': 6, 'reps_max': 8, 'reps_label': '6-8', 'focus': null, 'notes': null, 'rest_seconds': 120, 'is_timed': false, 'hold_seconds': null},
+          ],
+        },
+        {'day_of_week': 7, 'slug': 'rest', 'name': 'Sunday', 'session_type': 'rest', 'label': 'REST', 'title': 'Rest', 'focus': null, 'is_rest': true, 'description': null, 'recovery_note': 'Sleep well.', 'estimated_minutes': 0, 'exercises': []},
+      ],
+    };
+
+Map<String, dynamic> exerciseJson(int id, {String? name, String muscle = 'chest', String difficulty = 'beginner', bool locked = false, bool full = false, bool posture = false}) {
+  final base = {
+    'id': id,
+    'slug': 'exercise-$id',
+    'name': name ?? 'Exercise $id',
+    'kind': 'plan',
+    'muscle_group': muscle,
+    'muscle_group_label': muscle[0].toUpperCase() + muscle.substring(1),
+    'secondary_groups': ['triceps'],
+    'mechanic': 'compound',
+    'difficulty': difficulty,
+    'equipment': ['barbell'],
+    'is_timed': false,
+    'per_side': false,
+    'mobility_type': null,
+    'required_entitlement': locked ? 'library.premium' : null,
+    'locked': locked,
+    'updated_at': '2026-10-01T10:00:00+00:00',
+  };
+  if (locked || !full) return base;
+  return {
+    ...base,
+    'target_regions': {'primary': ['chest'], 'secondary': []},
+    'rest': {'min_seconds': 90, 'max_seconds': 180, 'default_seconds': 120},
+    'default_hold_seconds': null,
+    'description': 'A horizontal press with a barbell.',
+    'form_cues': ['Shoulder blades together', 'Feet planted'],
+    'common_mistakes': ['Bouncing the bar', 'Flaring elbows'],
+    'breathing': 'Inhale down, exhale up.',
+    'demo_key': 'bench-press',
+    'media': [],
+    'posture': posture ? {'supported': true, 'tier': 'tier1', 'camera_view': 'side', 'rule_version': 1} : {'supported': false},
+  };
+}
+
+/// A paginated `/exercises` answer: [total] exercises, [perPage] per page, honouring ?page=, ?q=, ?muscle=.
+FakeReply exercisePageReply(RequestOptions o, {int total = 45, int perPage = 20, Set<int> locked = const {}}) {
+  final page = int.tryParse(o.uri.queryParameters['page'] ?? '1') ?? 1;
+  final muscle = o.uri.queryParameters['muscle'];
+  final q = o.uri.queryParameters['q'];
+  var ids = [for (var i = 1; i <= total; i++) i];
+  if (q != null) ids = ids.where((i) => 'Exercise $i'.toLowerCase().contains(q.toLowerCase())).toList();
+  final last = (ids.length / perPage).ceil().clamp(1, 9999);
+  final slice = ids.skip((page - 1) * perPage).take(perPage);
+  return FakeReply.json(200, {
+    'data': [for (final i in slice) exerciseJson(i, locked: locked.contains(i), muscle: muscle ?? 'chest')],
+    'links': {},
+    'meta': {'current_page': page, 'last_page': last, 'per_page': perPage, 'total': ids.length},
+  });
+}

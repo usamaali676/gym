@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ActivityLevel;
 use App\Enums\DietPreference;
+use App\Enums\Difficulty;
 use App\Enums\FitnessLevel;
 use App\Enums\Goal;
+use App\Enums\MuscleGroup;
 use App\Enums\Sex;
 use App\Enums\UnitSystem;
 use App\Http\Controllers\Controller;
@@ -54,6 +56,11 @@ class AppConfigController extends Controller
             ],
             'settings' => AppSettingKeys::publicValues(),
             'profile_options' => $this->profileOptions(),
+            // Filters of the exercise library (equipment reuses profile_options.equipment).
+            'library_options' => [
+                'muscle' => array_map(fn (MuscleGroup $m) => ['value' => $m->value, 'label' => $m->label()], MuscleGroup::cases()),
+                'difficulty' => array_map(fn (Difficulty $d) => ['value' => $d->value, 'label' => $d->label()], Difficulty::cases()),
+            ],
             // Names and one-line descriptions of what a membership can unlock, so the paywall never hard-codes copy.
             'entitlements' => array_map(fn (Entitlement $e) => ['key' => $e->value, 'label' => $e->label(), 'description' => $e->description()], Entitlement::cases()),
             'limits' => collect(Entitlement::LIMITS)->map(fn (string $label, string $key) => ['key' => $key, 'label' => $label])->values()->all(),

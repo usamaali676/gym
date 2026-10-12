@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\Difficulty;
 use App\Enums\Goal;
+use App\Enums\MuscleGroup;
 use App\Models\AppRelease;
 use App\Models\AppSetting;
 use App\Models\AppVersionPolicy;
@@ -146,4 +148,12 @@ it('publishes the entitlement catalogue so the paywall shows server-provided nam
     expect(collect($data['entitlements'])->pluck('key')->all())->toBe(Entitlement::keys())
         ->and($data['entitlements'][0])->toHaveKeys(['key', 'label', 'description'])
         ->and(collect($data['limits'])->pluck('key')->all())->toBe(array_keys(Entitlement::LIMITS));
+});
+
+it('publishes the library filter choices', function () {
+    $options = $this->getJson('/api/v1/app/config')->json('data.library_options');
+
+    expect(collect($options['muscle'])->pluck('value')->all())->toBe(MuscleGroup::values())
+        ->and(collect($options['difficulty'])->pluck('value')->all())->toBe(Difficulty::values())
+        ->and($options['muscle'][0])->toHaveKeys(['value', 'label']);
 });

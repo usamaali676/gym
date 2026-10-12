@@ -165,4 +165,41 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('membership.png'));
   });
+
+  testWidgets('train tab (week) and library', (tester) async {
+    final w = await TestWorld.create();
+    await w.storeSession();
+    w.serveSignedInMember();
+    w.server.reply('GET', '/exercises/exercise-1', 200, {'data': exerciseJson(1, name: 'Bench press', full: true, posture: true)});
+    await pumpApp(tester, w);
+    await pumpUntilHome(tester);
+    await tester.tap(find.text('TRAIN'));
+    await pumpUntil(tester, find.text('Strength Block'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('train_week.png'));
+
+    await tester.tap(find.text('LIBRARY'));
+    await pumpUntil(tester, find.text('Exercise 1'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('library.png'));
+
+    await tester.tap(find.text('Exercise 1'));
+    await pumpUntil(tester, find.text('FORM CUES'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('exercise_detail.png'));
+  });
+
+  testWidgets('day detail and programme detail', (tester) async {
+    final w = await TestWorld.create();
+    await w.storeSession();
+    w.serveSignedInMember();
+    await pumpApp(tester, w);
+    await pumpUntilHome(tester);
+    await tester.tap(find.text('TRAIN'));
+    await pumpUntil(tester, find.text('Strength Block'));
+    await tester.tap(find.text('Legs'));
+    await pumpUntil(tester, find.text('Bench press'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('day_detail.png'));
+  });
 }

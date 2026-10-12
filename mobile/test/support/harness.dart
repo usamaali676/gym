@@ -109,6 +109,11 @@ class TestWorld {
     server.reply('GET', '/dashboard', 200, {'data': dashboardJson()});
     server.reply('GET', '/membership', 200, {'data': membershipJson()});
     server.reply('GET', '/membership/plans', 200, {'data': [planJson()]});
+    server.on('GET', '/plan/week', (o) => FakeReply.json(200, {'data': weekPlanJson()}));
+    server.on('GET', '/plan/days/3', (o) => FakeReply.json(200, {'data': dayDetailJson()}));
+    server.reply('GET', '/programs', 200, {'data': [programmeJson(), programmeJson(id: 2, name: 'Hypertrophy Plus', selected: false, locked: true, entitlement: 'programs.premium')]});
+    server.reply('GET', '/programs/1', 200, {'data': programmeDetailJson()});
+    server.on('GET', '/exercises', (o) => exercisePageReply(o));
   }
 }
 

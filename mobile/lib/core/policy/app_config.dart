@@ -12,6 +12,7 @@ class AppConfig {
     required this.pushEnabled,
     required this.coachEnabled,
     required this.profileOptions,
+    required this.libraryOptions,
     required this.entitlementCatalog,
     required this.limitLabels,
     required this.settings,
@@ -28,6 +29,9 @@ class AppConfig {
   final bool pushEnabled;
   final bool coachEnabled;
   final Map<String, List<ProfileOption>> profileOptions;
+
+  /// Filter choices of the exercise library (`muscle`, `difficulty`); equipment reuses [profileOptions].
+  final Map<String, List<ProfileOption>> libraryOptions;
 
   /// What a membership can unlock, with the server's wording (key, label, description).
   final List<EntitlementInfo> entitlementCatalog;
@@ -50,6 +54,7 @@ class AppConfig {
   }
 
   List<ProfileOption> options(String name) => profileOptions[name] ?? const [];
+  List<ProfileOption> libraryChoices(String name) => name == 'equipment' ? options('equipment') : (libraryOptions[name] ?? const []);
 
   factory AppConfig.fromJson(Map<String, dynamic> json) {
     final policy = json['version_policy'] is Map ? Map<String, dynamic>.from(json['version_policy'] as Map) : const <String, dynamic>{};
@@ -57,6 +62,14 @@ class AppConfig {
     final auth = json['auth'] is Map ? Map<String, dynamic>.from(json['auth'] as Map) : const <String, dynamic>{};
     final features = json['features'] is Map ? Map<String, dynamic>.from(json['features'] as Map) : const <String, dynamic>{};
     final rawOptions = json['profile_options'] is Map ? Map<String, dynamic>.from(json['profile_options'] as Map) : const <String, dynamic>{};
+    final rawLibrary = json['library_options'] is Map ? Map<String, dynamic>.from(json['library_options'] as Map) : const <String, dynamic>{};
+    Map<String, List<ProfileOption>> parseOptions(Map<String, dynamic> raw) => {
+          for (final e in raw.entries)
+            e.key: [
+              for (final o in (e.value as List? ?? const []))
+                if (o is Map) ProfileOption(o['value'], (o['label'] ?? o['value']).toString()),
+            ],
+        };
 
     return AppConfig(
       versionStatus: VersionStatus.parse(policy['status'] as String?),
@@ -73,13 +86,8 @@ class AppConfig {
       paymentProviders: [for (final p in (features['payments'] as List? ?? const [])) p.toString()],
       pushEnabled: features['push'] == true,
       coachEnabled: features['coach'] == true,
-      profileOptions: {
-        for (final e in rawOptions.entries)
-          e.key: [
-            for (final o in (e.value as List? ?? const []))
-              if (o is Map) ProfileOption(o['value'], (o['label'] ?? o['value']).toString()),
-          ],
-      },
+      profileOptions: parseOptions(rawOptions),
+      libraryOptions: parseOptions(rawLibrary),
       entitlementCatalog: [
         for (final e in (json['entitlements'] as List? ?? const []))
           if (e is Map) EntitlementInfo(e['key'].toString(), (e['label'] ?? e['key']).toString(), (e['description'] ?? '').toString()),

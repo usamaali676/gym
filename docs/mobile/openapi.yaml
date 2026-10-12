@@ -5840,6 +5840,33 @@ components:
                 required:
                 - value
                 - label
+        library_options:
+          type: object
+          properties:
+            muscle:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  label:
+                    type: string
+                required:
+                - value
+                - label
+            difficulty:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  label:
+                    type: string
+                required:
+                - value
+                - label
         entitlements:
           type: array
           items:
