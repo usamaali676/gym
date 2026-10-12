@@ -73,6 +73,14 @@ class ApiError implements Exception {
         message: 'Cannot reach the server. Check your connection and try again.',
       );
 
+  /// The server answered, but with a shape this version of the app cannot read (a half-deployed release, a proxy's error
+  /// page, an API that moved on). Shown as a plain error with a retry; never a crash.
+  static ApiError unreadable() => const ApiError(
+        kind: ApiErrorKind.unknown,
+        code: 'unreadable_response',
+        message: 'The server\'s answer could not be read by this version of the app. Try again, or update the app if this keeps happening.',
+      );
+
   static ApiError timedOut() => const ApiError(
         kind: ApiErrorKind.timeout,
         code: 'timeout',
@@ -167,4 +175,24 @@ class ApiError implements Exception {
 
   @override
   String toString() => 'ApiError($code, $status, $message${requestId == null ? '' : ', request $requestId'})';
+}
+
+
+/// Is [error] what a parser throws when the data is not the shape it expects (as opposed to a deliberate, specific error
+/// such as "this rule needs a newer app")?
+bool looksUnreadable(Object error) => error is TypeError || error is FormatException || error is StateError || error is RangeError || error is NoSuchMethodError;
+
+/// Runs a repository call (request and parsing) and turns "the answer was not what this version of the app expects" into
+/// [ApiError.unreadable]. Errors that are already [ApiError]s, and deliberate errors of the parsers, pass through unchanged.
+/// Without this, a wrong type in an answer would escape as a raw `TypeError`, skip every `on ApiError` handler and leave a
+/// spinner or a crash.
+Future<T> readServer<T>(Future<T> Function() call) async {
+  try {
+    return await call();
+  } on ApiError {
+    rethrow;
+  } catch (e) {
+    if (looksUnreadable(e)) throw ApiError.unreadable();
+    rethrow;
+  }
 }

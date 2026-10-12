@@ -124,6 +124,21 @@ void main() {
       expect(await TokenStore(w.store).read(), isNull);
     });
 
+    test('an answer the app cannot read signs nobody in and stores no token', () async {
+      final w = await TestWorld.create();
+      // A token without the user: half of a valid answer.
+      w.server.reply('POST', '/auth/login', 200, {'data': {'token': tokenJson(token: '8|ipt_half'), 'device_id': 12}});
+      final c = w.container();
+      await settle();
+
+      await expectLater(
+        c.read(authControllerProvider.notifier).login('a@b.co', 'hunter2hunter2'),
+        throwsA(isA<ApiError>().having((e) => e.code, 'code', 'unreadable_response')),
+      );
+      expect(c.read(authControllerProvider), isA<SignedOut>());
+      expect(await TokenStore(w.store).read(), isNull, reason: 'a half-readable answer must not leave a stored session behind');
+    });
+
     test('register and guest sign in the same way', () async {
       final w = await TestWorld.create();
       w.server.on('POST', '/auth/register', (_) => FakeReply.json(201, {'data': {'token': tokenJson(), 'device_id': 1, 'user': userJson(onboarded: false)}}));

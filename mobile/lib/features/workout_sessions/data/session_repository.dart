@@ -79,7 +79,7 @@ class SessionRepository {
   static const _uuid = Uuid();
 
   /// Start (or resume) the workout of a weekday. The client uuid makes a retried start harmless.
-  Future<WorkoutSession> start({int? weekday, DateTime? date}) async {
+  Future<WorkoutSession> start({int? weekday, DateTime? date}) => readServer(() async {
     final res = await _api.post(
       '/workout-sessions',
       idempotent: true,
@@ -90,20 +90,20 @@ class SessionRepository {
       },
     );
     return WorkoutSession.fromJson(res.data);
-  }
+  });
 
-  Future<WorkoutSession> load(int id) async => WorkoutSession.fromJson((await _api.get('/workout-sessions/$id')).data);
+  Future<WorkoutSession> load(int id) => readServer(() async => WorkoutSession.fromJson((await _api.get('/workout-sessions/$id')).data));
 
   /// The unfinished workout, if the member has one.
-  Future<WorkoutSession?> active() async {
+  Future<WorkoutSession?> active() => readServer(() async {
     final res = await _api.get('/workout-sessions/active');
     return res.data == null ? null : WorkoutSession.fromJson(res.data);
-  }
+  });
 
   /// The body of the offline queue's `workout.set.log` operation: the same fields the online endpoint takes.
   static Map<String, dynamic> setPayload(int sessionId, SetEntry entry) => {'session_id': sessionId, ...entry.toJson()};
 
-  Future<SetResult> logSet(int sessionId, SetEntry entry) async {
+  Future<SetResult> logSet(int sessionId, SetEntry entry) => readServer(() async {
     final res = await _api.post('/workout-sessions/$sessionId/sets', body: entry.toJson(), idempotent: true);
     final d = res.map;
     return SetResult(
@@ -112,21 +112,21 @@ class SessionRepository {
       xpAwarded: (d['xp'] as num?)?.toInt() ?? 0,
       exerciseStatus: (d['exercise_status'] ?? 'pending').toString(),
     );
-  }
+  });
 
   Future<void> deleteSet(int sessionId, int setId) async => _api.delete('/workout-sessions/$sessionId/sets/$setId');
 
   /// What the member may do instead of this exercise. Needs a connection: the server knows the equipment and the plan.
-  Future<List<SwapOption>> alternatives(int sessionId, int sessionExerciseId) async {
+  Future<List<SwapOption>> alternatives(int sessionId, int sessionExerciseId) => readServer(() async {
     final res = await _api.get('/workout-sessions/$sessionId/exercises/$sessionExerciseId/alternatives');
     return [for (final e in (res.data as List? ?? const [])) SwapOption.fromJson(Map<String, dynamic>.from(e as Map))];
-  }
+  });
 
   /// Replaces the exercise (only before a set was logged for it). The server answers with the whole updated session.
-  Future<WorkoutSession> swap(int sessionId, int sessionExerciseId, int replacementId) async {
+  Future<WorkoutSession> swap(int sessionId, int sessionExerciseId, int replacementId) => readServer(() async {
     final res = await _api.post('/workout-sessions/$sessionId/exercises/$sessionExerciseId/swap', body: {'exercise_id': replacementId});
     return WorkoutSession.fromJson(res.data);
-  }
+  });
 
   Future<void> skipExercise(int sessionId, int sessionExerciseId) async => _api.post('/workout-sessions/$sessionId/exercises/$sessionExerciseId/skip', idempotent: true);
 
@@ -144,7 +144,7 @@ class SessionRepository {
 
   Future<void> abandon(int sessionId) async => _api.post('/workout-sessions/$sessionId/abandon', idempotent: true);
 
-  Future<FinishedSummary> summary(int sessionId) async => FinishedSummary.fromJson((await _api.get('/workout-sessions/$sessionId/summary')).data);
+  Future<FinishedSummary> summary(int sessionId) => readServer(() async => FinishedSummary.fromJson((await _api.get('/workout-sessions/$sessionId/summary')).data));
 
   // ------------------------------------------------------------------------------------------ local copy
 

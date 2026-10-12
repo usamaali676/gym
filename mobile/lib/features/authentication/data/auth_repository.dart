@@ -28,20 +28,22 @@ class AuthRepository {
 
   Future<AuthUser> guest() async => _authenticate('/auth/guest', {});
 
-  Future<AuthUser> _authenticate(String path, Map<String, dynamic> body) async {
+  Future<AuthUser> _authenticate(String path, Map<String, dynamic> body) => readServer(() async {
     final response = await _api.post(path, auth: false, body: {...body, 'device': await _device.payload()});
     final data = response.map;
-    await _sessions.start(Session.fromApi(Map<String, dynamic>.from(data['token'] as Map), deviceId: (data['device_id'] as num?)?.toInt()));
+    // Read everything before the session is started, so an unreadable answer never leaves a half-signed-in phone.
+    final session = Session.fromApi(Map<String, dynamic>.from(data['token'] as Map), deviceId: (data['device_id'] as num?)?.toInt());
     final user = AuthUser.fromJson(Map<String, dynamic>.from(data['user'] as Map));
+    await _sessions.start(session);
     await _tokens.writeUser(user.raw);
     return user;
-  }
+  });
 
-  Future<AuthUser> me() async {
+  Future<AuthUser> me() => readServer(() async {
     final user = AuthUser.fromJson((await _api.get('/me')).map);
     await _tokens.writeUser(user.raw);
     return user;
-  }
+  });
 
   Future<AuthUser?> cachedUser() async {
     final raw = await _tokens.readUser();
@@ -73,9 +75,9 @@ class AuthRepository {
   }
 
   /// First-run wizard. Same rules as the website; the server answers with the updated account.
-  Future<AuthUser> completeOnboarding(Map<String, dynamic> body) async {
+  Future<AuthUser> completeOnboarding(Map<String, dynamic> body) => readServer(() async {
     final user = AuthUser.fromJson((await _api.post('/me/onboarding', body: body)).map);
     await _tokens.writeUser(user.raw);
     return user;
-  }
+  });
 }

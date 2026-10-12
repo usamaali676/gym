@@ -1,4 +1,5 @@
 import '../../../core/api/api_client.dart';
+import '../../../core/api/api_error.dart';
 import '../../../core/api/loaded.dart';
 import '../../../core/storage/json_cache.dart';
 import '../../workout_programs/domain/plan.dart' show dateParam;
@@ -18,16 +19,16 @@ class NutritionRepository {
         parse: NutritionDay.fromJson,
       );
 
-  Future<List<Food>> search(String query) async {
+  Future<List<Food>> search(String query) => readServer(() async {
     final res = await _api.get('/foods/search', query: {'q': query.trim()});
     return [for (final f in res.list) Food.fromJson(Map<String, dynamic>.from(f as Map))];
-  }
+  });
 
-  Future<List<Food>> recent() async => [for (final f in (await _api.get('/foods/recent')).list) Food.fromJson(Map<String, dynamic>.from(f as Map))];
+  Future<List<Food>> recent() => readServer(() async => [for (final f in (await _api.get('/foods/recent')).list) Food.fromJson(Map<String, dynamic>.from(f as Map))]);
 
-  Future<List<Food>> favorites() async => [for (final f in (await _api.get('/foods/favorites')).list) Food.fromJson(Map<String, dynamic>.from(f as Map))];
+  Future<List<Food>> favorites() => readServer(() async => [for (final f in (await _api.get('/foods/favorites')).list) Food.fromJson(Map<String, dynamic>.from(f as Map))]);
 
-  Future<Food> food(int id) async => Food.fromJson((await _api.get('/foods/$id')).map);
+  Future<Food> food(int id) => readServer(() async => Food.fromJson((await _api.get('/foods/$id')).map));
 
   Future<void> setFavorite(int foodId, bool favorite) async {
     if (favorite) {
@@ -38,19 +39,19 @@ class NutritionRepository {
   }
 
   /// What [quantity] of a food is worth, computed by the server (nothing is saved).
-  Future<Calculation> calculate({required int foodId, required double quantity, required String unit, int? servingId}) async {
+  Future<Calculation> calculate({required int foodId, required double quantity, required String unit, int? servingId}) => readServer(() async {
     final res = await _api.post('/nutrition/calculate', body: {'food_id': foodId, 'quantity': quantity, 'unit': unit, 'serving_id': ?servingId});
     return Calculation.fromJson(res.data);
-  }
+  });
 
-  Future<FoodLogEntry> log({required int foodId, required String meal, required DateTime date, required double quantity, required String unit, int? servingId}) async {
+  Future<FoodLogEntry> log({required int foodId, required String meal, required DateTime date, required double quantity, required String unit, int? servingId}) => readServer(() async {
     final res = await _api.post(
       '/food-logs',
       idempotent: true,
       body: {'food_id': foodId, 'meal': meal, 'logged_on': dateParam(date), 'quantity': quantity, 'unit': unit, 'serving_id': ?servingId},
     );
     return FoodLogEntry.fromJson(Map<String, dynamic>.from(res.map['log'] as Map));
-  }
+  });
 
   Future<void> updateLog(int id, {required double quantity, required String unit, int? servingId, String? meal}) async =>
       _api.patch('/food-logs/$id', body: {'quantity': quantity, 'unit': unit, 'serving_id': ?servingId, 'meal': ?meal});

@@ -73,4 +73,28 @@ void main() {
       expect(ApiError.timedOut().isOffline, isTrue);
     });
   });
+
+  group('readServer: an answer this version cannot read', () {
+    test('a wrong type, a bad format, a missing key and a bad index all become the same plain error', () async {
+      for (final failure in <Object Function()>[
+        () => 'x' as int, // TypeError
+        () => int.parse('x'), // FormatException
+        () => <int>[].first, // StateError
+        () => <int>[1][3], // RangeError
+        () => (null as dynamic).foo(), // NoSuchMethodError
+      ]) {
+        await expectLater(
+          readServer<int>(() async => failure() as int),
+          throwsA(isA<ApiError>().having((e) => e.code, 'code', 'unreadable_response').having((e) => e.isOffline, 'offline', isFalse)),
+        );
+      }
+    });
+
+    test('real API errors pass through untouched, and other exceptions are not hidden', () async {
+      final original = ApiError.offline();
+      await expectLater(readServer<int>(() async => throw original), throwsA(same(original)));
+      await expectLater(readServer<int>(() async => throw Exception('something else')), throwsA(isA<Exception>().having((e) => e.toString(), 'text', contains('something else'))));
+      expect(await readServer(() async => 7), 7);
+    });
+  });
 }

@@ -91,7 +91,7 @@ class PolicyController extends Notifier<PolicyState> {
     state = state.copyWith(loading: true);
     try {
       final response = await ref.read(apiClientProvider).get('/app/config', auth: false);
-      final config = AppConfig.fromJson(response.map);
+      final config = await readServer(() async => AppConfig.fromJson(response.map));
       await ref.read(sharedPreferencesProvider).setString(_cacheKey, jsonEncode(response.map));
       state = PolicyState(config: config, lastChecked: DateTime.now());
     } on ApiError catch (e) {

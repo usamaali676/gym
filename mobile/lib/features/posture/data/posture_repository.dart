@@ -1,4 +1,5 @@
 import '../../../core/api/api_client.dart';
+import '../../../core/api/api_error.dart';
 import '../../../core/api/loaded.dart';
 import '../../../core/storage/json_cache.dart';
 import '../domain/posture_models.dart';
@@ -41,8 +42,8 @@ class PostureRepository {
 
   /// Saves the numeric summary of a set. The same [FinishedSet] can be sent again safely: the server recognises its
   /// `client_uuid`.
-  Future<PostureSaveResult> save(PostureRule rule, FinishedSet set, {int? workoutSessionId}) async {
+  Future<PostureSaveResult> save(PostureRule rule, FinishedSet set, {int? workoutSessionId}) => readServer(() async {
     final response = await _api.post('/posture/sessions', idempotent: true, body: payload(rule, set, workoutSessionId: workoutSessionId));
     return PostureSaveResult.fromJson(response.map);
-  }
+  });
 }

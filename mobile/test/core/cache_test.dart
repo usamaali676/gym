@@ -63,6 +63,19 @@ void main() {
     });
   });
 
+  group('loadWithCache with an answer the app cannot read', () {
+    test('is a plain unreadable-answer error, is not saved, and does not replace what was saved before', () async {
+      final cache = JsonCache(prefs, scope: '7');
+      await cache.write('k', 41);
+
+      await expectLater(
+        loadWithCache<int>(cache: cache, key: 'k', fetch: () async => 'a string where a number should be', parse: (j) => (j as int) + 1),
+        throwsA(isA<ApiError>().having((e) => e.code, 'code', 'unreadable_response')),
+      );
+      expect(cache.read('k')!.data, 41, reason: 'the old answer is untouched');
+    });
+  });
+
   group('loadWithCache', () {
     test('a good answer is returned fresh and remembered', () async {
       final cache = JsonCache(prefs, scope: '1');

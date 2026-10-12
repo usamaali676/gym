@@ -20,7 +20,15 @@ Future<Loaded<T>> loadWithCache<T>({
 }) async {
   try {
     final json = await fetch();
-    final value = parse(json);
+    final T value;
+    try {
+      value = parse(json);
+    } catch (e) {
+      // A wrong type or a missing field means the answer is not what this version expects; a deliberate error of the parser
+      // (for example "this rule needs a newer app") is passed on as it is.
+      if (looksUnreadable(e)) throw ApiError.unreadable();
+      rethrow;
+    }
     await cache.write(key, json);
     return Loaded(value);
   } on ApiError catch (e) {
