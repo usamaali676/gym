@@ -195,7 +195,9 @@ jobs:
     # job compiles it (no code signing, so it cannot be installed or uploaded) and so checks the Podfile, the iOS 15.5
     # minimum the camera coach's ML Kit needs, and that every plugin builds for iOS. It does NOT run the app.
     name: iOS build (no code signing)
-    runs-on: macos-14
+    # macos-15: the camera plugin (camera_avfoundation 0.10) uses the newer AVCaptureSession notification names, which
+    # the Xcode of macos-14 does not have (run 23 failed on exactly that).
+    runs-on: macos-15
     defaults:
       run:
         working-directory: mobile
@@ -209,6 +211,9 @@ jobs:
           cache: true
 
       - run: flutter pub get
+
+      - name: Xcode in use
+        run: xcodebuild -version
 
       - name: Build iOS (release, no code signing)
         run: flutter build ios --release --no-codesign --dart-define=API_BASE_URL=https://api.example.invalid
