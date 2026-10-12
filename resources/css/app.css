@@ -22,6 +22,8 @@
     --color-neon2: #00e676;
     --color-neon-dim: #1fa80d;
     --color-danger: #ff3b3b;
+    /* Amber: uncertain tracking / caution. Added for the mobile apps' posture coach; shared so both platforms use one value. */
+    --color-warn: #ffb020;
     --color-ink: #e8f5e9;
     --color-muted: #8fa39a;
     --color-line: rgba(57, 255, 20, 0.15);
