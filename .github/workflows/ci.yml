@@ -195,9 +195,10 @@ jobs:
     # job compiles it (no code signing, so it cannot be installed or uploaded) and so checks the Podfile, the iOS 15.5
     # minimum the camera coach's ML Kit needs, and that every plugin builds for iOS. It does NOT run the app.
     name: iOS build (no code signing)
-    # macos-15: the camera plugin (camera_avfoundation 0.10) uses the newer AVCaptureSession notification names, which
-    # the Xcode of macos-14 does not have (run 23 failed on exactly that).
-    runs-on: macos-15
+    # A recent Xcode is needed: camera_avfoundation 0.10 uses newer AVCaptureSession notification names than the Xcode of
+    # macos-14 has (run 23), and device_info_plus 13.3 calls NSProcessInfo.isiOSAppOnVision, missing from Xcode 16.4 on
+    # macos-15 (run 25). Apple also requires the current SDK for App Store uploads.
+    runs-on: macos-26
     defaults:
       run:
         working-directory: mobile
