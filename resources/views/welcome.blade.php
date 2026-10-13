@@ -86,7 +86,8 @@
         </section>
     </main>
 
-    <footer class="border-t border-line py-8 text-center text-xs text-muted">
+    <footer class="border-t border-line px-4 py-8 text-center text-xs text-muted">
+        <x-credit class="!mt-0 mb-6"/>
         <p>{{ config('app.name') }}. General fitness guidance only, not medical advice.</p>
     </footer>
 </body>

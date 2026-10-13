@@ -197,6 +197,14 @@
     .chip-danger { color: #ff8a8a; background: rgba(255, 59, 59, 0.1); border-color: rgba(255, 59, 59, 0.45); }
     .eyebrow { font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-neon); }
     .muted { color: var(--color-muted); }
+    /* "Designed & developed by" credit, shown on every page. */
+    .credit-card { margin: 2rem auto 0; max-width: 28rem; padding: 1rem 1.25rem; text-align: center; border: 1px solid var(--color-line-strong); border-radius: 1rem; background: linear-gradient(180deg, rgba(57, 255, 20, 0.09), rgba(57, 255, 20, 0.03)); box-shadow: 0 0 26px rgba(57, 255, 20, 0.14); }
+    .credit-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-muted); }
+    .credit-link { display: block; margin-top: 0.3rem; text-decoration: none; }
+    .credit-name { display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; letter-spacing: 0.06em; color: var(--color-neon); text-shadow: 0 0 14px rgba(57, 255, 20, 0.45); }
+    .credit-cta { display: inline-block; margin-top: 0.15rem; font-size: 0.78rem; font-weight: 600; color: var(--color-ink); text-decoration: underline; text-underline-offset: 4px; }
+    .credit-link:hover .credit-name, .credit-link:focus-visible .credit-name { color: var(--color-ink); }
+    .credit-link:focus-visible { outline: 2px solid var(--color-neon); outline-offset: 4px; border-radius: 0.5rem; }
     .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 700; letter-spacing: 0.01em; }
     .text-glow { text-shadow: 0 0 18px rgba(57, 255, 20, 0.55); }
     .glow-line { height: 1px; background: linear-gradient(90deg, transparent, var(--color-neon), transparent); opacity: 0.5; }

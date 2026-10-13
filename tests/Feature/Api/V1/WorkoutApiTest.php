@@ -46,9 +46,9 @@ describe('plan', function () {
         expect($r->json('data.exercises'))->toHaveCount(7)
             ->and($r->json('data.exercises.0.exercise.slug'))->toBe('flat-barbell-bench-press')
             ->and($r->json('data.exercises.0.reps_min'))->toBe(6)
-            ->and($r->json('data.exercises.0.rest_seconds'))->toBe(150)
+            ->and($r->json('data.exercises.0.rest_seconds'))->toBe(20)
             ->and($r->json('data.can_act'))->toBeTrue()
-            ->and($r->json('data.estimated_minutes'))->toBeGreaterThan(30);
+            ->and($r->json('data.estimated_minutes'))->toBe(28);
         $this->getJson('/api/v1/plan/days/9', ($this->h)())->assertNotFound();
         $this->getJson('/api/v1/plan/days/1?date=nonsense', ($this->h)())->assertStatus(422);
     });
@@ -90,7 +90,7 @@ describe('running a workout', function () {
             ->and($data['exercises'])->toHaveCount(7)
             ->and($data['exercises'][0]['slug'])->toBe('flat-barbell-bench-press')
             ->and($data['exercises'][0]['target_sets'])->toBe(3)
-            ->and($data['exercises'][0]['rest_seconds'])->toBe(150)
+            ->and($data['exercises'][0]['rest_seconds'])->toBe(20)
             ->and($data['exercises'][0]['suggested']['reason'])->not->toBeEmpty()
             ->and($data['started_at'])->not->toBeNull()
             ->and($data['server_time'])->not->toBeNull()

@@ -42,8 +42,7 @@ test('a day page shows exercises with sets, reps, focus and rest', function () {
         ->assertSee('Flat Barbell Bench Press')
         ->assertSee('Overall chest mass')
         ->assertSee('6-10')
-        ->assertSee('Rest 2-3 min')
-        ->assertSee('Rest 60-90 s')
+        ->assertSee('Rest 20 s')
         ->assertSee('7 exercises')
         ->assertSee('21 sets');
 });

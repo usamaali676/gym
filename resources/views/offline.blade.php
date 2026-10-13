@@ -17,6 +17,9 @@
         a, button { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.25rem; border: 0; border-radius: .75rem; background: #39FF14; color: #041006; font: 700 .95rem system-ui, sans-serif; text-decoration: none; cursor: pointer; }
         a.alt { background: transparent; color: #E8F5E9; border: 1px solid #2a3a2f; margin-left: .5rem; }
         :focus-visible { outline: 2px solid #39FF14; outline-offset: 3px; }
+        .credit { margin-top: 2rem; padding: 1rem; border: 1px solid #1f5a14; border-radius: 1rem; background: rgba(57,255,20,.06); }
+        .credit small { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #8fa39a; }
+        .credit a.name { display: inline; min-height: 0; padding: 0; margin-top: .25rem; background: none; color: #39FF14; font: 800 1.25rem system-ui, sans-serif; letter-spacing: .05em; text-decoration: underline; text-underline-offset: 4px; }
     </style>
 </head>
 <body>
@@ -26,6 +29,7 @@
         <p>This page is not saved on your device. Pages you opened recently (today's workout, your plan, the exercise library) still work, and sets you log mid-workout are kept and sent when you reconnect.</p>
         <button type="button" onclick="location.reload()">Try again</button>
         <a class="alt" href="{{ url('/dashboard') }}">Dashboard</a>
+        <div class="credit"><small>Designed &amp; developed by</small><a class="name" href="{{ config('ironpulse.credit.url') }}" target="_blank" rel="noopener noreferrer">{{ config('ironpulse.credit.name') }}</a></div>
     </main>
 </body>
 </html>

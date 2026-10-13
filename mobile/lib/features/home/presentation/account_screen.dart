@@ -11,6 +11,7 @@ import '../../../app/theme/typography.dart';
 import '../../../core/notifications/local_alerts.dart';
 import '../../../core/notifications/rest_alerts.dart';
 import '../../../core/sync/offline_queue.dart';
+import '../../../core/widgets/credit_badge.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
@@ -123,6 +124,8 @@ class AccountScreen extends ConsumerWidget {
               _Row('Server', Uri.tryParse(env.apiBaseUrl)?.host ?? env.apiBaseUrl),
             ]),
           ),
+          const SizedBox(height: 16),
+          const CreditBadge(),
           const SizedBox(height: 24),
           NeonButton(
             label: 'Sign out',

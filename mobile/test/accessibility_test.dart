@@ -44,6 +44,9 @@ Future<void> _tour(WidgetTester tester, Future<void> Function(String screen) che
   await pumpUntil(tester, find.text('Exercise 1'));
   await check('train: exercises');
 
+  await _tab(tester, 'LIBRARY', find.text('Search exercises'));
+  await check('library');
+
   await _tab(tester, 'FUEL', find.text('Chicken breast, cooked').evaluate().isNotEmpty ? find.text('Chicken breast, cooked') : find.textContaining('kcal'));
   await check('fuel');
 

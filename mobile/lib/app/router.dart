@@ -15,6 +15,7 @@ import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/register_screen.dart';
 import '../features/authentication/presentation/welcome_screen.dart';
 import '../features/exercise_library/presentation/exercise_detail_screen.dart';
+import '../features/exercise_library/presentation/library_screen.dart';
 import '../features/home/presentation/account_screen.dart';
 import '../features/home/presentation/app_shell.dart';
 import '../features/membership/presentation/membership_screen.dart';
@@ -167,6 +168,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         branches: [
           StatefulShellBranch(routes: [GoRoute(path: Routes.home, builder: (_, _) => const DashboardScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.train, builder: (_, _) => const TrainScreen())]),
+          StatefulShellBranch(routes: [GoRoute(path: Routes.library, builder: (_, _) => const LibraryScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.fuel, builder: (_, _) => const NutritionScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.progress, builder: (_, _) => const ProgressScreen())]),
           StatefulShellBranch(routes: [GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen())]),

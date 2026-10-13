@@ -34,9 +34,9 @@ export function advance(exercises, idx, setIdx) {
     return { kind: 'finished', idx, setIdx: setIdx + 1 };
 }
 
-/** Rest after a set: the exercise's own default (2-3 min compounds, 60-90 s isolation). */
+/** Rest after a set: what the server sent for this exercise (20 s unless the gym changed it). */
 export function restSecondsFor(ex) {
-    return Math.max(10, Math.round(ex.restSeconds || 75));
+    return Math.max(10, Math.round(ex.restSeconds || 20));
 }
 
 /**

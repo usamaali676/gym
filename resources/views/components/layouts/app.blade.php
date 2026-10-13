@@ -85,6 +85,7 @@
         <main id="main" class="page-in mx-auto max-w-7xl px-4 pb-32 pt-6 sm:px-6 lg:px-8 lg:pb-14 {{ $bare ? '' : '' }}" tabindex="-1">
             <x-flash/>
             {{ $slot }}
+            <x-credit/>
         </main>
     </div>
 

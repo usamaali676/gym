@@ -77,8 +77,8 @@ test('the play page boots the game with exercise content and prefs', function ()
     $config = json_decode($m[1], true);
 
     expect($config['exercises'])->toHaveCount(7)
-        ->and($config['exercises'][0]['restSeconds'])->toBe(150)
-        ->and($config['exercises'][5]['restSeconds'])->toBe(75)
+        ->and($config['exercises'][0]['restSeconds'])->toBe(20)
+        ->and($config['exercises'][5]['restSeconds'])->toBe(20)
         ->and($config['exercises'][0]['cues'])->not->toBeEmpty()
         ->and($config['exercises'][0]['regions']['primary'])->toContain('chest_upper')
         ->and($config['prefs']['sound'])->toBeTrue()

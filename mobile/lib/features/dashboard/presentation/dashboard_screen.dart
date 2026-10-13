@@ -6,6 +6,7 @@ import '../../../app/theme/tokens.g.dart';
 import '../../../app/theme/typography.dart';
 import '../../../core/policy/app_config.dart';
 import '../../../core/policy/policy_controller.dart';
+import '../../../core/widgets/credit_badge.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/spread_row.dart';
 import '../../../core/widgets/loaded_view.dart';
@@ -72,6 +73,8 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 18),
             Text('“${d.quote}”', textAlign: TextAlign.center, style: IpText.body(13, color: IpColors.muted).copyWith(fontStyle: FontStyle.italic)),
           ],
+          const SizedBox(height: 18),
+          const CreditBadge(),
         ],
       ),
     );

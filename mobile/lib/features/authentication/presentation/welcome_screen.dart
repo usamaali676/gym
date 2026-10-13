@@ -8,6 +8,7 @@ import '../../../app/theme/typography.dart';
 import '../../../core/api/api_error.dart';
 import '../../../core/policy/policy_controller.dart';
 import '../../../core/widgets/brand.dart';
+import '../../../core/widgets/credit_badge.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/neon_button.dart';
 import '../../../core/widgets/status_chip.dart';
@@ -97,6 +98,8 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     const SizedBox(height: 20),
                     const MessageBanner('You appear to be offline. Sign-in needs a connection.', tone: Tone.warn),
                   ],
+                  const SizedBox(height: 28),
+                  const CreditBadge(),
                 ],
               ),
             ),

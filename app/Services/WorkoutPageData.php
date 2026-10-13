@@ -7,6 +7,7 @@ use App\Models\SessionExercise;
 use App\Models\SessionSet;
 use App\Models\User;
 use App\Models\WorkoutSession;
+use App\Support\RestTime;
 use Illuminate\Support\Collection;
 
 /** Builds the JSON the game-mode page boots from. */
@@ -91,10 +92,10 @@ class WorkoutPageData
             'targetSets' => $row->target_sets,
             'repsMin' => $row->target_reps_min,
             'repsMax' => $row->target_reps_max,
-            'restSeconds' => $item?->rest_seconds_override ?: $exercise->default_rest_seconds,
-            'restLabel' => $exercise->rest_min_seconds >= 120 || $exercise->rest_max_seconds >= 120
+            'restSeconds' => RestTime::fixed() ?: ($item?->rest_seconds_override ?: $exercise->default_rest_seconds),
+            'restLabel' => RestTime::label() ?? ($exercise->rest_min_seconds >= 120 || $exercise->rest_max_seconds >= 120
                 ? round($exercise->rest_min_seconds / 60, 1).'-'.round($exercise->rest_max_seconds / 60, 1).' min'
-                : "{$exercise->rest_min_seconds}-{$exercise->rest_max_seconds} s",
+                : "{$exercise->rest_min_seconds}-{$exercise->rest_max_seconds} s"),
             'weight' => $weight,
             'targetReps' => $suggestion['reps'] ?? $row->target_reps_min,
             'reason' => $suggestion['reason'] ?? 'First time: pick a weight you can lift for '.$row->target_reps_min.'-'.$row->target_reps_max.' reps, leaving 1-2 reps in reserve.',

@@ -20,6 +20,7 @@
             <x-flash/>
             {{ $slot }}
         </div>
+        <x-credit/>
     </main>
 </body>
 </html>

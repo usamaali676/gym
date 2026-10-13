@@ -26,7 +26,7 @@ test('monday shows the push chest workout from the seeded plan', function () {
         ->assertSee('21 sets')
         ->assertSee('Flat Barbell Bench Press')
         ->assertSee('3×6-10', escape: false)
-        ->assertSee('about 58 min');
+        ->assertSee('about 28 min');
 });
 
 test('saturday is a rest day with the recovery message', function () {

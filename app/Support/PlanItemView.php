@@ -33,12 +33,16 @@ final class PlanItemView
 
     public function restSeconds(): int
     {
-        return $this->item->rest_seconds_override ?: $this->exercise->default_rest_seconds;
+        return RestTime::fixed() ?: ($this->item->rest_seconds_override ?: $this->exercise->default_rest_seconds);
     }
 
     /** "2-3 min" for compounds, "60-90 s" for isolation work. */
     public function restLabel(): string
     {
+        if ($fixed = RestTime::label()) {
+            return $fixed;
+        }
+
         $min = $this->exercise->rest_min_seconds;
         $max = $this->exercise->rest_max_seconds;
 

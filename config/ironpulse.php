@@ -22,6 +22,26 @@ return [
         'numbers' => true,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rest between sets
+    |--------------------------------------------------------------------------
+    | One rest time (seconds) for every exercise, on the website and in the apps. Set to 0 to use each exercise's own
+    | rest from the plan data instead (compounds 2-3 min, isolation 60-90 s).
+    */
+    'rest_seconds' => (int) env('IRONPULSE_REST_SECONDS', 20),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Credit
+    |--------------------------------------------------------------------------
+    | Shown on every page of the website and inside the apps ("Designed and developed by ...").
+    */
+    'credit' => [
+        'name' => 'Usama Ali',
+        'url' => 'https://www.linkedin.com/in/muhammad-usama-ali-887796214?utm_source=share_via&utm_content=profile&utm_medium=member_ios',
+    ],
+
     'guest_mode' => (bool) env('IRONPULSE_GUEST_MODE', true),
     // Guests nobody has come back to for this many days are deleted by `ironpulse:prune-guests`.
     'guest_ttl_days' => (int) env('IRONPULSE_GUEST_TTL_DAYS', 30),

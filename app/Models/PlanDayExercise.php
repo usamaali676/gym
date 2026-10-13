@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\RecordsContentChanges;
 use App\Support\Content\ContentCollection;
+use App\Support\RestTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,6 +44,6 @@ class PlanDayExercise extends Model
 
     public function restSeconds(): int
     {
-        return $this->rest_seconds_override ?: $this->exercise->default_rest_seconds;
+        return \App\Support\RestTime::fixed() ?: ($this->rest_seconds_override ?: $this->exercise->default_rest_seconds);
     }
 }

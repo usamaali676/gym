@@ -4,6 +4,7 @@ namespace App\Http\Resources\V1;
 
 use App\Models\Exercise;
 use App\Services\Membership\EntitlementService;
+use App\Support\RestTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -50,9 +51,9 @@ class ExerciseResource extends JsonResource
         return $data + [
             'target_regions' => $this->target_regions ?? ['primary' => [], 'secondary' => []],
             'rest' => [
-                'min_seconds' => $this->rest_min_seconds,
-                'max_seconds' => $this->rest_max_seconds,
-                'default_seconds' => $this->default_rest_seconds,
+                'min_seconds' => RestTime::fixed() ?: $this->rest_min_seconds,
+                'max_seconds' => RestTime::fixed() ?: $this->rest_max_seconds,
+                'default_seconds' => RestTime::fixed() ?: $this->default_rest_seconds,
             ],
             'default_hold_seconds' => $this->default_hold_seconds,
             'description' => $this->description,

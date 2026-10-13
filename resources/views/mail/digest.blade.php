@@ -21,6 +21,7 @@
                 <ol style="margin:0;padding-left:18px;color:#cfe3d2;font-size:14px;line-height:1.6;">@foreach ($report['focus'] as $f)<li>{{ $f }}</li>@endforeach</ol></td></tr>
         @endif
         <tr><td style="padding:20px 24px;"><a href="{{ $reportUrl }}" style="display:inline-block;background:#39ff14;color:#041006;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:10px;">Open the full report</a></td></tr>
+        <tr><td style="padding:0 24px 12px;"><p style="margin:0;font-size:13px;color:#cfe3d2;">Designed &amp; developed by <a href="{{ config('ironpulse.credit.url') }}" style="color:#39ff14;font-weight:bold;">{{ config('ironpulse.credit.name') }}</a></p></td></tr>
         <tr><td style="padding:0 24px 24px;"><p style="margin:0;color:#6f857a;font-size:12px;">You get this because the weekly digest is switched on in your profile. <a href="{{ $unsubscribeUrl }}" style="color:#6f857a;">Unsubscribe in one click</a>.</p></td></tr>
     </table>
 </td></tr></table>

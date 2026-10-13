@@ -40,10 +40,10 @@ test('a single-exercise workout finishes after its last set', () => {
     assert.equal(advance(list, 0, 2).kind, 'finished');
 });
 
-test('rest uses the exercise default and never goes below 10 seconds', () => {
+test('rest uses the exercise value the server sent (20 s by default) and never goes below 10 seconds', () => {
     assert.equal(restSecondsFor(ex({ restSeconds: 150 })), 150);
     assert.equal(restSecondsFor(ex({ restSeconds: 75 })), 75);
-    assert.equal(restSecondsFor(ex({ restSeconds: 0 })), 75);
+    assert.equal(restSecondsFor(ex({ restSeconds: 0 })), 20);
     assert.equal(restSecondsFor(ex({ restSeconds: 3 })), 10);
 });
 

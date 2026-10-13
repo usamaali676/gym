@@ -76,7 +76,7 @@ test('estimated duration uses sets, work time and the rest defaults', function (
     $wednesday = $service->dayFor($user, Carbon::parse('2026-10-14'));
     $saturday = $service->dayFor($user, Carbon::parse('2026-10-17'));
 
-    expect($service->estimatedMinutes($monday))->toBe(58)
-        ->and($service->estimatedMinutes($wednesday))->toBe(53)
+    expect($service->estimatedMinutes($monday))->toBe(28)
+        ->and($service->estimatedMinutes($wednesday))->toBe(28)
         ->and($service->estimatedMinutes($saturday))->toBe(0);
 });
